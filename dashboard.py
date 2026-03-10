@@ -336,8 +336,12 @@ purple_area = dict(
 with col1:
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(
-        x=chart_df["date"], y=chart_df["vtho_generated"],
-        fill="tozeroy", **purple_area, name="VTHO Generated",
+        x=chart_df["date"],
+        y=chart_df["vtho_generated"],
+        fill="tozeroy",
+        fillcolor="rgba(114,102,255,0.08)",
+        line=dict(color="#7266FF", width=2.5),
+        name="VTHO Generated",
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
     ))
     fig1.update_layout(
@@ -346,8 +350,7 @@ with col1:
         margin=dict(l=16, r=16, t=48, b=16),
         hovermode="x unified", showlegend=False,
         xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11),
-                   tickformat=".2s"),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
         height=300
     )
     st.plotly_chart(fig1, use_container_width=True)
