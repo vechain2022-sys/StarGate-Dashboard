@@ -255,6 +255,13 @@ def fetch_vet_staked():
     dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
     return df[df["date"] >= dec1].reset_index(drop=True)
 
+@st.cache_data(ttl=300)
+def fetch_vet_delegated():
+    df = pd.read_excel("vet-delegated_2025-2026_03_10.xlsx")
+    df["date"] = pd.to_datetime(df["date"], origin="1899-12-30", unit="D").dt.date
+    df = df.sort_values("date").reset_index(drop=True)
+    return df[["date", "vet_delegated_cumsum"]]
+
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
     df     = fetch_vtho_generated()
