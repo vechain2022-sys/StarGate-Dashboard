@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import requests
 import time
+import os
 from datetime import timedelta
 
 st.set_page_config(
@@ -242,23 +243,20 @@ def fetch_vet_staked():
     df = _fetch_daily(
         "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY",
         "vet_staked_delta",
-        from_ts=FROM_TS_FULL  # fetch from July for correct baseline
+        from_ts=FROM_TS_FULL
     )
-    # Cumsum on full history
     df["vet_staked_cumsum"] = df["vet_staked_delta"].cumsum()
-    # Aggregate to daily
     df = df.groupby("date").agg(
         vet_staked_delta=("vet_staked_delta", "sum"),
         vet_staked_cumsum=("vet_staked_cumsum", "last")
     ).reset_index()
-    # Filter to Dec onwards
     dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
     return df[df["date"] >= dec1].reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_vet_delegated():
-    import os
     path = os.path.join(os.path.dirname(__file__), "vet-delegated_2025-2026_03_10.xlsx")
+    df = pd.read_excel(path)
     df["date"] = pd.to_datetime(df["date"], origin="1899-12-30", unit="D").dt.date
     df = df.sort_values("date").reset_index(drop=True)
     return df[["date", "vet_delegated_cumsum"]]
@@ -268,7 +266,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     df     = fetch_vtho_generated()
     df_clm = fetch_vtho_claimed()
     df_stk = fetch_vet_staked()
-    df_dlg = fetch_vet_delegated() 
+    df_dlg = fetch_vet_delegated()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -298,6 +296,7 @@ if filtered.empty:
 
 f_clm = df_clm[(df_clm["date"] >= s) & (df_clm["date"] <= e)].copy()
 f_stk = df_stk[(df_stk["date"] >= s) & (df_stk["date"] <= e)].copy()
+f_dlg = df_dlg[(df_dlg["date"] >= s) & (df_dlg["date"] <= e)].copy()
 
 # ── Aggregate ─────────────────────────────────────────────
 def aggregate(df, col, how="sum"):
@@ -315,34 +314,27 @@ def aggregate(df, col, how="sum"):
 filtered["gmtTime"] = pd.to_datetime(filtered["gmtTime"])
 f_clm["gmtTime"]    = pd.to_datetime(f_clm["gmtTime"])
 f_stk["gmtTime"]    = pd.to_datetime(f_stk["date"])
+f_dlg["gmtTime"]    = pd.to_datetime(f_dlg["date"])
 
 chart_df  = aggregate(filtered, "vtho_generated", "sum")
 chart_clm = aggregate(f_clm,    "vtho_claimed",   "sum")
 
-# VET staked needs special handling — cumsum uses last, delta uses sum
 if period in ["Weekly", "Monthly"]:
     freq = "W" if period == "Weekly" else "ME"
     chart_stk = f_stk.set_index("gmtTime").resample(freq).agg(
         vet_staked_delta=("vet_staked_delta", "sum"),
         vet_staked_cumsum=("vet_staked_cumsum", "last")
     ).reset_index().rename(columns={"gmtTime": "date"})
-else:
-    chart_stk = f_stk[["date","vet_staked_delta","vet_staked_cumsum"]].copy()
-
-f_dlg = df_dlg[(df_dlg["date"] >= s) & (df_dlg["date"] <= e)].copy()
-f_dlg["gmtTime"] = pd.to_datetime(f_dlg["date"])
-
-if period in ["Weekly", "Monthly"]:
-    freq = "W" if period == "Weekly" else "ME"
     chart_dlg = f_dlg.set_index("gmtTime").resample(freq)["vet_delegated_cumsum"].last().reset_index()
     chart_dlg.columns = ["date", "vet_delegated_cumsum"]
 else:
-    chart_dlg = f_dlg[["date", "vet_delegated_cumsum"]].copy()
-    
+    chart_stk = f_stk[["date","vet_staked_delta","vet_staked_cumsum"]].copy()
+    chart_dlg = f_dlg[["date","vet_delegated_cumsum"]].copy()
+
 # ── KPIs ──────────────────────────────────────────────────
-vtho_gen_total  = filtered["vtho_generated"].sum()
-vtho_clm_total  = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
-vet_stk_latest  = f_stk["vet_staked_cumsum"].iloc[-1] if not f_stk.empty else 0
+vtho_gen_total = filtered["vtho_generated"].sum()
+vtho_clm_total = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
+vet_stk_latest = f_stk["vet_staked_cumsum"].iloc[-1] if not f_stk.empty else 0
 
 latest     = filtered["vtho_generated"].iloc[-1]
 prev       = filtered["vtho_generated"].iloc[-2] if len(filtered) > 1 else latest
@@ -630,7 +622,7 @@ with col7:
         height=320
     )
     st.plotly_chart(fig7, use_container_width=True)
-    
+
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
