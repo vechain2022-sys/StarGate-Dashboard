@@ -219,9 +219,50 @@ def fetch_vtho_generated():
     df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
     return df[["blockNumber","blockTimestamp","gmtTime","date","vtho_generated"]]
 
+@st.cache_data(ttl=300)
+def fetch_vtho_claimed():
+    url   = "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-claimed/DAY"
+    TO_TS = int(pd.Timestamp.utcnow().timestamp())
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    rows = []
+    start_day = pd.to_datetime(FROM_TS, unit="s", utc=True).normalize()
+    end_day   = pd.to_datetime(TO_TS,   unit="s", utc=True).normalize()
+    for day_start in pd.date_range(start_day, end_day, freq="D", tz="UTC"):
+        day_end     = day_start + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+        window_from = max(FROM_TS, int(day_start.timestamp()))
+        window_to   = min(TO_TS,   int(day_end.timestamp()))
+        if window_from > window_to:
+            continue
+        page = 0
+        while True:
+            params = {
+                "from": window_from, "to": window_to,
+                "page": page, "size": SIZE, "direction": "ASC"
+            }
+            r = session.get(url, params=params, timeout=TIMEOUT)
+            r.raise_for_status()
+            data = r.json().get("data", []) or []
+            rows.extend(data)
+            if len(data) < SIZE:
+                break
+            page += 1
+            time.sleep(SLEEP_S)
+    if not rows:
+        return pd.DataFrame(columns=["blockNumber","blockTimestamp","gmtTime","date","vtho_claimed"])
+    df = pd.DataFrame(rows)[["blockNumber","blockTimestamp","total"]].copy()
+    df["gmtTime"]     = pd.to_datetime(df["blockTimestamp"], unit="s", utc=True)
+    df["date"]        = df["gmtTime"].dt.date
+    df["vtho_claimed"] = pd.to_numeric(df["total"], errors="coerce") / 1e18
+    df = df[df["vtho_claimed"] > 0]  # filter out zero days
+    df = df.drop_duplicates(subset=["blockNumber","blockTimestamp"])
+    df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
+    return df[["blockNumber","blockTimestamp","gmtTime","date","vtho_claimed"]]
+    
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
-    df = fetch_vtho_generated()
+    df      = fetch_vtho_generated()
+    df_clm  = fetch_vtho_claimed()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -260,6 +301,18 @@ elif period == "Monthly":
 else:
     chart_df = filtered[["date", "vtho_generated"]].copy()
 
+f_clm = df_clm[(df_clm["date"] >= s) & (df_clm["date"] <= e)].copy()
+f_clm["gmtTime"] = pd.to_datetime(f_clm["gmtTime"])
+
+if period == "Weekly":
+    chart_clm = f_clm.set_index("gmtTime").resample("W")["vtho_claimed"].sum().reset_index()
+    chart_clm.columns = ["date", "vtho_claimed"]
+elif period == "Monthly":
+    chart_clm = f_clm.set_index("gmtTime").resample("ME")["vtho_claimed"].sum().reset_index()
+    chart_clm.columns = ["date", "vtho_claimed"]
+else:
+    chart_clm = f_clm[["date", "vtho_claimed"]].copy()
+    
 # ── KPIs ──────────────────────────────────────────────────
 latest     = filtered["vtho_generated"].iloc[-1]
 prev       = filtered["vtho_generated"].iloc[-2] if len(filtered) > 1 else latest
@@ -387,6 +440,69 @@ with st.expander("📄 Raw Data"):
         use_container_width=True
     )
 
+# ── SECTION 2: VTHO Claimed ───────────────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">VTHO Claimed</div>
+    <div class="vc-section-badge">Staker Rewards</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col3, col4 = st.columns(2)
+
+with col3:
+    fig3 = go.Figure()
+    fig3.add_trace(go.Scatter(
+        x=chart_clm["date"], y=chart_clm["vtho_claimed"],
+        fill="tozeroy", fillcolor="rgba(189,184,255,0.10)",
+        line=dict(color="#BDB8FF", width=2.5),
+        hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
+    ))
+    fig3.update_layout(
+        title=dict(
+            text="VTHO Claimed Over Time",
+            subtitle=dict(
+                text="Rewards claimed by stakers over time",
+                font=dict(size=12, color="#7B789A")
+            ),
+            font=dict(family="Satoshi", size=14, color="#0C0A1F")
+        ),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=False,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=320
+    )
+    st.plotly_chart(fig3, use_container_width=True)
+
+with col4:
+    fig4 = go.Figure()
+    fig4.add_trace(go.Bar(
+        x=chart_clm["date"], y=chart_clm["vtho_claimed"],
+        marker=dict(color="rgba(189,184,255,0.7)", line=dict(width=0)),
+        hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
+    ))
+    fig4.update_layout(
+        title=dict(
+            text="Daily VTHO Claimed",
+            subtitle=dict(
+                text="Per-day claiming activity",
+                font=dict(size=12, color="#7B789A")
+            ),
+            font=dict(family="Satoshi", size=14, color="#0C0A1F")
+        ),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=False, bargap=0.2,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=320
+    )
+    st.plotly_chart(fig4, use_container_width=True)
+    
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
