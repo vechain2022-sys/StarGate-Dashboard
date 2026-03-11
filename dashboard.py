@@ -502,7 +502,52 @@ with col4:
         height=320
     )
     st.plotly_chart(fig4, use_container_width=True)
-    
+
+# ── Full width: Generated vs Claimed ─────────────────────
+st.markdown("""
+<div style="padding: 0 64px 56px; background: #ffffff;">
+</div>
+""", unsafe_allow_html=True)
+
+col5, _ = st.columns([1, 0.001])
+with col5:
+    fig5 = go.Figure()
+    fig5.add_trace(go.Scatter(
+        x=chart_df["date"], y=chart_df["vtho_generated"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
+        line=dict(color="#7266FF", width=2.5),
+        name="Generated",
+        hovertemplate="%{x}<br><b>Generated: %{y:,.0f} VTHO</b><extra></extra>"
+    ))
+    fig5.add_trace(go.Scatter(
+        x=chart_clm["date"], y=chart_clm["vtho_claimed"],
+        fill="tozeroy", fillcolor="rgba(189,184,255,0.10)",
+        line=dict(color="#BDB8FF", width=2.5),
+        name="Claimed",
+        hovertemplate="%{x}<br><b>Claimed: %{y:,.0f} VTHO</b><extra></extra>"
+    ))
+    fig5.update_layout(
+        title=dict(
+            text="VTHO Generated vs. Claimed",
+            subtitle=dict(
+                text="Generated supply vs. actual claiming activity",
+                font=dict(size=12, color="#7B789A")
+            ),
+            font=dict(family="Satoshi", size=14, color="#0C0A1F")
+        ),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=True,
+        legend=dict(
+            font=dict(color="#7B789A", size=11),
+            bgcolor="rgba(0,0,0,0)",
+            orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+        ),
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=320
+    )
+    st.plotly_chart(fig5, use_container_width=True)
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
