@@ -267,6 +267,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     df     = fetch_vtho_generated()
     df_clm = fetch_vtho_claimed()
     df_stk = fetch_vet_staked()
+    df_dlg = fetch_vet_delegated() 
 
 if df.empty:
     st.error("No data returned from API.")
@@ -327,6 +328,16 @@ if period in ["Weekly", "Monthly"]:
 else:
     chart_stk = f_stk[["date","vet_staked_delta","vet_staked_cumsum"]].copy()
 
+f_dlg = df_dlg[(df_dlg["date"] >= s) & (df_dlg["date"] <= e)].copy()
+f_dlg["gmtTime"] = pd.to_datetime(f_dlg["date"])
+
+if period in ["Weekly", "Monthly"]:
+    freq = "W" if period == "Weekly" else "ME"
+    chart_dlg = f_dlg.set_index("gmtTime").resample(freq)["vet_delegated_cumsum"].last().reset_index()
+    chart_dlg.columns = ["date", "vet_delegated_cumsum"]
+else:
+    chart_dlg = f_dlg[["date", "vet_delegated_cumsum"]].copy()
+    
 # ── KPIs ──────────────────────────────────────────────────
 vtho_gen_total  = filtered["vtho_generated"].sum()
 vtho_clm_total  = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
@@ -585,6 +596,40 @@ with col6:
     )
     st.plotly_chart(fig6, use_container_width=True)
 
+# ── SECTION 4: VET Delegated ─────────────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">VET Delegation Growth</div>
+    <div class="vc-section-badge">↑ Growing Participation</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col7, _ = st.columns([1, 0.001])
+with col7:
+    fig7 = go.Figure()
+    fig7.add_trace(go.Scatter(
+        x=chart_dlg["date"], y=chart_dlg["vet_delegated_cumsum"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
+        line=dict(color="#7266FF", width=2.5),
+        hovertemplate="%{x}<br><b>%{y:,.0f} VET</b><extra></extra>"
+    ))
+    fig7.update_layout(
+        title=dict(
+            text="Total VET Delegated Over Time",
+            subtitle=dict(text="Cumulative VET delegated in StarGate", font=dict(size=12, color="#7B789A")),
+            font=dict(family="Satoshi", size=14, color="#0C0A1F")
+        ),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=False,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=320
+    )
+    st.plotly_chart(fig7, use_container_width=True)
+    
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
