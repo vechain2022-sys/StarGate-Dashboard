@@ -353,7 +353,7 @@ with col1:
     fig1.update_layout(
         title=dict(text="VTHO Generated Over Time", subtitle=dict(text="Emission rising proportionally as more VET gets staked", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")),
         paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        margin=dict(l=40, r=24, t=48, b=40),
+        margin=dict(l=40, r=24, t=64, b=40),
         hovermode="x unified", showlegend=False,
         xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
         yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
