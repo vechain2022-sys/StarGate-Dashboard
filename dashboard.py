@@ -351,7 +351,7 @@ with col1:
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
     ))
     fig1.update_layout(
-        title=dict(text="VTHO Generated Over Time", font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        title=dict(text="VTHO Generated Over Time", subtitle=dict(text="Emission rising proportionally as more VET gets staked", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")),
         paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
         margin=dict(l=40, r=24, t=48, b=40),
         hovermode="x unified", showlegend=False,
