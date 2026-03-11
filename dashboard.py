@@ -255,7 +255,7 @@ def fetch_vet_staked():
 
 @st.cache_data(ttl=300)
 def fetch_vet_delegated():
-    path = os.path.join(os.path.dirname(__file__), "vet-delegated_2025-2026_03_10.xlsx")
+    path = os.path.join(os.path.dirname(__file__), "vet-delegated 2025-2026.03.10.xlsx")
     df = pd.read_excel(path)
     df["date"] = pd.to_datetime(df["date"], origin="1899-12-30", unit="D").dt.date
     df = df.sort_values("date").reset_index(drop=True)
