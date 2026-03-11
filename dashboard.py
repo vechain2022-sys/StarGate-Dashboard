@@ -258,11 +258,66 @@ def fetch_vtho_claimed():
     df = df.drop_duplicates(subset=["blockNumber","blockTimestamp"])
     df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
     return df[["blockNumber","blockTimestamp","gmtTime","date","vtho_claimed"]]
-    
+
+FROM_TS_FULL = 1733702400  # July 2025 — for correct baseline
+FROM_TS      = 1764547200  # Dec 1 2025 — display start
+
+@st.cache_data(ttl=300)
+def fetch_vet_staked():
+    url   = "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY"
+    TO_TS = int(pd.Timestamp.utcnow().timestamp())
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    rows = []
+    start_day = pd.to_datetime(FROM_TS_FULL, unit="s", utc=True).normalize()
+    end_day   = pd.to_datetime(TO_TS, unit="s", utc=True).normalize()
+    for day_start in pd.date_range(start_day, end_day, freq="D", tz="UTC"):
+        day_end     = day_start + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
+        window_from = max(FROM_TS_FULL, int(day_start.timestamp()))
+        window_to   = min(TO_TS, int(day_end.timestamp()))
+        if window_from > window_to:
+            continue
+        page = 0
+        while True:
+            params = {
+                "from": window_from, "to": window_to,
+                "page": page, "size": SIZE, "direction": "ASC"
+            }
+            r = session.get(url, params=params, timeout=TIMEOUT)
+            r.raise_for_status()
+            data = r.json().get("data", []) or []
+            rows.extend(data)
+            if len(data) < SIZE:
+                break
+            page += 1
+    if not rows:
+        return pd.DataFrame(columns=["date","vet_staked_delta","vet_staked_cumsum"])
+    df = pd.DataFrame(rows)[["blockNumber","blockTimestamp","total"]].copy()
+    df["gmtTime"]          = pd.to_datetime(df["blockTimestamp"], unit="s", utc=True)
+    df["date"]             = df["gmtTime"].dt.date
+    df["vet_staked_delta"] = pd.to_numeric(df["total"], errors="coerce") / 1e18
+    df = df.drop_duplicates(subset=["blockNumber","blockTimestamp"])
+    df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
+
+    # Cumsum on full history first
+    df["vet_staked_cumsum"] = df["vet_staked_delta"].cumsum()
+
+    # Aggregate to daily
+    df = df.groupby("date").agg(
+        vet_staked_delta=("vet_staked_delta", "sum"),
+        vet_staked_cumsum=("vet_staked_cumsum", "last")
+    ).reset_index()
+
+    # Filter to Dec onwards for display
+    dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
+    df   = df[df["date"] >= dec1].reset_index(drop=True)
+    return df[["date","vet_staked_delta","vet_staked_cumsum"]]
+
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
-    df      = fetch_vtho_generated()
-    df_clm  = fetch_vtho_claimed()
+    df     = fetch_vtho_generated()
+    df_clm = fetch_vtho_claimed()
+    df_stk = fetch_vet_staked()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -290,6 +345,7 @@ if filtered.empty:
     st.warning("No data for selected range.")
     st.stop()
 
+
 # ── Aggregate ─────────────────────────────────────────────
 filtered["gmtTime"] = pd.to_datetime(filtered["gmtTime"])
 if period == "Weekly":
@@ -312,7 +368,24 @@ elif period == "Monthly":
     chart_clm.columns = ["date", "vtho_claimed"]
 else:
     chart_clm = f_clm[["date", "vtho_claimed"]].copy()
-    
+
+f_stk = df_stk[(df_stk["date"] >= s) & (df_stk["date"] <= e)].copy()
+f_stk["gmtTime"] = pd.to_datetime(f_stk["date"])
+
+if period == "Weekly":
+    chart_stk = f_stk.set_index("gmtTime").resample("W").agg(
+        vet_staked_delta=("vet_staked_delta", "sum"),
+        vet_staked_cumsum=("vet_staked_cumsum", "last")
+    ).reset_index()
+elif period == "Monthly":
+    chart_stk = f_stk.set_index("gmtTime").resample("ME").agg(
+        vet_staked_delta=("vet_staked_delta", "sum"),
+        vet_staked_cumsum=("vet_staked_cumsum", "last")
+    ).reset_index()
+else:
+    chart_stk = f_stk.copy()
+chart_stk = chart_stk.rename(columns={"gmtTime": "date"}) if "gmtTime" in chart_stk.columns else chart_stk
+
 # ── KPIs ──────────────────────────────────────────────────
 latest     = filtered["vtho_generated"].iloc[-1]
 prev       = filtered["vtho_generated"].iloc[-2] if len(filtered) > 1 else latest
@@ -548,6 +621,43 @@ with col5:
         height=320
     )
     st.plotly_chart(fig5, use_container_width=True)
+
+# ── SECTION 3: VET Staked ─────────────────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">VET Staking Growth</div>
+    <div class="vc-section-badge">↑ Strong Growth Trend</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col6, _ = st.columns([1, 0.001])
+with col6:
+    fig6 = go.Figure()
+    fig6.add_trace(go.Scatter(
+        x=chart_stk["date"], y=chart_stk["vet_staked_cumsum"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
+        line=dict(color="#7266FF", width=2.5),
+        hovertemplate="%{x}<br><b>%{y:,.0f} VET</b><extra></extra>"
+    ))
+    fig6.update_layout(
+        title=dict(
+            text="Total VET Staked Over Time",
+            subtitle=dict(
+                text="Cumulative VET locked in StarGate staking",
+                font=dict(size=12, color="#7B789A")
+            ),
+            font=dict(family="Satoshi", size=14, color="#0C0A1F")
+        ),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=False,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=320
+    )
+    st.plotly_chart(fig6, use_container_width=True)
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
