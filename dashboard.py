@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import time
-from datetime import timedelta, date
+from datetime import timedelta
 
 st.set_page_config(
     page_title="VeChain StarGate Dashboard",
@@ -13,23 +12,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Inject CSS matching reference design ─────────────────
+# ── CSS ───────────────────────────────────────────────────
 st.markdown("""
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
 :root {
   --vc-purple:       #7266FF;
   --vc-dark:         #0C0A1F;
   --vc-light-purple: #BDB8FF;
   --vc-cool-gray:    #F1F1F4;
-  --vc-white:        #FCFCFD;
   --muted:           #7B789A;
-  --label:           #4E4B6A;
 }
-
-/* Hide Streamlit chrome */
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
@@ -39,7 +33,12 @@ st.markdown("""
 }
 [data-testid="stSidebar"] * { color: rgba(255,255,255,0.85) !important; }
 [data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stDateInput label { color: rgba(189,184,255,0.6) !important; font-size: 10px !important; letter-spacing: 0.1em; text-transform: uppercase; }
+[data-testid="stSidebar"] .stDateInput label {
+  color: rgba(189,184,255,0.6) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
 
 /* Header */
 .vc-header {
@@ -82,7 +81,10 @@ st.markdown("""
   font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
   color: rgba(189,184,255,0.5); font-family: 'Satoshi', sans-serif;
 }
-.vc-meta-value { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif; }
+.vc-meta-value {
+  font-size: 14px; font-weight: 500;
+  color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif;
+}
 
 /* KPI Row */
 .vc-kpi-row {
@@ -95,7 +97,8 @@ st.markdown("""
   position: relative; overflow: hidden;
 }
 .vc-kpi-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
 }
 .vc-kpi-card.a1::before, .vc-kpi-card.a4::before { background: var(--vc-purple); }
 .vc-kpi-card.a2::before, .vc-kpi-card.a3::before { background: var(--vc-light-purple); }
@@ -110,18 +113,19 @@ st.markdown("""
 }
 .vc-kpi-card.a4 .vc-kpi-value { color: var(--vc-dark); }
 .vc-kpi-delta {
-  font-size: 13px; font-weight: 500; color: var(--vc-light-purple);
-  font-family: 'Inter', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--vc-light-purple); font-family: 'Inter', sans-serif;
 }
-.vc-kpi-delta.up::before { content: '↑ '; }
+.vc-kpi-delta.up::before   { content: '↑ '; }
 .vc-kpi-delta.down::before { content: '↓ '; }
 
 /* Section */
 .vc-section {
-  padding: 56px 64px;
+  padding: 56px 64px 0 64px;
   background: #ffffff;
   border-bottom: 1px solid rgba(12,10,31,0.08);
 }
+.vc-section.gray { background: var(--vc-cool-gray); }
 .vc-section-header {
   display: flex; align-items: flex-start; justify-content: space-between;
   margin-bottom: 40px;
@@ -137,13 +141,41 @@ st.markdown("""
   background: rgba(114,102,255,0.08); color: var(--vc-purple);
   border: 1px solid rgba(114,102,255,0.2);
 }
+.vc-section-badge.light {
+  background: rgba(189,184,255,0.15); color: var(--vc-purple);
+  border: 1px solid rgba(189,184,255,0.3);
+}
+
+/* Streamlit column + chart overrides */
+[data-testid="stHorizontalBlock"] {
+  gap: 24px !important;
+  padding: 0 64px 56px !important;
+  background: #ffffff;
+}
+[data-testid="stHorizontalBlock"].gray {
+  background: var(--vc-cool-gray) !important;
+}
+[data-testid="stHorizontalBlock"] > div {
+  padding: 0 !important;
+  min-width: 0;
+}
+[data-testid="stPlotlyChart"] {
+  background: #ffffff;
+  border: 1px solid rgba(12,10,31,0.08);
+  border-radius: 12px;
+  padding: 32px !important;
+  box-shadow: 0 2px 24px rgba(114,102,255,0.07);
+}
+[data-testid="stPlotlyChart"] > div { margin: 0 !important; }
 
 /* Footer */
 .vc-footer {
   padding: 36px 64px; background: var(--vc-dark);
   display: flex; align-items: center; justify-content: space-between;
 }
-.vc-footer-brand { font-size: 13px; color: rgba(189,184,255,0.6); font-family: 'Inter', sans-serif; }
+.vc-footer-brand {
+  font-size: 13px; color: rgba(189,184,255,0.6); font-family: 'Inter', sans-serif;
+}
 .vc-footer-brand strong { color: #fff; font-family: 'Satoshi', sans-serif; }
 .vc-live-dot {
   display: inline-flex; align-items: center; gap: 6px;
@@ -163,17 +195,17 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Config ───────────────────────────────────────────────
-FROM_TS  = 1764547200
-HEADERS  = {"accept": "*/*", "user-agent": "curl/8.0.1"}
-SIZE     = 150
-TIMEOUT  = 30
-SLEEP_S  = 0.10
+# ── Config ────────────────────────────────────────────────
+FROM_TS = 1764547200
+HEADERS = {"accept": "*/*", "user-agent": "curl/8.0.1"}
+SIZE    = 150
+TIMEOUT = 30
+SLEEP_S = 0.10
 
-# ── Fetch ─────────────────────────────────────────────────
+# ── Generic fetch ─────────────────────────────────────────
 @st.cache_data(ttl=300)
-def fetch_vtho_generated():
-    url = "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-generated/DAY"
+def fetch_endpoint(path: str, value_col: str):
+    url   = f"https://indexer.mainnet.vechain.org/api/v1/stargate/{path}"
     TO_TS = int(pd.Timestamp.utcnow().timestamp())
     session = requests.Session()
     session.headers.update(HEADERS)
@@ -188,7 +220,10 @@ def fetch_vtho_generated():
             continue
         page = 0
         while True:
-            params = {"from": window_from, "to": window_to, "page": page, "size": SIZE, "direction": "ASC"}
+            params = {
+                "from": window_from, "to": window_to,
+                "page": page, "size": SIZE, "direction": "ASC"
+            }
             r = session.get(url, params=params, timeout=TIMEOUT)
             r.raise_for_status()
             data = r.json().get("data", []) or []
@@ -198,29 +233,32 @@ def fetch_vtho_generated():
             page += 1
             time.sleep(SLEEP_S)
     if not rows:
-        return pd.DataFrame(columns=["blockNumber","blockTimestamp","gmtTime","date","vtho_generated"])
+        return pd.DataFrame(columns=["blockNumber","blockTimestamp","gmtTime","date", value_col])
     df = pd.DataFrame(rows)[["blockNumber","blockTimestamp","total"]].copy()
-    df["gmtTime"]       = pd.to_datetime(df["blockTimestamp"], unit="s", utc=True)
-    df["date"]          = df["gmtTime"].dt.date
-    df["vtho_generated"] = pd.to_numeric(df["total"], errors="coerce") / 1e18
+    df["gmtTime"]    = pd.to_datetime(df["blockTimestamp"], unit="s", utc=True)
+    df["date"]       = df["gmtTime"].dt.date
+    df[value_col]    = pd.to_numeric(df["total"], errors="coerce") / 1e18
     df = df.drop_duplicates(subset=["blockNumber","blockTimestamp"])
     df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
-    return df[["blockNumber","blockTimestamp","gmtTime","date","vtho_generated"]]
+    return df[["blockNumber","blockTimestamp","gmtTime","date", value_col]]
 
-# ── Load ──────────────────────────────────────────────────
+# ── Load all endpoints ────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
-    df = fetch_vtho_generated()
+    df_vtho_gen  = fetch_endpoint("vtho-generated/DAY", "vtho_generated")
+    df_vtho_clm  = fetch_endpoint("vtho-claimed/DAY",   "vtho_claimed")
+    df_vet_stk   = fetch_endpoint("vet-staked/DAY",     "vet_staked")
+    df_vet_dlg   = fetch_endpoint("vet-delegated/DAY",  "vet_delegated")
 
-if df.empty:
+if df_vtho_gen.empty:
     st.error("No data returned from API.")
     st.stop()
 
 # ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ Filters")
-    period = st.selectbox("Aggregation", ["Daily", "Weekly", "Monthly"])
-    min_date = df["date"].min()
-    max_date = df["date"].max()
+    period   = st.selectbox("Aggregation", ["Daily", "Weekly", "Monthly"])
+    min_date = df_vtho_gen["date"].min()
+    max_date = df_vtho_gen["date"].max()
     date_range = st.date_input(
         "Date Range",
         value=(max_date - timedelta(days=30), max_date),
@@ -228,40 +266,99 @@ with st.sidebar:
         max_value=max_date,
     )
 
-# ── Filter ────────────────────────────────────────────────
-if len(date_range) == 2:
-    s, e = date_range
-    filtered = df[(df["date"] >= s) & (df["date"] <= e)].copy()
-else:
-    filtered = df.copy()
+# ── Filter — always define s, e ───────────────────────────
+s = date_range[0] if len(date_range) >= 1 else min_date
+e = date_range[1] if len(date_range) == 2 else max_date
 
-# ── Aggregate ─────────────────────────────────────────────
-filtered["gmtTime"] = pd.to_datetime(filtered["gmtTime"])
-if period == "Weekly":
-    chart_df = filtered.set_index("gmtTime").resample("W")["vtho_generated"].sum().reset_index()
-    chart_df.columns = ["date","vtho_generated"]
-elif period == "Monthly":
-    chart_df = filtered.set_index("gmtTime").resample("ME")["vtho_generated"].sum().reset_index()
-    chart_df.columns = ["date","vtho_generated"]
-else:
-    chart_df = filtered[["date","vtho_generated"]].copy()
+def filter_df(df, col):
+    out = df[(df["date"] >= s) & (df["date"] <= e)].copy()
+    out["gmtTime"] = pd.to_datetime(out["gmtTime"])
+    return out
 
-# ── KPIs ──────────────────────────────────────────────────
-latest = filtered["vtho_generated"].iloc[-1]
-prev   = filtered["vtho_generated"].iloc[-2] if len(filtered) > 1 else latest
-change = ((latest - prev) / prev * 100) if prev else 0
-total  = filtered["vtho_generated"].sum()
-avg    = filtered["vtho_generated"].mean()
-days_count = (pd.to_datetime(e) - pd.to_datetime(s)).days + 1 if len(date_range) == 2 else len(filtered)
+def aggregate(df, col):
+    if period == "Weekly":
+        r = df.set_index("gmtTime").resample("W")[col].sum().reset_index()
+    elif period == "Monthly":
+        r = df.set_index("gmtTime").resample("ME")[col].sum().reset_index()
+    else:
+        return df[["date", col]].copy()
+    r.columns = ["date", col]
+    return r
 
+f_gen = filter_df(df_vtho_gen, "vtho_generated")
+f_clm = filter_df(df_vtho_clm, "vtho_claimed")
+f_stk = filter_df(df_vet_stk,  "vet_staked")
+f_dlg = filter_df(df_vet_dlg,  "vet_delegated")
+
+c_gen = aggregate(f_gen, "vtho_generated")
+c_clm = aggregate(f_clm, "vtho_claimed")
+c_stk = aggregate(f_stk, "vet_staked")
+c_dlg = aggregate(f_dlg, "vet_delegated")
+
+# ── KPI helpers ───────────────────────────────────────────
 def fmt(v):
     if v >= 1e9: return f"{v/1e9:.2f}B"
     if v >= 1e6: return f"{v/1e6:.1f}M"
     return f"{v:,.0f}"
 
-direction = "up" if change >= 0 else "down"
-change_abs = abs(change)
+def kpi_delta(df, col):
+    if len(df) < 2: return 0, "up"
+    latest, prev = df[col].iloc[-1], df[col].iloc[-2]
+    chg = ((latest - prev) / prev * 100) if prev else 0
+    return abs(chg), "up" if chg >= 0 else "down"
+
+days_count   = (pd.to_datetime(e) - pd.to_datetime(s)).days + 1
 last_updated = pd.Timestamp.utcnow().strftime("%-d %b %Y, %H:%M UTC")
+
+vtho_gen_total = f_gen["vtho_generated"].sum()
+vtho_clm_total = f_clm["vtho_claimed"].sum()
+vet_stk_latest = f_stk["vet_staked"].iloc[-1] if not f_stk.empty else 0
+vet_dlg_latest = f_dlg["vet_delegated"].iloc[-1] if not f_dlg.empty else 0
+dlg_pct        = (vet_dlg_latest / vet_stk_latest * 100) if vet_stk_latest else 0
+
+gen_chg, gen_dir = kpi_delta(f_gen, "vtho_generated")
+clm_chg, clm_dir = kpi_delta(f_clm, "vtho_claimed")
+stk_chg, stk_dir = kpi_delta(f_stk, "vet_staked")
+dlg_chg, dlg_dir = kpi_delta(f_dlg, "vet_delegated")
+
+# ── Chart layout helper ───────────────────────────────────
+CHART_H = 300
+
+def base_layout(title):
+    return dict(
+        title=dict(text=title, font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=48, b=40),
+        hovermode="x unified", showlegend=False,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)",
+                   tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=CHART_H
+    )
+
+def area_chart(df, x, y, title, color="#7266FF", fill="rgba(114,102,255,0.08)"):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=df[x], y=df[y], fill="tozeroy",
+        fillcolor=fill, line=dict(color=color, width=2.5),
+        hovertemplate="%{x}<br><b>%{y:,.0f}</b><extra></extra>"
+    ))
+    fig.update_layout(**base_layout(title))
+    return fig
+
+def bar_chart(df, x, y, title, color="rgba(114,102,255,0.55)"):
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=df[x], y=df[y],
+        marker=dict(color=color, line=dict(width=0)),
+        hovertemplate="%{x}<br><b>%{y:,.0f}</b><extra></extra>"
+    ))
+    fig.update_layout(**base_layout(title), bargap=0.2)
+    return fig
+
+# ═══════════════════════════════════════════════
+# RENDER
+# ═══════════════════════════════════════════════
 
 # ── HEADER ────────────────────────────────────────────────
 st.markdown(f"""
@@ -294,28 +391,28 @@ st.markdown(f"""
 <div class="vc-kpi-row">
   <div class="vc-kpi-card a1">
     <div class="vc-kpi-label">Total VTHO Generated</div>
-    <div class="vc-kpi-value">{fmt(total)}</div>
-    <div class="vc-kpi-delta {direction}">{change_abs:.2f}% vs previous day</div>
+    <div class="vc-kpi-value">{fmt(vtho_gen_total)}</div>
+    <div class="vc-kpi-delta {gen_dir}">{gen_chg:.2f}% vs previous day</div>
   </div>
   <div class="vc-kpi-card a2">
-    <div class="vc-kpi-label">Latest Daily VTHO</div>
-    <div class="vc-kpi-value">{fmt(latest)}</div>
-    <div class="vc-kpi-delta up">most recent snapshot</div>
+    <div class="vc-kpi-label">Total VTHO Claimed</div>
+    <div class="vc-kpi-value">{fmt(vtho_clm_total)}</div>
+    <div class="vc-kpi-delta {clm_dir}">{clm_chg:.2f}% vs previous day</div>
   </div>
   <div class="vc-kpi-card a3">
-    <div class="vc-kpi-label">Daily Average</div>
-    <div class="vc-kpi-value">{fmt(avg)}</div>
-    <div class="vc-kpi-delta up">over selected range</div>
+    <div class="vc-kpi-label">VET Staked (Latest)</div>
+    <div class="vc-kpi-value">{fmt(vet_stk_latest)}</div>
+    <div class="vc-kpi-delta {stk_dir}">{stk_chg:.2f}% vs previous day</div>
   </div>
   <div class="vc-kpi-card a4">
-    <div class="vc-kpi-label">Days Tracked</div>
-    <div class="vc-kpi-value">{days_count}</div>
-    <div class="vc-kpi-delta">in selected range</div>
+    <div class="vc-kpi-label">VET Delegated</div>
+    <div class="vc-kpi-value">{fmt(vet_dlg_latest)}</div>
+    <div class="vc-kpi-delta up">{dlg_pct:.1f}% of staked</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── SECTION: VTHO Emission ────────────────────────────────
+# ── SECTION 1: VTHO Emission ──────────────────────────────
 st.markdown("""
 <div class="vc-section">
   <div class="vc-section-header">
@@ -325,67 +422,76 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Charts ────────────────────────────────────────────────
 col1, col2 = st.columns(2)
-
-purple_area = dict(
-    color="rgba(114,102,255,0.08)",
-    line=dict(color="#7266FF", width=2.5)
-)
-
 with col1:
-    fig1 = go.Figure()
-    fig1.add_trace(go.Scatter(
-        x=chart_df["date"],
-        y=chart_df["vtho_generated"],
-        fill="tozeroy",
-        fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5),
-        name="VTHO Generated",
-        hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
-    ))
-    fig1.update_layout(
-        title=dict(text="VTHO Generated Over Time", font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        margin=dict(l=16, r=16, t=48, b=16),
-        hovermode="x unified", showlegend=False,
-        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
-        height=300
-    )
-    st.plotly_chart(fig1, use_container_width=True)
-
+    st.plotly_chart(area_chart(c_gen, "date", "vtho_generated", "VTHO Generated Over Time"), use_container_width=True)
 with col2:
-    fig2 = go.Figure()
-    fig2.add_trace(go.Bar(
-        x=chart_df["date"], y=chart_df["vtho_generated"],
-        marker=dict(
-            color=[f"rgba(114,102,255,{0.4 + i*0.01})" for i in range(len(chart_df))],
-            line=dict(width=0)
-        ),
-        name="VTHO Generated",
-        hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
-    ))
-    fig2.update_layout(
-        title=dict(text="Daily VTHO Breakdown", font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        margin=dict(l=16, r=16, t=48, b=16),
-        hovermode="x unified", showlegend=False,
-        bargap=0.3,
-        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11),
-                   tickformat=".2s"),
-        height=300
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(bar_chart(c_clm, "date", "vtho_claimed", "VTHO Claimed"), use_container_width=True)
 
-# ── Raw Data ──────────────────────────────────────────────
-with st.expander("📄 Raw Data"):
-    st.dataframe(
-        filtered[["date","vtho_generated","blockNumber"]]
-        .sort_values("date", ascending=False),
-        use_container_width=True
+# ── SECTION 2: VET Staking ────────────────────────────────
+st.markdown("""
+<div class="vc-section gray">
+  <div class="vc-section-header">
+    <div class="vc-section-title">VET Staking Growth</div>
+    <div class="vc-section-badge light">↑ Strong Growth Trend</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col3, col4 = st.columns(2)
+with col3:
+    st.plotly_chart(area_chart(c_stk, "date", "vet_staked", "Total VET Staked",
+                               color="#7266FF", fill="rgba(114,102,255,0.08)"), use_container_width=True)
+with col4:
+    st.plotly_chart(area_chart(c_dlg, "date", "vet_delegated", "Total VET Delegated",
+                               color="#BDB8FF", fill="rgba(189,184,255,0.10)"), use_container_width=True)
+
+# ── SECTION 3: Combined ───────────────────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">VTHO Generated vs Claimed</div>
+    <div class="vc-section-badge">Reward Flow</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col5, col6 = st.columns(2)
+with col5:
+    # Combined dual area
+    fig_comb = go.Figure()
+    fig_comb.add_trace(go.Scatter(
+        x=c_gen["date"], y=c_gen["vtho_generated"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
+        line=dict(color="#7266FF", width=2.5),
+        name="Generated",
+        hovertemplate="%{x}<br><b>Generated: %{y:,.0f}</b><extra></extra>"
+    ))
+    fig_comb.add_trace(go.Scatter(
+        x=c_clm["date"], y=c_clm["vtho_claimed"],
+        fill="tozeroy", fillcolor="rgba(189,184,255,0.12)",
+        line=dict(color="#BDB8FF", width=2.5),
+        name="Claimed",
+        hovertemplate="%{x}<br><b>Claimed: %{y:,.0f}</b><extra></extra>"
+    ))
+    fig_comb.update_layout(
+        **{**base_layout("VTHO Generated vs Claimed"), "showlegend": True},
+        legend=dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)")
     )
+    st.plotly_chart(fig_comb, use_container_width=True)
+
+with col6:
+    # Raw data table
+    combined = f_gen[["date","vtho_generated"]].merge(
+        f_clm[["date","vtho_claimed"]], on="date", how="outer"
+    ).merge(
+        f_stk[["date","vet_staked"]], on="date", how="outer"
+    ).merge(
+        f_dlg[["date","vet_delegated"]], on="date", how="outer"
+    ).sort_values("date", ascending=False)
+
+    st.markdown("<div style='height:32px'></div>", unsafe_allow_html=True)
+    st.dataframe(combined, use_container_width=True, height=CHART_H)
 
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
