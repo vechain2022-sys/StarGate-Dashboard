@@ -299,6 +299,25 @@ def fetch_total_vet_staked_snapshot():
     df_level = df_level.sort_values("order").reset_index(drop=True)
     return total_vet, total_nft, df_level
 
+@st.cache_data(ttl=300)
+def fetch_total_vet_delegated_snapshot():
+    url = "https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated"
+    r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+    r.raise_for_status()
+    data = r.json()
+    total_vet    = int(data["total"]) / 1e18
+    total_nft    = data["totalNftCount"]
+    by_level     = {k: int(v) / 1e18 for k, v in data["byLevel"].items()}
+    nft_by_level = data["nftCountByLevel"]
+    df_level = pd.DataFrame({
+        "level":      list(by_level.keys()),
+        "vet_delegated": list(by_level.values()),
+        "nft_count":  [nft_by_level[k] for k in by_level.keys()]
+    })
+    df_level["order"] = df_level["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
+    df_level = df_level.sort_values("order").reset_index(drop=True)
+    return total_vet, total_nft, df_level
+    
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
     df      = fetch_vtho_generated()
@@ -306,6 +325,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     df_stk  = fetch_vet_staked()
     df_dlg  = fetch_vet_delegated()
     snap_vet, snap_nft, df_level = fetch_total_vet_staked_snapshot()
+    snap_dlg_vet, snap_dlg_nft, df_dlg_level = fetch_total_vet_delegated_snapshot()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -759,6 +779,119 @@ with col11:
     )
     st.plotly_chart(fig11, use_container_width=True)
 
+# ── SECTION 6: Delegation Breakdown by Level ──────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">Delegation Breakdown by Level</div>
+    <div class="vc-section-badge">Live Snapshot</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown(f"""
+<div class="vc-snapshot-kpi-row">
+  <div class="vc-snapshot-kpi">
+    <div class="vc-kpi-label">Total VET Delegated (Live)</div>
+    <div class="vc-kpi-value">{fmt(snap_dlg_vet)}</div>
+    <div class="vc-kpi-delta up">current snapshot</div>
+  </div>
+  <div class="vc-snapshot-kpi">
+    <div class="vc-kpi-label">Total NFTs Delegating</div>
+    <div class="vc-kpi-value">{fmt(snap_dlg_nft)}</div>
+    <div class="vc-kpi-delta up">across all levels</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col12, col13 = st.columns(2)
+with col12:
+    fig12 = go.Figure()
+    fig12.add_trace(go.Bar(
+        x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"],
+        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
+        hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
+    ))
+    fig12.update_layout(
+        title=dict(text="VET Delegated by Level",
+                   subtitle=dict(text="Total VET delegated per tier", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x", showlegend=False, bargap=0.25,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        height=360
+    )
+    st.plotly_chart(fig12, use_container_width=True)
+
+with col13:
+    fig13 = go.Figure()
+    fig13.add_trace(go.Pie(
+        labels=df_dlg_level["level"], values=df_dlg_level["vet_delegated"],
+        marker=dict(colors=LEVEL_COLORS),
+        hole=0.45,
+        hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
+        textfont=dict(family="Satoshi", size=11),
+        textposition="outside"
+    ))
+    fig13.update_layout(
+        title=dict(text="VET Delegated Distribution",
+                   subtitle=dict(text="Share of total VET delegated per level", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff",
+        margin=dict(l=40, r=40, t=64, b=40),
+        showlegend=True,
+        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
+                    orientation="v", x=1.02, y=0.5),
+        height=360
+    )
+    st.plotly_chart(fig13, use_container_width=True)
+
+col14, col15 = st.columns(2)
+with col14:
+    fig14 = go.Figure()
+    fig14.add_trace(go.Bar(
+        x=df_dlg_level["level"], y=df_dlg_level["nft_count"],
+        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
+        hovertemplate="<b>%{x}</b><br>%{y:,} NFTs<extra></extra>"
+    ))
+    fig14.update_layout(
+        title=dict(text="NFT Count by Level (Delegated)",
+                   subtitle=dict(text="Number of NFTs delegating per tier", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x", showlegend=False, bargap=0.25,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=","),
+        height=360
+    )
+    st.plotly_chart(fig14, use_container_width=True)
+
+with col15:
+    fig15 = go.Figure()
+    fig15.add_trace(go.Pie(
+        labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
+        marker=dict(colors=LEVEL_COLORS),
+        hole=0.45,
+        hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
+        textfont=dict(family="Satoshi", size=11),
+        textposition="outside"
+    ))
+    fig15.update_layout(
+        title=dict(text="NFT Delegation Distribution",
+                   subtitle=dict(text="Share of delegating NFTs per level", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff",
+        margin=dict(l=40, r=40, t=64, b=40),
+        showlegend=True,
+        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
+                    orientation="v", x=1.02, y=0.5),
+        height=360
+    )
+    st.plotly_chart(fig15, use_container_width=True)
+    
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
