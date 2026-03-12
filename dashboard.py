@@ -332,7 +332,39 @@ def fetch_nft_holders_snapshot():
     df_holders["order"] = df_holders["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
     df_holders = df_holders.sort_values("order").reset_index(drop=True)
     return total, df_holders
-        
+
+@st.cache_data(ttl=300)
+def fetch_nft_holders_daily():
+    FROM_TS_FULL = 1733702400
+    TO_TS = int(pd.Timestamp.utcnow().timestamp())
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    rows = []
+    page = 0
+    while True:
+        params = {"from": FROM_TS_FULL, "to": TO_TS, "page": page, "size": 150, "direction": "ASC"}
+        r = session.get(
+            "https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders/DAY",
+            params=params, timeout=TIMEOUT
+        )
+        r.raise_for_status()
+        data = r.json().get("data", []) or []
+        rows.extend(data)
+        if not r.json()["pagination"]["hasNext"]:
+            break
+        page += 1
+        time.sleep(SLEEP_S)
+    if not rows:
+        return pd.DataFrame(columns=["date","delta","holders_cumsum"])
+    df = pd.DataFrame(rows)
+    df["date"] = pd.to_datetime(df[["year","month","dayOfMonth"]].rename(columns={"dayOfMonth":"day"}))
+    df["date"] = df["date"].dt.date
+    df["delta"] = pd.to_numeric(df["total"])
+    df = df.sort_values("date").reset_index(drop=True)
+    df["holders_cumsum"] = df["delta"].cumsum()
+    dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
+    return df[df["date"] >= dec1][["date","delta","holders_cumsum"]].reset_index(drop=True)
+    
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
     df      = fetch_vtho_generated()
@@ -342,6 +374,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     snap_vet, snap_nft, df_level = fetch_total_vet_staked_snapshot()
     snap_dlg_vet, snap_dlg_nft, df_dlg_level = fetch_total_vet_delegated_snapshot()
     snap_holders, df_holders = fetch_nft_holders_snapshot()
+    df_holders_daily = fetch_nft_holders_daily()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -372,6 +405,10 @@ if filtered.empty:
 f_clm = df_clm[(df_clm["date"] >= s) & (df_clm["date"] <= e)].copy()
 f_stk = df_stk[(df_stk["date"] >= s) & (df_stk["date"] <= e)].copy()
 f_dlg = df_dlg[(df_dlg["date"] >= s) & (df_dlg["date"] <= e)].copy()
+
+f_holders_daily = df_holders_daily[
+    (df_holders_daily["date"] >= s) & (df_holders_daily["date"] <= e)
+].copy()
 
 # ── Aggregate ─────────────────────────────────────────────
 def aggregate(df, col, how="sum"):
@@ -406,6 +443,17 @@ else:
     chart_stk = f_stk[["date","vet_staked_delta","vet_staked_cumsum"]].copy()
     chart_dlg = f_dlg[["date","vet_delegated_cumsum"]].copy()
 
+f_holders_daily["gmtTime"] = pd.to_datetime(f_holders_daily["date"])
+
+if period in ["Weekly", "Monthly"]:
+    freq = "W" if period == "Weekly" else "ME"
+    chart_holders = f_holders_daily.set_index("gmtTime").resample(freq).agg(
+        delta=("delta", "sum"),
+        holders_cumsum=("holders_cumsum", "last")
+    ).reset_index().rename(columns={"gmtTime": "date"})
+else:
+    chart_holders = f_holders_daily[["date","delta","holders_cumsum"]].copy()
+    
 # ── KPIs ──────────────────────────────────────────────────
 vtho_gen_total = filtered["vtho_generated"].sum()
 vtho_clm_total = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
@@ -971,7 +1019,76 @@ with col17:
         height=360
     )
     st.plotly_chart(fig17, use_container_width=True)
-        
+
+# ── SECTION 8: NFT Holders Over Time ─────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">NFT Holder Growth</div>
+    <div class="vc-section-badge">↑ Growing Community</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+holders_latest = f_holders_daily["holders_cumsum"].iloc[-1] if not f_holders_daily.empty else 0
+
+st.markdown(f"""
+<div class="vc-snapshot-kpi-row" style="grid-template-columns: 1fr 2fr;">
+  <div class="vc-snapshot-kpi">
+    <div class="vc-kpi-label">Total NFT Holders</div>
+    <div class="vc-kpi-value">{fmt(holders_latest)}</div>
+    <div class="vc-kpi-delta up">cumulative</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col18, col19 = st.columns(2)
+with col18:
+    fig18 = go.Figure()
+    fig18.add_trace(go.Scatter(
+        x=chart_holders["date"], y=chart_holders["holders_cumsum"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
+        line=dict(color="#7266FF", width=2.5),
+        hovertemplate="%{x}<br><b>%{y:,} holders</b><extra></extra>"
+    ))
+    fig18.update_layout(
+        title=dict(text="Total NFT Holders Over Time",
+                   subtitle=dict(text="Cumulative unique holders since launch", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=False,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=","),
+        height=320
+    )
+    st.plotly_chart(fig18, use_container_width=True)
+
+with col19:
+    fig19 = go.Figure()
+    fig19.add_trace(go.Bar(
+        x=chart_holders["date"], y=chart_holders["delta"],
+        marker=dict(
+            color=["rgba(114,102,255,0.6)" if v >= 0 else "rgba(255,100,100,0.6)"
+                   for v in chart_holders["delta"]],
+            line=dict(width=0)
+        ),
+        hovertemplate="%{x}<br><b>%{y:+,} holders</b><extra></extra>"
+    ))
+    fig19.update_layout(
+        title=dict(text="Daily NFT Holder Change",
+                   subtitle=dict(text="Net new holders per day (negative = more leaving than joining)", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x unified", showlegend=False, bargap=0.2,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=",",
+                   zerolinecolor="rgba(12,10,31,0.15)"),
+        height=320
+    )
+    st.plotly_chart(fig19, use_container_width=True)
+    
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
