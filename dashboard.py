@@ -364,7 +364,52 @@ def fetch_nft_holders_daily():
     df["holders_cumsum"] = df["delta"].cumsum()
     dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
     return df[df["date"] >= dec1][["date","delta","holders_cumsum"]].reset_index(drop=True)
-    
+
+@st.cache_data(ttl=300)
+def fetch_validators():
+    rows = []
+    page = 0
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    while True:
+        r = session.get(
+            "https://indexer.mainnet.vechain.org/api/v1/validators",
+            params={"page": page, "size": 50, "direction": "ASC"},
+            timeout=TIMEOUT
+        )
+        r.raise_for_status()
+        data = r.json().get("data", []) or []
+        rows.extend(data)
+        if not r.json()["pagination"]["hasNext"]:
+            break
+        page += 1
+        time.sleep(SLEEP_S)
+    df = pd.DataFrame(rows)
+    active = df[df["status"] == "ACTIVE"].copy().reset_index(drop=True)
+
+    # APY table — only validators accepting delegation (delegatorVetStaked > 0)
+    accepting = active[active["delegatorVetStaked"] > 0]
+    apy_rows = []
+    for _, row in accepting.iterrows():
+        yields = row.get("nftYieldsNextCycle", {})
+        if isinstance(yields, dict):
+            for level, apy in yields.items():
+                apy_rows.append({"level": level, "apy": float(apy)})
+    apy_df = pd.DataFrame(apy_rows)
+    apy_table_rows = []
+    for level in LEVEL_ORDER:
+        subset = apy_df[apy_df["level"] == level]["apy"]
+        apy_table_rows.append({
+            "NFT Level":       level,
+            "Min APY":         round(subset.min(), 1),
+            "Avg APY":         round(subset.mean(), 1),
+            "Max APY":         round(subset.max(), 1),
+        })
+    apy_table = pd.DataFrame(apy_table_rows)
+    apy_table["Est. APY Range"] = apy_table["Min APY"].map("{:.1f}%".format) + " – " + apy_table["Max APY"].map("{:.1f}%".format)
+    apy_table["Avg APY"]        = apy_table["Avg APY"].map("{:.1f}%".format)
+
+    return active, apy_table
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
     df      = fetch_vtho_generated()
@@ -375,6 +420,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     snap_dlg_vet, snap_dlg_nft, df_dlg_level = fetch_total_vet_delegated_snapshot()
     snap_holders, df_holders = fetch_nft_holders_snapshot()
     df_holders_daily = fetch_nft_holders_daily()
+    df_validators, df_apy_table = fetch_validators()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -1088,7 +1134,152 @@ with col19:
         height=320
     )
     st.plotly_chart(fig19, use_container_width=True)
-    
+
+# ── SECTION 9: Validators ─────────────────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">Validators</div>
+    <div class="vc-section-badge">Live Snapshot</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+# KPIs
+total_active  = len(df_validators)
+total_vet_val = df_validators["vetStaked"].sum()
+validator_vet = df_validators["validatorVetStaked"].sum()
+delegator_vet = df_validators["delegatorVetStaked"].sum()
+total_tvl     = df_validators["totalTvl"].sum()
+avg_yield     = df_validators["tvlBasedYield"].mean()
+
+st.markdown(f"""
+<div class="vc-kpi-row" style="grid-template-columns: repeat(6, 1fr);">
+  <div class="vc-kpi-card a1">
+    <div class="vc-kpi-label">Active Validators</div>
+    <div class="vc-kpi-value" style="font-size:32px">{total_active}</div>
+    <div class="vc-kpi-delta up">all online</div>
+  </div>
+  <div class="vc-kpi-card a2">
+    <div class="vc-kpi-label">Total VET Staked</div>
+    <div class="vc-kpi-value" style="font-size:32px">{fmt(total_vet_val)}</div>
+    <div class="vc-kpi-delta up">across validators</div>
+  </div>
+  <div class="vc-kpi-card a3">
+    <div class="vc-kpi-label">Validator VET</div>
+    <div class="vc-kpi-value" style="font-size:32px">{fmt(validator_vet)}</div>
+    <div class="vc-kpi-delta up">own stake</div>
+  </div>
+  <div class="vc-kpi-card a1">
+    <div class="vc-kpi-label">Delegator VET</div>
+    <div class="vc-kpi-value" style="font-size:32px">{fmt(delegator_vet)}</div>
+    <div class="vc-kpi-delta up">delegated stake</div>
+  </div>
+  <div class="vc-kpi-card a2">
+    <div class="vc-kpi-label">Total TVL</div>
+    <div class="vc-kpi-value" style="font-size:32px">{fmt(total_tvl)}</div>
+    <div class="vc-kpi-delta up">VTHO</div>
+  </div>
+  <div class="vc-kpi-card a3">
+    <div class="vc-kpi-label">Avg Yield</div>
+    <div class="vc-kpi-value" style="font-size:32px">{avg_yield:.1f}%</div>
+    <div class="vc-kpi-delta up">TVL based</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Charts
+top20 = df_validators.nlargest(20, "vetStaked").copy()
+top20["label"] = top20["id"].str[:6] + "..." + top20["id"].str[-4:]
+
+col20, col21 = st.columns(2)
+with col20:
+    fig20 = go.Figure()
+    fig20.add_trace(go.Scatter(
+        x=top20["vetStaked"],
+        y=top20["tvlBasedYield"],
+        mode="markers",
+        marker=dict(
+            size=12,
+            color=top20["delegatorVetStaked"],
+            colorscale=[[0, "#BDB8FF"], [1, "#7266FF"]],
+            showscale=True,
+            colorbar=dict(title="Delegator VET", tickfont=dict(color="#7B789A", size=10)),
+            line=dict(width=1, color="white")
+        ),
+        text=top20["label"],
+        hovertemplate="<b>%{text}</b><br>VET Staked: %{x:,.0f}<br>Yield: %{y:.2f}%<extra></extra>"
+    ))
+    fig20.update_layout(
+        title=dict(text="Yield vs VET Staked",
+                   subtitle=dict(text="Top 20 validators — color intensity = delegator VET", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11), tickformat=".2s", title="VET Staked"),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), title="Yield %"),
+        height=400
+    )
+    st.plotly_chart(fig20, use_container_width=True)
+
+with col21:
+    top20_sorted = top20.sort_values("vetStaked", ascending=True)
+    fig21 = go.Figure()
+    fig21.add_trace(go.Bar(
+        y=top20_sorted["label"],
+        x=top20_sorted["delegatorVetStaked"],
+        orientation="h",
+        name="Delegator",
+        marker=dict(color="#7266FF", line=dict(width=0)),
+        hovertemplate="<b>%{y}</b><br>Delegator VET: %{x:,.0f}<extra></extra>"
+    ))
+    fig21.add_trace(go.Bar(
+        y=top20_sorted["label"],
+        x=top20_sorted["validatorVetStaked"],
+        orientation="h",
+        name="Validator",
+        marker=dict(color="#BDB8FF", line=dict(width=0)),
+        hovertemplate="<b>%{y}</b><br>Validator VET: %{x:,.0f}<extra></extra>"
+    ))
+    fig21.update_layout(
+        title=dict(text="VET Staked by Validator",
+                   subtitle=dict(text="Top 20 — validator vs delegator split", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        barmode="stack",
+        margin=dict(l=40, r=24, t=64, b=40),
+        legend=dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)",
+                    orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
+        yaxis=dict(tickfont=dict(color="#7B789A", size=10)),
+        height=400
+    )
+    st.plotly_chart(fig21, use_container_width=True)
+
+# APY Range Table
+st.markdown("""
+<div style="padding: 0 64px 56px;">
+  <div style="font-size:16px; font-weight:700; color:#0C0A1F; font-family:'Satoshi',sans-serif; margin-bottom:16px;">
+    Est. APY Range by NFT Level
+    <span style="font-size:11px; font-weight:400; color:#7B789A; margin-left:12px;">
+      Validators accepting delegation only · Next cycle
+    </span>
+  </div>
+""", unsafe_allow_html=True)
+
+st.dataframe(
+    df_apy_table[["NFT Level", "Est. APY Range", "Avg APY"]],
+    use_container_width=True,
+    hide_index=True,
+    column_config={
+        "NFT Level":      st.column_config.TextColumn("NFT Level"),
+        "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
+        "Avg APY":        st.column_config.TextColumn("Avg APY"),
+    }
+)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
