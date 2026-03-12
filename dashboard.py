@@ -1154,7 +1154,7 @@ total_tvl     = df_validators["totalTvl"].sum()
 avg_yield     = df_validators["tvlBasedYield"].mean()
 
 st.markdown(f"""
-<div class="vc-kpi-row" style="grid-template-columns: repeat(6, 1fr);">
+<div class="vc-kpi-row" style="grid-template-columns: repeat(4, 1fr);">
   <div class="vc-kpi-card a1">
     <div class="vc-kpi-label">Active Validators</div>
     <div class="vc-kpi-value" style="font-size:32px">{total_active}</div>
@@ -1174,16 +1174,6 @@ st.markdown(f"""
     <div class="vc-kpi-label">Delegator VET</div>
     <div class="vc-kpi-value" style="font-size:32px">{fmt(delegator_vet)}</div>
     <div class="vc-kpi-delta up">delegated stake</div>
-  </div>
-  <div class="vc-kpi-card a2">
-    <div class="vc-kpi-label">Total TVL</div>
-    <div class="vc-kpi-value" style="font-size:32px">{fmt(total_tvl)}</div>
-    <div class="vc-kpi-delta up">VTHO</div>
-  </div>
-  <div class="vc-kpi-card a3">
-    <div class="vc-kpi-label">Avg Yield</div>
-    <div class="vc-kpi-value" style="font-size:32px">{avg_yield:.1f}%</div>
-    <div class="vc-kpi-delta up">TVL based</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1257,28 +1247,28 @@ with col21:
     st.plotly_chart(fig21, use_container_width=True)
 
 # APY Range Table
-st.markdown("""
-<div style="padding: 0 64px 56px;">
-  <div style="font-size:16px; font-weight:700; color:#0C0A1F; font-family:'Satoshi',sans-serif; margin-bottom:16px;">
-    Est. APY Range by NFT Level
-    <span style="font-size:11px; font-weight:400; color:#7B789A; margin-left:12px;">
-      Validators accepting delegation only · Next cycle
-    </span>
-  </div>
-""", unsafe_allow_html=True)
 
-st.dataframe(
-    df_apy_table[["NFT Level", "Est. APY Range", "Avg APY"]],
-    use_container_width=True,
-    hide_index=True,
-    column_config={
-        "NFT Level":      st.column_config.TextColumn("NFT Level"),
-        "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
-        "Avg APY":        st.column_config.TextColumn("Avg APY"),
-    }
-)
+_, col_tbl, _ = st.columns([1, 2, 1])
+with col_tbl:
+    st.markdown("""
+    <div style="font-size:16px; font-weight:700; color:#0C0A1F; font-family:'Satoshi',sans-serif; margin-bottom:16px;">
+      Est. APY Range by NFT Level
+      <span style="font-size:11px; font-weight:400; color:#7B789A; margin-left:12px;">
+        Validators accepting delegation only · Next cycle
+      </span>
+    </div>
+    """, unsafe_allow_html=True)
+    st.dataframe(
+        df_apy_table[["NFT Level", "Est. APY Range", "Avg APY"]],
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "NFT Level":      st.column_config.TextColumn("NFT Level"),
+            "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
+            "Avg APY":        st.column_config.TextColumn("Avg APY"),
+        }
+    )
 
-st.markdown("</div>", unsafe_allow_html=True)
 
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
