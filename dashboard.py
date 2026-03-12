@@ -135,6 +135,7 @@ st.markdown("""
   background: rgba(114,102,255,0.08); color: var(--vc-purple);
   border: 1px solid rgba(114,102,255,0.2);
 }
+.vc-section:nth-child(odd) { background: #F1F1F4 !important; }
 .vc-snapshot-kpi-row {
   display: grid; grid-template-columns: repeat(2, 1fr);
   gap: 1px; background: rgba(12,10,31,0.08);
@@ -153,7 +154,7 @@ st.markdown("""
 [data-testid="stHorizontalBlock"] {
   gap: 24px !important;
   padding: 0 64px 56px !important;
-  background: #ffffff;
+  background: inherit !important;
 }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
 [data-testid="stPlotlyChart"] {
