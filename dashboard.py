@@ -317,7 +317,22 @@ def fetch_total_vet_delegated_snapshot():
     df_level["order"] = df_level["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
     df_level = df_level.sort_values("order").reset_index(drop=True)
     return total_vet, total_nft, df_level
-    
+
+@st.cache_data(ttl=300)
+def fetch_nft_holders_snapshot():
+    url = "https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders"
+    r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+    r.raise_for_status()
+    data = r.json()
+    total = data["total"]
+    df_holders = pd.DataFrame({
+        "level": list(data["byLevel"].keys()),
+        "holders": list(data["byLevel"].values())
+    })
+    df_holders["order"] = df_holders["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
+    df_holders = df_holders.sort_values("order").reset_index(drop=True)
+    return total, df_holders
+        
 # ── Load ──────────────────────────────────────────────────
 with st.spinner("Fetching data from VeChain indexer..."):
     df      = fetch_vtho_generated()
@@ -326,6 +341,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     df_dlg  = fetch_vet_delegated()
     snap_vet, snap_nft, df_level = fetch_total_vet_staked_snapshot()
     snap_dlg_vet, snap_dlg_nft, df_dlg_level = fetch_total_vet_delegated_snapshot()
+    snap_holders, df_holders = fetch_nft_holders_snapshot()
 
 if df.empty:
     st.error("No data returned from API.")
@@ -891,7 +907,71 @@ with col15:
         height=360
     )
     st.plotly_chart(fig15, use_container_width=True)
-    
+
+# ── SECTION 7: NFT Holders ────────────────────────────────
+st.markdown("""
+<div class="vc-section">
+  <div class="vc-section-header">
+    <div class="vc-section-title">NFT Holders</div>
+    <div class="vc-section-badge">Live Snapshot</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown(f"""
+<div class="vc-snapshot-kpi-row" style="grid-template-columns: 1fr 2fr;">
+  <div class="vc-snapshot-kpi">
+    <div class="vc-kpi-label">Total NFT Holders</div>
+    <div class="vc-kpi-value">{fmt(snap_holders)}</div>
+    <div class="vc-kpi-delta up">unique addresses</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
+
+col16, col17 = st.columns(2)
+with col16:
+    fig16 = go.Figure()
+    fig16.add_trace(go.Bar(
+        x=df_holders["level"], y=df_holders["holders"],
+        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
+        hovertemplate="<b>%{x}</b><br>%{y:,} holders<extra></extra>"
+    ))
+    fig16.update_layout(
+        title=dict(text="NFT Holders by Level",
+                   subtitle=dict(text="Number of unique holders per staking tier", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=dict(l=40, r=24, t=64, b=40),
+        hovermode="x", showlegend=False, bargap=0.25,
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11)),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=","),
+        height=360
+    )
+    st.plotly_chart(fig16, use_container_width=True)
+
+with col17:
+    fig17 = go.Figure()
+    fig17.add_trace(go.Pie(
+        labels=df_holders["level"], values=df_holders["holders"],
+        marker=dict(colors=LEVEL_COLORS),
+        hole=0.45,
+        hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
+        textfont=dict(family="Satoshi", size=11),
+        textposition="outside"
+    ))
+    fig17.update_layout(
+        title=dict(text="NFT Holders Distribution",
+                   subtitle=dict(text="Share of holders per staking tier", font=dict(size=12, color="#7B789A")),
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff",
+        margin=dict(l=40, r=40, t=64, b=40),
+        showlegend=True,
+        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
+                    orientation="v", x=1.02, y=0.5),
+        height=360
+    )
+    st.plotly_chart(fig17, use_container_width=True)
+        
 # ── FOOTER ────────────────────────────────────────────────
 st.markdown(f"""
 <div class="vc-footer">
