@@ -1,1 +1,2 @@
-config.toml
+[ui]
+hideTopBar = true
