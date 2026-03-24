@@ -35,7 +35,7 @@ st.markdown("""
 .appview-container .main .block-container { padding-top: 0 !important; }
 .vc-header {
   background: var(--vc-dark);
-  padding: 72px 64px 40px;
+  padding: 72px 64px 0 64px;
   position: relative; overflow: hidden;
 }
 .vc-header::before {
@@ -217,9 +217,9 @@ st.markdown("""
 }
 .vc-filter-wrap [data-testid="stHorizontalBlock"] {
   background: var(--vc-dark) !important;
-  padding: 0 64px 40px 64px !important;
+  padding: 16px 64px 36px 64px !important;
   gap: 24px !important;
-  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  border-bottom: 3px solid rgba(114,102,255,0.3) !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -439,13 +439,6 @@ st.markdown(f"""
       <div class="vc-meta-item">
         <span class="vc-meta-label">Last Updated</span>
         <span class="vc-meta-value">{last_updated}</span>
-      </div>
-      <div class="vc-meta-divider"></div>
-      <div class="vc-meta-item">
-        <span class="vc-filter-label">Aggregation</span>
-      </div>
-      <div class="vc-meta-item">
-        <span class="vc-filter-label">Date Range</span>
       </div>
     </div>
   </div>
