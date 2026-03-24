@@ -580,7 +580,7 @@ st.markdown(f"""
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Key Change</span>
-      <span class="vc-meta-value">Fixed → Proportional VTHO Issuance</span>
+      <span class="vc-meta-value">Uncapped → Self-regulating</span>
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Data Source</span>
