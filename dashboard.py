@@ -25,9 +25,13 @@ st.markdown("""
   --vc-white:        #ffffff;
   --muted:           #7B789A;
 }
+
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
+
+/* ── Page background ── */
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
+[data-testid="stMain"] { background: var(--vc-cool-gray); }
 
 /* ── Sidebar ── */
 [data-testid="stSidebar"] {
@@ -134,21 +138,17 @@ st.markdown("""
 .vc-kpi-card.a1 .vc-kpi-value,
 .vc-kpi-card.a2 .vc-kpi-value,
 .vc-kpi-card.a3 .vc-kpi-value { color: var(--vc-purple); }
-.vc-kpi-card.a4 .vc-kpi-value { color: var(--vc-dark); }
+.vc-kpi-card.a4 .vc-kpi-value  { color: var(--vc-dark); }
 .vc-kpi-delta {
   font-size: 13px; font-weight: 500;
   color: var(--vc-light-purple); font-family: 'Inter', sans-serif;
 }
 .vc-kpi-delta.up::before { content: '↑ '; }
 
-/* ── Section wrapper — contains title + charts in one unbroken block ── */
-.vc-section {
-  padding: 64px 80px;
-  border-bottom: 1px solid rgba(12,10,31,0.08);
-}
-.vc-section-header {
+/* ── Section title ── */
+.vc-section-title-row {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 40px;
+  padding: 56px 80px 0;
 }
 .vc-section-title {
   font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
@@ -161,15 +161,11 @@ st.markdown("""
   background: rgba(114,102,255,0.08); color: var(--vc-purple);
   border: 1px solid rgba(114,102,255,0.2); white-space: nowrap;
 }
-/* charts row sits inside the same .vc-section div — no gap */
-.vc-charts-row {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-}
 
-/* ── Override Streamlit column padding so charts sit flush inside section ── */
+/* ── Chart columns ── */
 [data-testid="stHorizontalBlock"] {
   gap: 24px !important;
-  padding: 0 80px 64px !important;
+  padding: 24px 80px 56px !important;
   background: transparent !important;
 }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
@@ -190,18 +186,27 @@ st.markdown("""
 [data-testid="stPlotlyChart"] .plotly { overflow: hidden !important; max-width: 100% !important; }
 .modebar-container { right: 8px !important; top: 8px !important; }
 
-[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] {
-  background: transparent !important;
+/* ── Dataframe card ── */
+[data-testid="stDataFrame"] {
+  background: var(--vc-white);
+  border: 1px solid rgba(12,10,31,0.08);
+  border-radius: 12px;
+  padding: 0 !important;
+  box-shadow: 0 2px 24px rgba(114,102,255,0.07);
 }
 
-/* ── Section background applied via container_style ── */
-div[data-testid="stVerticalBlock"].section-odd  { background: var(--vc-cool-gray); }
-div[data-testid="stVerticalBlock"].section-even { background: var(--vc-white); }
+/* ── Section divider ── */
+.vc-divider {
+  height: 1px;
+  background: rgba(12,10,31,0.08);
+  margin: 0 80px;
+}
 
 /* ── Footer ── */
 .vc-footer {
   padding: 40px 80px; background: var(--vc-dark);
   display: flex; align-items: center; justify-content: space-between;
+  margin-top: 56px;
 }
 .vc-footer-brand { font-size: 13px; color: rgba(189,184,255,0.6); font-family: 'Inter', sans-serif; }
 .vc-footer-brand strong { color: #fff; font-family: 'Satoshi', sans-serif; }
@@ -233,30 +238,17 @@ LEVEL_COLORS = [
     "#6057E8","#4E45D1","#3C34BA","#2A23A3","#18128C"
 ]
 
-BG_ODD  = "#F1F1F4"
-BG_EVEN = "#F1F1F4"
-
-# ── Section title helper — inline with charts, no extra block ─────────────
-def section_header(title, badge, bg):
+# ── Native section title helper ───────────────────────────
+def section_title(title, badge):
     st.markdown(f"""
-    <div style="background:{bg};padding:56px 80px 32px;border-bottom:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;">
-        <div style="font-size:28px;font-weight:700;letter-spacing:-0.02em;
-                    color:#0C0A1F;font-family:'Satoshi',sans-serif;">{title}</div>
-        <div style="padding:6px 14px;border-radius:6px;font-size:10px;font-weight:600;
-                    letter-spacing:0.09em;text-transform:uppercase;font-family:'Satoshi',sans-serif;
-                    background:rgba(114,102,255,0.08);color:#7266FF;
-                    border:1px solid rgba(114,102,255,0.2);white-space:nowrap;">{badge}</div>
-      </div>
+    <div class="vc-section-title-row">
+      <div class="vc-section-title">{title}</div>
+      <div class="vc-section-badge">{badge}</div>
     </div>
     """, unsafe_allow_html=True)
 
-# ── Section bottom border + background wrapper ────────────────────────────
-def section_end(bg):
-    st.markdown(f"""
-    <div style="background:{bg};padding:0 0 56px 0;
-                border-bottom:1px solid rgba(12,10,31,0.08);"></div>
-    """, unsafe_allow_html=True)
+def divider():
+    st.markdown('<div class="vc-divider"></div>', unsafe_allow_html=True)
 
 # ── Fetch helpers ─────────────────────────────────────────
 def _fetch_daily(url, value_col, from_ts=None):
@@ -336,8 +328,8 @@ def fetch_vet_delegated():
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_staked_snapshot():
-    r    = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked",
-                        headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked",
+                     headers=HEADERS, timeout=TIMEOUT)
     r.raise_for_status(); data = r.json()
     total_vet    = int(data["total"]) / 1e18
     total_nft    = data["totalNftCount"]
@@ -353,8 +345,8 @@ def fetch_total_vet_staked_snapshot():
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_delegated_snapshot():
-    r    = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated",
-                        headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated",
+                     headers=HEADERS, timeout=TIMEOUT)
     r.raise_for_status(); data = r.json()
     total_vet    = int(data["total"]) / 1e18
     total_nft    = data["totalNftCount"]
@@ -370,8 +362,8 @@ def fetch_total_vet_delegated_snapshot():
 
 @st.cache_data(ttl=300)
 def fetch_nft_holders_snapshot():
-    r    = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders",
-                        headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders",
+                     headers=HEADERS, timeout=TIMEOUT)
     r.raise_for_status(); data = r.json()
     df_h = pd.DataFrame({"level": list(data["byLevel"].keys()),
                           "holders": list(data["byLevel"].values())})
@@ -510,7 +502,7 @@ def chart_layout(title, subtitle=None, height=360):
     )
 
 # ════════════════════════════════════════════════════
-# HEADER
+# HEADER  (pure HTML — no conflict)
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-header">
@@ -538,7 +530,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
-# KPI ROW
+# KPI ROW  (pure HTML — no conflict)
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-kpi-row">
@@ -566,9 +558,9 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
-# SECTION 1 — Staking Overview  (gray)
+# SECTION 1 — Staking Overview
 # ════════════════════════════════════════════════════
-section_header("Staking Overview", "↑ Strong Growth Trend")
+section_title("Staking Overview", "↑ Strong Growth Trend")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -632,12 +624,12 @@ with col2:
         height=360)
     st.plotly_chart(fig2, use_container_width=True)
 
-section_end()
+divider()
 
 # ════════════════════════════════════════════════════
-# SECTION 2 — VTHO Emission  (white)
+# SECTION 2 — VTHO Emission
 # ════════════════════════════════════════════════════
-section_header("VTHO Emission", "Key Mechanism Change")
+section_title("VTHO Emission", "Key Mechanism Change")
 
 col3, col4 = st.columns(2)
 with col3:
@@ -683,12 +675,12 @@ with col4:
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
 
-section_end()
+divider()
 
 # ════════════════════════════════════════════════════
-# SECTION 3 — Staking by Level  (gray)
+# SECTION 3 — Staking by Level
 # ════════════════════════════════════════════════════
-section_header("Staking by Level", "Live Snapshot")
+section_title("Staking by Level", "Live Snapshot")
 
 col5, col6 = st.columns(2)
 with col5:
@@ -723,12 +715,12 @@ with col6:
         height=360)
     st.plotly_chart(fig6, use_container_width=True)
 
-section_end()
+divider()
 
 # ════════════════════════════════════════════════════
-# SECTION 4 — Delegation by Level  (white)
+# SECTION 4 — Delegation by Level
 # ════════════════════════════════════════════════════
-section_header("Delegation by Level", "Live Snapshot")
+section_title("Delegation by Level", "Live Snapshot")
 
 col7, col8 = st.columns(2)
 with col7:
@@ -763,12 +755,12 @@ with col8:
         height=360)
     st.plotly_chart(fig8, use_container_width=True)
 
-section_end()
+divider()
 
 # ════════════════════════════════════════════════════
-# SECTION 5 — Holders & Yield  (gray)
+# SECTION 5 — Holders & Yield
 # ════════════════════════════════════════════════════
-section_header("Holders &amp; Yield", "Live Snapshot")
+section_title("Holders &amp; Yield", "Live Snapshot")
 
 col9, col10 = st.columns(2)
 with col9:
@@ -803,7 +795,7 @@ with col10:
                   font-family:'Satoshi',sans-serif;margin-bottom:6px;">
         Est. APY Range by NFT Level
       </div>
-      <div style="font-size:11px;color:#7B789A;font-family:'Inter',sans-serif;margin-bottom:24px;">
+      <div style="font-size:11px;color:#7B789A;font-family:'Inter',sans-serif;margin-bottom:16px;">
         Validators accepting delegation only · Next cycle
       </div>
     </div>
@@ -817,10 +809,8 @@ with col10:
             "Avg APY":        st.column_config.TextColumn("Avg APY"),
         })
 
-section_end()
-
 # ════════════════════════════════════════════════════
-# FOOTER
+# FOOTER  (pure HTML — no conflict)
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-footer">
