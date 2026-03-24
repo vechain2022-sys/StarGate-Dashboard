@@ -584,7 +584,7 @@ st.markdown(f"""
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Data Source</span>
-      <span class="vc-meta-value">VeChain StarGate Indexer API</span>
+      <span class="vc-meta-value">VeChain StarGate</span>
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Last Updated</span>
