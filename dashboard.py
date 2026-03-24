@@ -484,6 +484,24 @@ if df.empty:
     st.error("No data returned from API.")
     st.stop()
 
+# ── KPIs ──────────────────────────────────────────────────
+vtho_gen_total = filtered["vtho_generated"].sum()
+vtho_clm_total = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
+vet_stk_latest = f_stk["vet_staked_cumsum"].iloc[-1] if not f_stk.empty else 0
+latest         = filtered["vtho_generated"].iloc[-1]
+prev           = filtered["vtho_generated"].iloc[-2] if len(filtered) > 1 else latest
+change         = ((latest - prev) / prev * 100) if prev else 0
+days_count     = (pd.to_datetime(e) - pd.to_datetime(s)).days + 1
+
+def fmt(v):
+    if v >= 1e9: return f"{v/1e9:.2f}B"
+    if v >= 1e6: return f"{v/1e6:.1f}M"
+    if v >= 1e3: return f"{v/1e3:.1f}K"
+    return f"{v:,.0f}"
+
+direction    = "up" if change >= 0 else "down"
+change_abs   = abs(change)
+last_updated = pd.Timestamp.utcnow().strftime("%-d %b %Y, %H:%M UTC")
 # ── Filter Bar + Header ───────────────────────────────────
 min_date = df["date"].min()
 max_date = df["date"].max()
@@ -593,25 +611,6 @@ if period in ["Weekly", "Monthly"]:
 else:
     chart_holders = f_holders_daily[["date","delta","holders_cumsum"]].copy()
 
-# ── KPIs ──────────────────────────────────────────────────
-vtho_gen_total = filtered["vtho_generated"].sum()
-vtho_clm_total = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
-vet_stk_latest = f_stk["vet_staked_cumsum"].iloc[-1] if not f_stk.empty else 0
-latest         = filtered["vtho_generated"].iloc[-1]
-prev           = filtered["vtho_generated"].iloc[-2] if len(filtered) > 1 else latest
-change         = ((latest - prev) / prev * 100) if prev else 0
-days_count     = (pd.to_datetime(e) - pd.to_datetime(s)).days + 1
-
-def fmt(v):
-    if v >= 1e9: return f"{v/1e9:.2f}B"
-    if v >= 1e6: return f"{v/1e6:.1f}M"
-    if v >= 1e3: return f"{v/1e3:.1f}K"
-    return f"{v:,.0f}"
-
-direction    = "up" if change >= 0 else "down"
-change_abs   = abs(change)
-last_updated = pd.Timestamp.utcnow().strftime("%-d %b %Y, %H:%M UTC")
-
 # ── Chart layout helper ───────────────────────────────────
 # Note: paper_bgcolor is always white — charts sit on white cards regardless of section bg
 def chart_layout(title, subtitle=None, height=320, bg="#ffffff"):
@@ -629,32 +628,6 @@ def chart_layout(title, subtitle=None, height=320, bg="#ffffff"):
                    tickformat=".2s", automargin=True),
         height=height
     )
-
-# ── HEADER ────────────────────────────────────────────────
-st.markdown(f"""
-<div class="vc-header">
-  <div class="vc-header-tag">Live · Post-Hayabusa Analysis</div>
-  <h1>StarGate by VeChain<br>Performance Report</h1>
-  <div class="vc-header-meta">
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Hard Fork</span>
-      <span class="vc-meta-value">Hayabusa</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Key Change</span>
-      <span class="vc-meta-value">Uncapped → Self-regulating</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Data Source</span>
-      <span class="vc-meta-value">VeChain StarGate</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Last Updated</span>
-      <span class="vc-meta-value">{last_updated}</span>
-    </div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
 
 # ── KPI ROW ───────────────────────────────────────────────
 st.markdown(f"""
