@@ -33,6 +33,10 @@ st.markdown("""
 section[data-testid="stMain"] > div:first-child { padding-top: 0 !important; }
 .stMainBlockContainer { padding-top: 0 !important; }
 div[data-testid="stDecoration"] { display: none !important; }
+[data-testid="stApp"] { margin-top: 0 !important; padding-top: 0 !important; }
+html, body { margin: 0 !important; padding: 0 !important; }
+iframe { display: block; }
+.main > div { padding-top: 0 !important; }
 [data-testid="stSelectbox"] label {
   font-size: 10px !important; letter-spacing: 0.12em !important;
   text-transform: uppercase !important; color: var(--muted) !important;
@@ -45,8 +49,8 @@ div[data-testid="stDecoration"] { display: none !important; }
 }
 .vc-header {
   background: var(--vc-dark);
-  padding: 56px 64px 48px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 56px 64px 0 64px;
+  border-bottom: none;
   position: relative; overflow: hidden;
 }
 .vc-header::before {
@@ -159,19 +163,19 @@ div[data-testid="stDecoration"] { display: none !important; }
 }
 [data-testid="stHorizontalBlock"]:first-of-type {
   background: var(--vc-dark) !important;
-  padding: 0 64px 32px 64px !important;
-  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  padding: 0 64px 40px 64px !important;
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
 }
 [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stSelectbox"] > div > div,
-[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] > div > div input {
+[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] > div > div,
+[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] input {
   background: rgba(255,255,255,0.08) !important;
   border: 1px solid rgba(255,255,255,0.15) !important;
   color: rgba(255,255,255,0.9) !important;
   border-radius: 8px !important;
 }
-[data-testid="stHorizontalBlock"]:first-of-type svg {
-  fill: rgba(189,184,255,0.7) !important;
-}
+[data-testid="stHorizontalBlock"]:first-of-type svg { fill: rgba(189,184,255,0.7) !important; }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
 [data-testid="stPlotlyChart"] {
   background: #ffffff;
@@ -472,18 +476,17 @@ st.markdown(f"""
       <span class="vc-meta-label">Last Updated</span>
       <span class="vc-meta-value">{last_updated}</span>
     </div>
-    <div class="vc-meta-item vc-meta-filter-spacer"></div>
-    <div class="vc-meta-item vc-meta-filter-item" id="filter-period-anchor">
-      <span class="vc-meta-label">Aggregation</span>
-    </div>
-    <div class="vc-meta-item vc-meta-filter-item" id="filter-date-anchor">
-      <span class="vc-meta-label">Date Range</span>
-    </div>
+  </div>
+  <div style="height:1px; background:rgba(255,255,255,0.08); margin:28px 0 0 0;"></div>
+  <div style="padding:20px 0 0 0; display:flex; gap:8px; align-items:center;">
+    <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+          color:rgba(189,184,255,0.45); font-family:'Satoshi',sans-serif; font-weight:600;
+          margin-right:8px;">Filters</span>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Filter controls — rendered in a dark overlay row ─────
+# ── Filter controls ───────────────────────────────────────
 fc1, fc2, fc3 = st.columns([1, 2, 5])
 with fc1:
     period = st.selectbox("Aggregation", ["Daily","Weekly","Monthly"],
