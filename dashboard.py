@@ -30,6 +30,9 @@ st.markdown("""
 [data-testid="collapsedControl"] { display: none !important; }
 [data-testid="stAppViewContainer"] > div:first-child { padding-top: 0 !important; }
 [data-testid="stMainBlockContainer"] { padding-top: 0 !important; }
+section[data-testid="stMain"] > div:first-child { padding-top: 0 !important; }
+.stMainBlockContainer { padding-top: 0 !important; }
+div[data-testid="stDecoration"] { display: none !important; }
 [data-testid="stSelectbox"] label {
   font-size: 10px !important; letter-spacing: 0.12em !important;
   text-transform: uppercase !important; color: var(--muted) !important;
@@ -153,6 +156,11 @@ st.markdown("""
   gap: 24px !important;
   padding: 0 64px 56px !important;
   background: transparent !important;
+}
+[data-testid="stHorizontalBlock"]:first-of-type {
+  background: #ffffff !important;
+  padding: 0 64px 24px 64px !important;
+  border-bottom: 1px solid rgba(12,10,31,0.07) !important;
 }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
 [data-testid="stPlotlyChart"] {
@@ -460,32 +468,39 @@ st.markdown(f"""
 
 # ── Filter Bar ────────────────────────────────────────────
 st.markdown("""
-<div style="background:#ffffff; padding:24px 64px 0 64px;
-     border-bottom: none;">
-  <div style="display:flex; align-items:center; gap:32px;">
-    <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-          color:#7B789A; font-family:'Satoshi',sans-serif; font-weight:600;
-          white-space:nowrap; padding-top:6px;">
-      Filters
-    </span>
-  </div>
+<div style="background:#ffffff; padding:24px 64px 8px 64px;
+     border-bottom:1px solid rgba(12,10,31,0.07);">
+  <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+        color:#7B789A; font-family:'Satoshi',sans-serif; font-weight:600;">
+    Filters
+  </span>
 </div>
 """, unsafe_allow_html=True)
 
-fb1, fb2, fb3, fb4 = st.columns([0.12, 0.22, 0.01, 0.65])
-with fb1:
-    period = st.selectbox("AGGREGATION", ["Daily","Weekly","Monthly"],
-                          label_visibility="visible")
-with fb2:
-    date_range = st.date_input(
-        "DATE RANGE",
-        value=(max_date - timedelta(days=30), max_date),
-        min_value=min_date, max_value=max_date,
-        label_visibility="visible")
+with st.container():
+    st.markdown("""
+    <style>
+    div[data-testid="stHorizontalBlock"].filter-row > div {
+      background: #ffffff !important;
+      padding: 0 0 24px 0 !important;
+    }
+    </style>
+    <div style="background:#ffffff; padding:0 64px 24px 64px;
+         border-bottom:1px solid rgba(12,10,31,0.07);
+         display:flex; gap:24px; align-items:flex-end;">
+    </div>
+    """, unsafe_allow_html=True)
 
-st.markdown("""
-<div style="background:#ffffff; height:16px; border-bottom:1px solid rgba(12,10,31,0.07);"></div>
-""", unsafe_allow_html=True)
+    fc1, fc2, fc3 = st.columns([1, 2, 5])
+    with fc1:
+        period = st.selectbox("AGGREGATION", ["Daily","Weekly","Monthly"],
+                              label_visibility="visible")
+    with fc2:
+        date_range = st.date_input(
+            "DATE RANGE",
+            value=(max_date - timedelta(days=30), max_date),
+            min_value=min_date, max_value=max_date,
+            label_visibility="visible")
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
