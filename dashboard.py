@@ -28,6 +28,52 @@ st.markdown("""
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
 [data-testid="collapsedControl"] { display: none !important; }
+/* Filter bar sits on the dark header background */
+.vc-header-filter-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 32px 0 24px 0;
+}
+.vc-header-filter-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(189,184,255,0.5);
+  font-family: 'Satoshi', sans-serif;
+  margin-bottom: 12px;
+}
+
+/* Dark-themed Streamlit filter controls */
+.vc-filter-bar {
+  background: var(--vc-dark);
+  padding: 0 64px 40px 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.vc-filter-bar [data-testid="stSelectbox"] label,
+.vc-filter-bar [data-testid="stDateInput"] label {
+  color: rgba(189,184,255,0.55) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  font-family: 'Satoshi', sans-serif !important;
+}
+.vc-filter-bar [data-testid="stSelectbox"] > div > div,
+.vc-filter-bar [data-testid="stDateInput"] > div > div {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  color: rgba(255,255,255,0.9) !important;
+  border-radius: 8px !important;
+}
+.vc-filter-bar [data-testid="stSelectbox"] svg,
+.vc-filter-bar [data-testid="stDateInput"] svg {
+  fill: rgba(189,184,255,0.6) !important;
+}
+
+/* Override Streamlit column padding inside filter bar */
+.vc-filter-bar [data-testid="stHorizontalBlock"] {
+  padding: 0 !important;
+  gap: 24px !important;
+}
 .vc-header {
   background: var(--vc-dark);
   padding: 56px 64px 48px;
@@ -438,35 +484,59 @@ if df.empty:
     st.error("No data returned from API.")
     st.stop()
 
-# ── Filter Bar ────────────────────────────────────────────
+# ── Filter Bar + Header ───────────────────────────────────
 min_date = df["date"].min()
 max_date = df["date"].max()
 
-st.markdown("""
-<div style="background:#ffffff; border-bottom:1px solid rgba(12,10,31,0.08);
-     padding:16px 64px; display:flex; align-items:center; gap:48px;">
-  <span style="font-size:11px; font-weight:600; letter-spacing:0.1em;
-        text-transform:uppercase; color:#7B789A; font-family:'Satoshi',sans-serif;">
-    Filters
-  </span>
+st.markdown(f"""
+<div class="vc-header">
+  <div class="vc-header-tag">Live · Post-Hayabusa Analysis</div>
+  <h1>StarGate by VeChain<br>Performance Report</h1>
+  <div class="vc-header-meta">
+    <div class="vc-meta-item">
+      <span class="vc-meta-label">Hard Fork</span>
+      <span class="vc-meta-value">Hayabusa</span>
+    </div>
+    <div class="vc-meta-item">
+      <span class="vc-meta-label">Key Change</span>
+      <span class="vc-meta-value">Uncapped → Self-regulating</span>
+    </div>
+    <div class="vc-meta-item">
+      <span class="vc-meta-label">Data Source</span>
+      <span class="vc-meta-value">VeChain StarGate</span>
+    </div>
+    <div class="vc-meta-item">
+      <span class="vc-meta-label">Last Updated</span>
+      <span class="vc-meta-value">{last_updated}</span>
+    </div>
+  </div>
+  <div class="vc-header-filter-divider"></div>
+  <div class="vc-header-filter-label">Dashboard Filters</div>
 </div>
 """, unsafe_allow_html=True)
 
-fc1, fc2, fc3 = st.columns([1, 2, 6])
+# Filter controls rendered by Streamlit (inside a styled container)
+st.markdown("""
+<div class="vc-filter-bar">
+""", unsafe_allow_html=True)
+
+fc1, fc2, _ = st.columns([1, 2, 5])
 with fc1:
     period = st.selectbox(
-        "Aggregation",
+        "AGGREGATION",
         ["Daily", "Weekly", "Monthly"],
-        label_visibility="visible"
     )
 with fc2:
     date_range = st.date_input(
-        "Date Range",
+        "DATE RANGE",
         value=(max_date - timedelta(days=30), max_date),
         min_value=min_date,
         max_value=max_date,
     )
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+# ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
 e = date_range[1] if len(date_range) == 2 else max_date
 
