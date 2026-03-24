@@ -1,8 +1,2 @@
 [ui]
 hideTopBar = true
-
-[theme]
-base = "dark"
-
-[server]
-enableStaticServing = false
