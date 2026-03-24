@@ -29,23 +29,7 @@ st.markdown("""
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
 [data-testid="collapsedControl"] { display: none !important; }
 
-/* Filter bar — style the columns block that holds the filters */
-[data-testid="stMainBlockContainer"] > div > [data-testid="stVerticalBlock"] > div:nth-child(3) [data-testid="stHorizontalBlock"] {
-  background: var(--vc-dark) !important;
-  padding: 0 64px 40px 64px !important;
-  gap: 24px !important;
-}
-
-/* Filter label and input styling */
-[data-testid="stSelectbox"] label,
-[data-testid="stDateInput"] label {
-  color: rgba(189,184,255,0.55) !important;
-  font-size: 10px !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  font-family: 'Satoshi', sans-serif !important;
-}
-/* Filter inputs — scoped only to first columns block after header */
+/* Filter label styling only — no dark input overrides */
 [data-testid="stSelectbox"] label,
 [data-testid="stDateInput"] label {
   color: var(--muted) !important;
@@ -464,31 +448,6 @@ if df.empty:
     st.error("No data returned from API.")
     st.stop()
 
-st.markdown("""
-<div style="background:var(--vc-dark); padding: 24px 64px 0 64px; margin:0;">
-  <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-        color:rgba(189,184,255,0.5); font-family:'Satoshi',sans-serif;">
-    Dashboard Filters
-  </span>
-</div>
-""", unsafe_allow_html=True)
-
-fc1, fc2, _ = st.columns([1, 2, 5])
-with fc1:
-    period = st.selectbox("AGGREGATION", ["Daily", "Weekly", "Monthly"])
-with fc2:
-    date_range = st.date_input(
-        "DATE RANGE",
-        value=(max_date - timedelta(days=30), max_date),
-        min_value=min_date,
-        max_value=max_date,
-    )
-
-st.markdown("""
-<div style="background:var(--vc-dark); height:32px; margin:0;
-     border-bottom:1px solid rgba(255,255,255,0.08);"></div>
-""", unsafe_allow_html=True)
-
 # ── Helpers needed before header ─────────────────────────
 def fmt(v):
     if v >= 1e9: return f"{v/1e9:.2f}B"
@@ -527,13 +486,18 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Filter controls rendered by Streamlit (inside a styled container)
+st.markdown("""
+<div style="background:var(--vc-dark); padding:24px 64px 0 64px;">
+  <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+        color:rgba(189,184,255,0.5); font-family:'Satoshi',sans-serif;">
+    Dashboard Filters
+  </span>
+</div>
+""", unsafe_allow_html=True)
+
 fc1, fc2, _ = st.columns([1, 2, 5])
 with fc1:
-    period = st.selectbox(
-        "AGGREGATION",
-        ["Daily", "Weekly", "Monthly"],
-    )
+    period = st.selectbox("AGGREGATION", ["Daily", "Weekly", "Monthly"])
 with fc2:
     date_range = st.date_input(
         "DATE RANGE",
@@ -541,6 +505,11 @@ with fc2:
         min_value=min_date,
         max_value=max_date,
     )
+
+st.markdown("""
+<div style="background:var(--vc-dark); height:32px; margin:0;
+     border-bottom:1px solid rgba(255,255,255,0.08);"></div>
+""", unsafe_allow_html=True)
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
