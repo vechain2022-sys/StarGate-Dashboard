@@ -158,9 +158,19 @@ div[data-testid="stDecoration"] { display: none !important; }
   background: transparent !important;
 }
 [data-testid="stHorizontalBlock"]:first-of-type {
-  background: #ffffff !important;
-  padding: 0 64px 24px 64px !important;
-  border-bottom: 1px solid rgba(12,10,31,0.07) !important;
+  background: var(--vc-dark) !important;
+  padding: 0 64px 32px 64px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stSelectbox"] > div > div,
+[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] > div > div input {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  color: rgba(255,255,255,0.9) !important;
+  border-radius: 8px !important;
+}
+[data-testid="stHorizontalBlock"]:first-of-type svg {
+  fill: rgba(189,184,255,0.7) !important;
 }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
 [data-testid="stPlotlyChart"] {
@@ -462,45 +472,28 @@ st.markdown(f"""
       <span class="vc-meta-label">Last Updated</span>
       <span class="vc-meta-value">{last_updated}</span>
     </div>
+    <div class="vc-meta-item vc-meta-filter-spacer"></div>
+    <div class="vc-meta-item vc-meta-filter-item" id="filter-period-anchor">
+      <span class="vc-meta-label">Aggregation</span>
+    </div>
+    <div class="vc-meta-item vc-meta-filter-item" id="filter-date-anchor">
+      <span class="vc-meta-label">Date Range</span>
+    </div>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Filter Bar ────────────────────────────────────────────
-st.markdown("""
-<div style="background:#ffffff; padding:24px 64px 8px 64px;
-     border-bottom:1px solid rgba(12,10,31,0.07);">
-  <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-        color:#7B789A; font-family:'Satoshi',sans-serif; font-weight:600;">
-    Filters
-  </span>
-</div>
-""", unsafe_allow_html=True)
-
-with st.container():
-    st.markdown("""
-    <style>
-    div[data-testid="stHorizontalBlock"].filter-row > div {
-      background: #ffffff !important;
-      padding: 0 0 24px 0 !important;
-    }
-    </style>
-    <div style="background:#ffffff; padding:0 64px 24px 64px;
-         border-bottom:1px solid rgba(12,10,31,0.07);
-         display:flex; gap:24px; align-items:flex-end;">
-    </div>
-    """, unsafe_allow_html=True)
-
-    fc1, fc2, fc3 = st.columns([1, 2, 5])
-    with fc1:
-        period = st.selectbox("AGGREGATION", ["Daily","Weekly","Monthly"],
-                              label_visibility="visible")
-    with fc2:
-        date_range = st.date_input(
-            "DATE RANGE",
-            value=(max_date - timedelta(days=30), max_date),
-            min_value=min_date, max_value=max_date,
-            label_visibility="visible")
+# ── Filter controls — rendered in a dark overlay row ─────
+fc1, fc2, fc3 = st.columns([1, 2, 5])
+with fc1:
+    period = st.selectbox("Aggregation", ["Daily","Weekly","Monthly"],
+                          label_visibility="collapsed")
+with fc2:
+    date_range = st.date_input(
+        "Date Range",
+        value=(max_date - timedelta(days=30), max_date),
+        min_value=min_date, max_value=max_date,
+        label_visibility="collapsed")
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
