@@ -35,7 +35,7 @@ st.markdown("""
 .appview-container .main .block-container { padding-top: 0 !important; }
 .vc-header {
   background: var(--vc-dark);
-  padding: 48px 64px 40px;
+  padding: 72px 64px 40px;
   position: relative; overflow: hidden;
 }
 .vc-header::before {
