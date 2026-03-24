@@ -34,7 +34,10 @@ _CSS_VARS = """
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: #F1F1F4; }
-[data-testid="stMain"] { background: #F1F1F4; }
+[data-testid="stMain"] { background: #F1F1F4; padding-top: 0 !important; }
+[data-testid="stMainBlockContainer"] { padding: 0 !important; max-width: 100% !important; }
+.stMainBlockContainer { padding: 0 !important; }
+section.main > div { padding-top: 0 !important; }
 </style>
 """
 
