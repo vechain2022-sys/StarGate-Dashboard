@@ -49,9 +49,9 @@ iframe { display: block; }
 }
 .vc-header {
   background: var(--vc-dark);
-  padding: 56px 64px 0 64px;
+  padding: 56px 64px 80px 64px;
   border-bottom: none;
-  position: relative; overflow: hidden;
+  position: relative; overflow: visible;
 }
 .vc-header::before {
   content: ''; position: absolute; top: -160px; right: -160px;
@@ -163,9 +163,11 @@ iframe { display: block; }
 }
 [data-testid="stHorizontalBlock"]:first-of-type {
   background: var(--vc-dark) !important;
-  padding: 0 64px 40px 64px !important;
+  padding: 0 64px 0 64px !important;
+  margin-top: -72px !important;
   border-bottom: none !important;
-  margin-bottom: 0 !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stSelectbox"] > div > div,
 [data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] > div > div,
@@ -477,12 +479,8 @@ st.markdown(f"""
       <span class="vc-meta-value">{last_updated}</span>
     </div>
   </div>
-  <div style="height:1px; background:rgba(255,255,255,0.08); margin:28px 0 0 0;"></div>
-  <div style="padding:20px 0 0 0; display:flex; gap:8px; align-items:center;">
-    <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-          color:rgba(189,184,255,0.45); font-family:'Satoshi',sans-serif; font-weight:600;
-          margin-right:8px;">Filters</span>
-  </div>
+  <div style="height:1px; background:rgba(255,255,255,0.08); margin:28px 0 28px 0;"></div>
+  <div style="height:48px;"></div>
 </div>
 """, unsafe_allow_html=True)
 
