@@ -28,8 +28,18 @@ st.markdown("""
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
 [data-testid="collapsedControl"] { display: none !important; }
-[data-testid="stSelectbox"] label,
-[data-testid="stDateInput"] label { display: none !important; }
+[data-testid="stAppViewContainer"] > div:first-child { padding-top: 0 !important; }
+[data-testid="stMainBlockContainer"] { padding-top: 0 !important; }
+[data-testid="stSelectbox"] label {
+  font-size: 10px !important; letter-spacing: 0.12em !important;
+  text-transform: uppercase !important; color: var(--muted) !important;
+  font-family: 'Satoshi', sans-serif !important; font-weight: 600 !important;
+}
+[data-testid="stDateInput"] label {
+  font-size: 10px !important; letter-spacing: 0.12em !important;
+  text-transform: uppercase !important; color: var(--muted) !important;
+  font-family: 'Satoshi', sans-serif !important; font-weight: 600 !important;
+}
 .vc-header {
   background: var(--vc-dark);
   padding: 56px 64px 48px;
@@ -450,23 +460,32 @@ st.markdown(f"""
 
 # ── Filter Bar ────────────────────────────────────────────
 st.markdown("""
-<div style="background:#ffffff; border-bottom:1px solid rgba(12,10,31,0.06); padding:20px 64px;">
-  <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-        color:#7B789A; font-family:'Satoshi',sans-serif; font-weight:600;">
-    Dashboard Filters
-  </span>
+<div style="background:#ffffff; padding:24px 64px 0 64px;
+     border-bottom: none;">
+  <div style="display:flex; align-items:center; gap:32px;">
+    <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+          color:#7B789A; font-family:'Satoshi',sans-serif; font-weight:600;
+          white-space:nowrap; padding-top:6px;">
+      Filters
+    </span>
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
-fc1, fc2, _ = st.columns([1, 2, 5])
-with fc1:
-    period = st.selectbox("AGGREGATION", ["Daily","Weekly","Monthly"], label_visibility="collapsed")
-with fc2:
+fb1, fb2, fb3, fb4 = st.columns([0.12, 0.22, 0.01, 0.65])
+with fb1:
+    period = st.selectbox("AGGREGATION", ["Daily","Weekly","Monthly"],
+                          label_visibility="visible")
+with fb2:
     date_range = st.date_input(
         "DATE RANGE",
         value=(max_date - timedelta(days=30), max_date),
         min_value=min_date, max_value=max_date,
-        label_visibility="collapsed")
+        label_visibility="visible")
+
+st.markdown("""
+<div style="background:#ffffff; height:16px; border-bottom:1px solid rgba(12,10,31,0.07);"></div>
+""", unsafe_allow_html=True)
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
