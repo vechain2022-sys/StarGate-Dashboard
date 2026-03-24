@@ -89,7 +89,7 @@ _CSS_CHARTS = """
 
 _CSS_COMPONENTS = """
 <style>
-.vc-header { background: #0C0A1F; padding: 72px 80px 48px; margin-top: -8rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
+.vc-header { background: #0C0A1F; padding: 72px 80px 48px; margin-top: -6rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
 .vc-header::before { content: ''; position: absolute; top: -160px; right: -160px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(114,102,255,0.18) 0%, transparent 70%); pointer-events: none; }
 .vc-header::after { content: ''; position: absolute; bottom: -80px; left: 200px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(189,184,255,0.08) 0%, transparent 70%); pointer-events: none; }
 .vc-header-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(114,102,255,0.18); border: 1px solid rgba(114,102,255,0.4); border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #BDB8FF; margin-bottom: 20px; font-family: 'Satoshi', sans-serif; }
@@ -501,11 +501,32 @@ with col1:
             showarrow=False, xanchor="left", xshift=8,
             font=dict(size=12,color="#BDB8FF",family="Satoshi"))
     l1 = chart_layout("VET Staked vs. Delegated",
-        "Cumulative VET locked in StarGate staking and delegation")
+        "Cumulative VET locked in StarGate staking and delegation", height=400)
     l1["showlegend"] = True
     l1["legend"] = dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
-                        orientation="h", yanchor="bottom", y=-0.18, xanchor="left", x=0)
-    l1["margin"]["r"] = 80
+                        orientation="h", yanchor="top", y=-0.12, xanchor="left", x=0)
+    l1["margin"] = dict(l=60, r=90, t=64, b=80)
+    l1["yaxis"]["tickformat"] = ""
+    l1["yaxis"]["ticksuffix"] = ""
+    l1["yaxis"]["tickvals"] = None
+    l1["yaxis"]["exponentformat"] = "none"
+    l1["yaxis"]["tickprefix"] = ""
+    l1["yaxis"]["tickmode"] = "auto"
+    l1["yaxis"]["nticks"] = 6
+    l1["yaxis"]["tickformatstops"] = [
+        dict(dtickrange=[None, 1e9], value=".2s"),
+        dict(dtickrange=[1e9, None], value=".3s"),
+    ]
+    # Override tickformat to show B instead of G
+    l1["yaxis"]["tickformat"] = ","
+    l1["yaxis"]["tickvals"] = None
+    # Use a custom tick formatter via labels
+    fig1.update_yaxes(
+        tickformat=".2s",
+        labelalias={"1G": "1B", "2G": "2B", "3G": "3B", "4G": "4B",
+                    "5G": "5B", "6G": "6B", "7G": "7B", "8G": "8B",
+                    "9G": "9B", "10G": "10B", "0.0G": "0"}
+    )
     fig1.update_layout(**l1)
     st.plotly_chart(fig1, use_container_width=True)
 
@@ -517,22 +538,26 @@ with col2:
         marker=dict(colors=["#7266FF","#BDB8FF","#E0DEFF"]),
         hole=0.48,
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
+        textfont=dict(family="Satoshi", size=12, color="#4E4B6A"),
+        textposition="outside",
+        textinfo="percent",
+        sort=False
     ))
     fig2.add_annotation(
-        text=f"<b>{fmt(tvl)}</b><br><span style='font-size:10px'>Total TVL</span>",
+        text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A'>Total TVL</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
-        font=dict(size=13,color="#0C0A1F",family="Satoshi"))
+        font=dict(size=15, color="#0C0A1F", family="Satoshi"))
     fig2.update_layout(
         title=dict(text="Stake Composition",
                    subtitle=dict(text="Validator · Delegated · Undelegated",
                                  font=dict(size=12,color="#7B789A")),
                    font=dict(family="Satoshi",size=14,color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
+        paper_bgcolor="#ffffff",
+        margin=dict(l=60, r=60, t=64, b=80),
         showlegend=True,
         legend=dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
-                    orientation="h", yanchor="bottom", y=-0.08, xanchor="left", x=0),
-        height=360)
+                    orientation="h", yanchor="top", y=-0.06, xanchor="center", x=0.5),
+        height=420)
     st.plotly_chart(fig2, use_container_width=True)
 
 divider()
