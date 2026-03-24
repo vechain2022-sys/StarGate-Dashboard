@@ -296,11 +296,16 @@ def fetch_vet_staked():
 
 @st.cache_data(ttl=300)
 def fetch_vet_delegated():
-    path = os.path.join(os.path.dirname(__file__), "vet-delegated 2025-2026.03.10.xlsx")
-    df = pd.read_excel(path)
-    df["date"] = pd.to_datetime(df["date"], origin="1899-12-30", unit="D").dt.date
-    df = df.sort_values("date").reset_index(drop=True)
-    return df[["date", "vet_delegated_cumsum"]]
+    df = _fetch_daily(
+        "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-delegated/DAY",
+        "vet_delegated_delta",
+    )
+    df["vet_delegated_cumsum"] = df["vet_delegated_delta"].cumsum()
+    df = df.groupby("date").agg(
+        vet_delegated_delta=("vet_delegated_delta", "sum"),
+        vet_delegated_cumsum=("vet_delegated_cumsum", "last")
+    ).reset_index()
+    return df[["date", "vet_delegated_delta", "vet_delegated_cumsum"]]
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_staked_snapshot():
@@ -564,11 +569,11 @@ st.markdown(f"""
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Key Change</span>
-      <span class="vc-meta-value">Fixed → Proportional VTHO Issuance</span>
+      <span class="vc-meta-value">Uncapped → Self-regulating</span>
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Data Source</span>
-      <span class="vc-meta-value">VeChain StarGate Indexer API</span>
+      <span class="vc-meta-value">VeChain StarGate</span>
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Last Updated</span>
