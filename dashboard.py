@@ -89,7 +89,7 @@ _CSS_CHARTS = """
 
 _CSS_COMPONENTS = """
 <style>
-.vc-header { background: #0C0A1F; padding: 72px 80px 48px; margin-top: -10rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
+.vc-header { background: #0C0A1F; padding: 72px 80px 48px; margin-top: -6rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
 .vc-header::before { content: ''; position: absolute; top: -160px; right: -160px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(114,102,255,0.18) 0%, transparent 70%); pointer-events: none; }
 .vc-header::after { content: ''; position: absolute; bottom: -80px; left: 200px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(189,184,255,0.08) 0%, transparent 70%); pointer-events: none; }
 .vc-header-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(114,102,255,0.18); border: 1px solid rgba(114,102,255,0.4); border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #BDB8FF; margin-bottom: 20px; font-family: 'Satoshi', sans-serif; }
@@ -111,8 +111,10 @@ _CSS_KPI = """
 .vc-kpi-card.a2::before, .vc-kpi-card.a3::before { background: #BDB8FF; }
 .vc-kpi-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7B789A; margin-bottom: 14px; font-family: 'Satoshi', sans-serif; }
 .vc-kpi-value { font-size: 44px; font-weight: 700; line-height: 1; letter-spacing: -0.025em; margin-bottom: 10px; font-family: 'Satoshi', sans-serif; }
-.vc-kpi-card.a1 .vc-kpi-value, .vc-kpi-card.a2 .vc-kpi-value, .vc-kpi-card.a3 .vc-kpi-value { color: #7266FF; }
-.vc-kpi-card.a4 .vc-kpi-value { color: #0C0A1F; }
+.vc-kpi-card.a1 .vc-kpi-value,
+.vc-kpi-card.a2 .vc-kpi-value,
+.vc-kpi-card.a3 .vc-kpi-value,
+.vc-kpi-card.a4 .vc-kpi-value { color: #7266FF; }
 .vc-kpi-delta { font-size: 13px; font-weight: 500; color: #BDB8FF; font-family: 'Inter', sans-serif; }
 .vc-kpi-delta.up::before { content: '\2191 '; }
 </style>
@@ -391,9 +393,9 @@ tvl            = snap_vet + validator_vet
 
 def fmt(v):
     if v >= 1e9: return f"{v/1e9:.2f}B"
-    if v >= 1e6: return f"{v/1e6:.1f}M"
-    if v >= 1e3: return f"{v/1e3:.1f}K"
-    return f"{v:,.0f}"
+    if v >= 1e6: return f"{v/1e6:.2f}M"
+    if v >= 1e3: return f"{v/1e3:.2f}K"
+    return f"{v:,.2f}"
 
 last_updated = pd.Timestamp.utcnow().strftime("%-d %b %Y, %H:%M UTC")
 
@@ -450,22 +452,18 @@ st.markdown(f"""
   <div class="vc-kpi-card a1">
     <div class="vc-kpi-label">Total Value Locked</div>
     <div class="vc-kpi-value">{fmt(tvl)}</div>
-    <div class="vc-kpi-delta up">staked + validator VET</div>
   </div>
   <div class="vc-kpi-card a2">
     <div class="vc-kpi-label">Total VTHO Generated</div>
     <div class="vc-kpi-value">{fmt(vtho_gen_total)}</div>
-    <div class="vc-kpi-delta up">{fmt(vtho_clm_total)} claimed</div>
   </div>
   <div class="vc-kpi-card a3">
     <div class="vc-kpi-label">Total NFT Minted</div>
     <div class="vc-kpi-value">{fmt(snap_nft)}</div>
-    <div class="vc-kpi-delta up">across all levels</div>
   </div>
   <div class="vc-kpi-card a4">
     <div class="vc-kpi-label">Unique NFT Holders</div>
     <div class="vc-kpi-value">{fmt(snap_holders)}</div>
-    <div class="vc-kpi-delta up">unique wallets</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
