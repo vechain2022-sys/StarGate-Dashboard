@@ -28,30 +28,15 @@ st.markdown("""
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
 [data-testid="collapsedControl"] { display: none !important; }
-[data-testid="stAppViewContainer"] > div:first-child { padding-top: 0 !important; }
-[data-testid="stMainBlockContainer"] { padding-top: 0 !important; }
-section[data-testid="stMain"] > div:first-child { padding-top: 0 !important; }
-.stMainBlockContainer { padding-top: 0 !important; }
-div[data-testid="stDecoration"] { display: none !important; }
-[data-testid="stApp"] { margin-top: 0 !important; padding-top: 0 !important; }
-html, body { margin: 0 !important; padding: 0 !important; }
-iframe { display: block; }
-.main > div { padding-top: 0 !important; }
-[data-testid="stSelectbox"] label {
-  font-size: 10px !important; letter-spacing: 0.12em !important;
-  text-transform: uppercase !important; color: var(--muted) !important;
-  font-family: 'Satoshi', sans-serif !important; font-weight: 600 !important;
-}
-[data-testid="stDateInput"] label {
-  font-size: 10px !important; letter-spacing: 0.12em !important;
-  text-transform: uppercase !important; color: var(--muted) !important;
-  font-family: 'Satoshi', sans-serif !important; font-weight: 600 !important;
-}
+[data-testid="stToolbar"] { display: none !important; }
+[data-testid="stDecoration"] { display: none !important; }
+[data-testid="stStatusWidget"] { display: none !important; }
+[data-testid="stAppViewContainer"] > section > div:first-child { padding-top: 0 !important; }
+.appview-container .main .block-container { padding-top: 0 !important; }
 .vc-header {
   background: var(--vc-dark);
-  padding: 56px 64px 80px 64px;
-  border-bottom: none;
-  position: relative; overflow: visible;
+  padding: 48px 64px 40px;
+  position: relative; overflow: hidden;
 }
 .vc-header::before {
   content: ''; position: absolute; top: -160px; right: -160px;
@@ -75,13 +60,17 @@ iframe { display: block; }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .vc-header h1 {
-  font-size: 56px; font-weight: 700; line-height: 1.05;
-  letter-spacing: -0.03em; margin-bottom: 12px;
+  font-size: 52px; font-weight: 700; line-height: 1.05;
+  letter-spacing: -0.03em; margin-bottom: 0;
   background: linear-gradient(135deg, #ffffff 0%, #d0ccff 55%, var(--vc-light-purple) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; font-family: 'Satoshi', sans-serif;
 }
-.vc-header-meta { display: flex; gap: 40px; margin-top: 36px; }
+.vc-header-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  margin-top: 32px; gap: 48px;
+}
+.vc-header-meta { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
 .vc-meta-item { display: flex; flex-direction: column; gap: 4px; }
 .vc-meta-label {
   font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
@@ -90,6 +79,15 @@ iframe { display: block; }
 .vc-meta-value {
   font-size: 14px; font-weight: 500;
   color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif;
+}
+.vc-meta-divider {
+  width: 1px; height: 36px; background: rgba(255,255,255,0.12);
+  align-self: center; flex-shrink: 0;
+}
+.vc-filter-label {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(189,184,255,0.5); font-family: 'Satoshi', sans-serif;
+  margin-bottom: 6px;
 }
 .vc-kpi-row {
   display: grid; grid-template-columns: repeat(4, 1fr);
@@ -101,8 +99,7 @@ iframe { display: block; }
   position: relative; overflow: hidden;
 }
 .vc-kpi-card::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 3px;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
 }
 .vc-kpi-card.a1::before, .vc-kpi-card.a4::before { background: var(--vc-purple); }
 .vc-kpi-card.a2::before, .vc-kpi-card.a3::before { background: var(--vc-light-purple); }
@@ -152,8 +149,7 @@ iframe { display: block; }
   position: relative; overflow: hidden;
 }
 .vc-snapshot-kpi::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 3px;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
   background: var(--vc-purple);
 }
 [data-testid="stHorizontalBlock"] {
@@ -161,23 +157,6 @@ iframe { display: block; }
   padding: 0 64px 56px !important;
   background: transparent !important;
 }
-[data-testid="stHorizontalBlock"]:first-of-type {
-  background: var(--vc-dark) !important;
-  padding: 0 64px 0 64px !important;
-  margin-top: -72px !important;
-  border-bottom: none !important;
-  position: relative !important;
-  z-index: 10 !important;
-}
-[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stSelectbox"] > div > div,
-[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] > div > div,
-[data-testid="stHorizontalBlock"]:first-of-type [data-testid="stDateInput"] input {
-  background: rgba(255,255,255,0.08) !important;
-  border: 1px solid rgba(255,255,255,0.15) !important;
-  color: rgba(255,255,255,0.9) !important;
-  border-radius: 8px !important;
-}
-[data-testid="stHorizontalBlock"]:first-of-type svg { fill: rgba(189,184,255,0.7) !important; }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
 [data-testid="stPlotlyChart"] {
   background: #ffffff;
@@ -216,6 +195,31 @@ iframe { display: block; }
   color: rgba(189,184,255,0.5); padding: 6px 14px;
   border: 1px solid rgba(114,102,255,0.3); border-radius: 100px;
   font-family: 'Satoshi', sans-serif;
+}
+/* Dark filter inputs */
+.vc-filter-wrap [data-testid="stSelectbox"] > div > div,
+.vc-filter-wrap [data-testid="stDateInput"] > div > div {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  color: rgba(255,255,255,0.9) !important;
+  border-radius: 8px !important;
+}
+.vc-filter-wrap [data-testid="stSelectbox"] > div > div:hover,
+.vc-filter-wrap [data-testid="stDateInput"] > div > div:hover {
+  border-color: rgba(114,102,255,0.6) !important;
+}
+.vc-filter-wrap svg { fill: rgba(189,184,255,0.7) !important; }
+.vc-filter-wrap [data-testid="stSelectbox"] label,
+.vc-filter-wrap [data-testid="stDateInput"] label {
+  color: rgba(189,184,255,0.5) !important;
+  font-size: 10px !important; letter-spacing: 0.12em !important;
+  text-transform: uppercase !important; font-family: 'Satoshi', sans-serif !important;
+}
+.vc-filter-wrap [data-testid="stHorizontalBlock"] {
+  background: var(--vc-dark) !important;
+  padding: 0 64px 40px 64px !important;
+  gap: 24px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -275,113 +279,79 @@ def _fetch_daily(url, value_col, from_ts=None):
     df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
     return df[["blockNumber","blockTimestamp","gmtTime","date", value_col]]
 
-# ── Fetch functions ───────────────────────────────────────
 @st.cache_data(ttl=300)
 def fetch_vtho_generated():
-    return _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-generated/DAY",
-        "vtho_generated")
+    return _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-generated/DAY", "vtho_generated")
 
 @st.cache_data(ttl=300)
 def fetch_vtho_claimed():
-    df = _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-claimed/DAY",
-        "vtho_claimed")
+    df = _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-claimed/DAY", "vtho_claimed")
     return df[df["vtho_claimed"] > 0].reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_vet_staked():
-    df = _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY",
-        "vet_staked_delta", from_ts=FROM_TS_FULL)
+    df = _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY", "vet_staked_delta", from_ts=FROM_TS_FULL)
     df["vet_staked_cumsum"] = df["vet_staked_delta"].cumsum()
-    df = df.groupby("date").agg(
-        vet_staked_delta=("vet_staked_delta","sum"),
-        vet_staked_cumsum=("vet_staked_cumsum","last")
-    ).reset_index()
+    df = df.groupby("date").agg(vet_staked_delta=("vet_staked_delta","sum"), vet_staked_cumsum=("vet_staked_cumsum","last")).reset_index()
     dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
     return df[df["date"] >= dec1].reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_vet_delegated():
-    df = _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-delegated/DAY",
-        "vet_delegated_delta")
+    df = _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vet-delegated/DAY", "vet_delegated_delta")
     df["vet_delegated_cumsum"] = df["vet_delegated_delta"].cumsum()
-    df = df.groupby("date").agg(
-        vet_delegated_delta=("vet_delegated_delta","sum"),
-        vet_delegated_cumsum=("vet_delegated_cumsum","last")
-    ).reset_index()
+    df = df.groupby("date").agg(vet_delegated_delta=("vet_delegated_delta","sum"), vet_delegated_cumsum=("vet_delegated_cumsum","last")).reset_index()
     return df[["date","vet_delegated_delta","vet_delegated_cumsum"]]
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_staked_snapshot():
-    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked",
-                     headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked", headers=HEADERS, timeout=TIMEOUT)
     r.raise_for_status()
     data = r.json()
-    total_vet    = int(data["total"]) / 1e18
-    total_nft    = data["totalNftCount"]
-    by_level     = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
+    total_vet = int(data["total"]) / 1e18
+    total_nft = data["totalNftCount"]
+    by_level  = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
     nft_by_level = data["nftCountByLevel"]
-    df_level = pd.DataFrame({
-        "level":     list(by_level.keys()),
-        "vet_staked":list(by_level.values()),
-        "nft_count": [nft_by_level[k] for k in by_level.keys()]
-    })
+    df_level = pd.DataFrame({"level": list(by_level.keys()), "vet_staked": list(by_level.values()), "nft_count": [nft_by_level[k] for k in by_level.keys()]})
     df_level["order"] = df_level["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
     return total_vet, total_nft, df_level.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_delegated_snapshot():
-    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated",
-                     headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated", headers=HEADERS, timeout=TIMEOUT)
     r.raise_for_status()
     data = r.json()
-    total_vet    = int(data["total"]) / 1e18
-    total_nft    = data["totalNftCount"]
-    by_level     = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
+    total_vet = int(data["total"]) / 1e18
+    total_nft = data["totalNftCount"]
+    by_level  = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
     nft_by_level = data["nftCountByLevel"]
-    df_level = pd.DataFrame({
-        "level":        list(by_level.keys()),
-        "vet_delegated":list(by_level.values()),
-        "nft_count":    [nft_by_level[k] for k in by_level.keys()]
-    })
+    df_level = pd.DataFrame({"level": list(by_level.keys()), "vet_delegated": list(by_level.values()), "nft_count": [nft_by_level[k] for k in by_level.keys()]})
     df_level["order"] = df_level["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
     return total_vet, total_nft, df_level.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_nft_holders_snapshot():
-    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders",
-                     headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders", headers=HEADERS, timeout=TIMEOUT)
     r.raise_for_status()
     data = r.json()
-    df_holders = pd.DataFrame({
-        "level":  list(data["byLevel"].keys()),
-        "holders":list(data["byLevel"].values())
-    })
+    df_holders = pd.DataFrame({"level": list(data["byLevel"].keys()), "holders": list(data["byLevel"].values())})
     df_holders["order"] = df_holders["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
     return data["total"], df_holders.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_nft_holders_daily():
     TO_TS = int(pd.Timestamp.utcnow().timestamp())
-    session = requests.Session()
-    session.headers.update(HEADERS)
+    session = requests.Session(); session.headers.update(HEADERS)
     rows, page = [], 0
     while True:
-        params = {"from": FROM_TS_FULL, "to": TO_TS, "page": page, "size": 150, "direction": "ASC"}
         r = session.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders/DAY",
-                        params=params, timeout=TIMEOUT)
+                        params={"from": FROM_TS_FULL, "to": TO_TS, "page": page, "size": 150, "direction": "ASC"}, timeout=TIMEOUT)
         r.raise_for_status()
         data = r.json().get("data", []) or []
         rows.extend(data)
-        if not r.json()["pagination"]["hasNext"]:
-            break
-        page += 1
-        time.sleep(SLEEP_S)
-    if not rows:
-        return pd.DataFrame(columns=["date","delta","holders_cumsum"])
+        if not r.json()["pagination"]["hasNext"]: break
+        page += 1; time.sleep(SLEEP_S)
+    if not rows: return pd.DataFrame(columns=["date","delta","holders_cumsum"])
     df = pd.DataFrame(rows)
     df["date"] = pd.to_datetime(df[["year","month","dayOfMonth"]].rename(columns={"dayOfMonth":"day"})).dt.date
     df["delta"] = pd.to_numeric(df["total"])
@@ -393,22 +363,19 @@ def fetch_nft_holders_daily():
 @st.cache_data(ttl=300)
 def fetch_validators():
     rows, page = [], 0
-    session = requests.Session()
-    session.headers.update(HEADERS)
+    session = requests.Session(); session.headers.update(HEADERS)
     while True:
         r = session.get("https://indexer.mainnet.vechain.org/api/v1/validators",
                         params={"page": page, "size": 50, "direction": "ASC"}, timeout=TIMEOUT)
         r.raise_for_status()
         data = r.json().get("data", []) or []
         rows.extend(data)
-        if not r.json()["pagination"]["hasNext"]:
-            break
-        page += 1
-        time.sleep(SLEEP_S)
+        if not r.json()["pagination"]["hasNext"]: break
+        page += 1; time.sleep(SLEEP_S)
     df = pd.DataFrame(rows)
-    active    = df[df["status"] == "ACTIVE"].copy().reset_index(drop=True)
+    active = df[df["status"] == "ACTIVE"].copy().reset_index(drop=True)
     accepting = active[active["delegatorVetStaked"] > 0]
-    apy_rows  = []
+    apy_rows = []
     for _, row in accepting.iterrows():
         yields = row.get("nftYieldsNextCycle", {})
         if isinstance(yields, dict):
@@ -418,15 +385,10 @@ def fetch_validators():
     apy_table_rows = []
     for level in LEVEL_ORDER:
         subset = apy_df[apy_df["level"] == level]["apy"]
-        apy_table_rows.append({
-            "NFT Level": level,
-            "Min APY":   round(subset.min(), 1),
-            "Avg APY":   round(subset.mean(), 1),
-            "Max APY":   round(subset.max(), 1),
-        })
+        apy_table_rows.append({"NFT Level": level, "Min APY": round(subset.min(),1), "Avg APY": round(subset.mean(),1), "Max APY": round(subset.max(),1)})
     apy_table = pd.DataFrame(apy_table_rows)
     apy_table["Est. APY Range"] = apy_table["Min APY"].map("{:.1f}%".format) + " \u2013 " + apy_table["Max APY"].map("{:.1f}%".format)
-    apy_table["Avg APY"]        = apy_table["Avg APY"].map("{:.1f}%".format)
+    apy_table["Avg APY"] = apy_table["Avg APY"].map("{:.1f}%".format)
     return active, apy_table
 
 # ── Load ──────────────────────────────────────────────────
@@ -445,7 +407,6 @@ if df.empty:
     st.error("No data returned from API.")
     st.stop()
 
-# ── Helpers ───────────────────────────────────────────────
 def fmt(v):
     if v >= 1e9: return f"{v/1e9:.2f}B"
     if v >= 1e6: return f"{v/1e6:.1f}M"
@@ -461,40 +422,47 @@ st.markdown(f"""
 <div class="vc-header">
   <div class="vc-header-tag">Live &middot; Post-Hayabusa Analysis</div>
   <h1>StarGate by VeChain<br>Performance Report</h1>
-  <div class="vc-header-meta">
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Hard Fork</span>
-      <span class="vc-meta-value">Hayabusa</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Key Change</span>
-      <span class="vc-meta-value">Uncapped &rarr; Self-regulating</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Data Source</span>
-      <span class="vc-meta-value">VeChain StarGate</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Last Updated</span>
-      <span class="vc-meta-value">{last_updated}</span>
+  <div class="vc-header-bottom">
+    <div class="vc-header-meta">
+      <div class="vc-meta-item">
+        <span class="vc-meta-label">Hard Fork</span>
+        <span class="vc-meta-value">Hayabusa</span>
+      </div>
+      <div class="vc-meta-item">
+        <span class="vc-meta-label">Key Change</span>
+        <span class="vc-meta-value">Uncapped &rarr; Self-regulating</span>
+      </div>
+      <div class="vc-meta-item">
+        <span class="vc-meta-label">Data Source</span>
+        <span class="vc-meta-value">VeChain StarGate</span>
+      </div>
+      <div class="vc-meta-item">
+        <span class="vc-meta-label">Last Updated</span>
+        <span class="vc-meta-value">{last_updated}</span>
+      </div>
+      <div class="vc-meta-divider"></div>
+      <div class="vc-meta-item">
+        <span class="vc-filter-label">Aggregation</span>
+      </div>
+      <div class="vc-meta-item">
+        <span class="vc-filter-label">Date Range</span>
+      </div>
     </div>
   </div>
-  <div style="height:1px; background:rgba(255,255,255,0.08); margin:28px 0 28px 0;"></div>
-  <div style="height:48px;"></div>
 </div>
 """, unsafe_allow_html=True)
 
 # ── Filter controls ───────────────────────────────────────
+st.markdown('<div class="vc-filter-wrap">', unsafe_allow_html=True)
 fc1, fc2, fc3 = st.columns([1, 2, 5])
 with fc1:
-    period = st.selectbox("Aggregation", ["Daily","Weekly","Monthly"],
-                          label_visibility="collapsed")
+    period = st.selectbox("Aggregation", ["Daily","Weekly","Monthly"], label_visibility="collapsed")
 with fc2:
-    date_range = st.date_input(
-        "Date Range",
+    date_range = st.date_input("Date Range",
         value=(max_date - timedelta(days=30), max_date),
         min_value=min_date, max_value=max_date,
         label_visibility="collapsed")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
@@ -533,10 +501,7 @@ chart_clm = aggregate(f_clm,    "vtho_claimed",   "sum")
 
 if period in ["Weekly","Monthly"]:
     freq = "W" if period == "Weekly" else "ME"
-    chart_stk = f_stk.set_index("gmtTime").resample(freq).agg(
-        vet_staked_delta=("vet_staked_delta","sum"),
-        vet_staked_cumsum=("vet_staked_cumsum","last")
-    ).reset_index().rename(columns={"gmtTime":"date"})
+    chart_stk = f_stk.set_index("gmtTime").resample(freq).agg(vet_staked_delta=("vet_staked_delta","sum"), vet_staked_cumsum=("vet_staked_cumsum","last")).reset_index().rename(columns={"gmtTime":"date"})
     chart_dlg = f_dlg.set_index("gmtTime").resample(freq)["vet_delegated_cumsum"].last().reset_index()
     chart_dlg.columns = ["date","vet_delegated_cumsum"]
 else:
@@ -546,9 +511,7 @@ else:
 f_holders_daily["gmtTime"] = pd.to_datetime(f_holders_daily["date"])
 if period in ["Weekly","Monthly"]:
     freq = "W" if period == "Weekly" else "ME"
-    chart_holders = f_holders_daily.set_index("gmtTime").resample(freq).agg(
-        delta=("delta","sum"), holders_cumsum=("holders_cumsum","last")
-    ).reset_index().rename(columns={"gmtTime":"date"})
+    chart_holders = f_holders_daily.set_index("gmtTime").resample(freq).agg(delta=("delta","sum"), holders_cumsum=("holders_cumsum","last")).reset_index().rename(columns={"gmtTime":"date"})
 else:
     chart_holders = f_holders_daily[["date","delta","holders_cumsum"]].copy()
 
@@ -563,22 +526,17 @@ days_count     = (pd.to_datetime(e) - pd.to_datetime(s)).days + 1
 direction      = "up" if change >= 0 else "down"
 change_abs     = abs(change)
 
-# ── Chart layout helper ───────────────────────────────────
-def chart_layout(title, subtitle=None, height=320, bg="#ffffff"):
+def chart_layout(title, subtitle=None, height=320):
     return dict(
-        title=dict(
-            text=title,
-            subtitle=dict(text=subtitle, font=dict(size=12, color="#7B789A")) if subtitle else None,
-            font=dict(family="Satoshi", size=14, color="#0C0A1F")
-        ),
+        title=dict(text=title,
+                   subtitle=dict(text=subtitle, font=dict(size=12, color="#7B789A")) if subtitle else None,
+                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
         paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
         margin=dict(l=40, r=24, t=64, b=40),
         hovermode="x unified", showlegend=False,
         xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11), automargin=True),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11),
-                   tickformat=".2s", automargin=True),
-        height=height
-    )
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), tickformat=".2s", automargin=True),
+        height=height)
 
 # ── KPI ROW ───────────────────────────────────────────────
 st.markdown(f"""
@@ -615,35 +573,27 @@ st.markdown(f"""
     <div class="vc-section-title">VTHO Emission Dynamics</div>
     <div class="vc-section-badge">Key Mechanism Change</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:
     fig1 = go.Figure()
-    fig1.add_trace(go.Scatter(
-        x=chart_df["date"], y=chart_df["vtho_generated"],
-        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5),
+    fig1.add_trace(go.Scatter(x=chart_df["date"], y=chart_df["vtho_generated"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)", line=dict(color="#7266FF", width=2.5),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"))
-    fig1.update_layout(**chart_layout("VTHO Generated Over Time",
-        "Emission rising proportionally as more VET gets staked"))
+    fig1.update_layout(**chart_layout("VTHO Generated Over Time", "Emission rising proportionally as more VET gets staked"))
     st.plotly_chart(fig1, use_container_width=True)
-
 with col2:
     fig2 = go.Figure()
-    fig2.add_trace(go.Bar(
-        x=chart_df["date"], y=chart_df["vtho_generated"],
+    fig2.add_trace(go.Bar(x=chart_df["date"], y=chart_df["vtho_generated"],
         marker=dict(color="rgba(114,102,255,0.55)", line=dict(width=0)),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"))
-    layout2 = chart_layout("Daily VTHO Breakdown")
-    layout2["bargap"] = 0.2
+    layout2 = chart_layout("Daily VTHO Breakdown"); layout2["bargap"] = 0.2
     fig2.update_layout(**layout2)
     st.plotly_chart(fig2, use_container_width=True)
 
 with st.expander("Raw Data — VTHO Generated"):
-    st.dataframe(filtered[["date","vtho_generated","blockNumber"]].sort_values("date", ascending=False),
-                 use_container_width=True)
+    st.dataframe(filtered[["date","vtho_generated","blockNumber"]].sort_values("date", ascending=False), use_container_width=True)
 
 # ═══════════════════════════════════════════════
 # SECTION 2 — VTHO Claimed
@@ -654,48 +604,37 @@ st.markdown(f"""
     <div class="vc-section-title">VTHO Claimed</div>
     <div class="vc-section-badge">Staker Rewards</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 col3, col4 = st.columns(2)
 with col3:
     fig3 = go.Figure()
-    fig3.add_trace(go.Scatter(
-        x=chart_clm["date"], y=chart_clm["vtho_claimed"],
-        fill="tozeroy", fillcolor="rgba(189,184,255,0.10)",
-        line=dict(color="#BDB8FF", width=2.5),
+    fig3.add_trace(go.Scatter(x=chart_clm["date"], y=chart_clm["vtho_claimed"],
+        fill="tozeroy", fillcolor="rgba(189,184,255,0.10)", line=dict(color="#BDB8FF", width=2.5),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"))
     fig3.update_layout(**chart_layout("VTHO Claimed Over Time", "Rewards claimed by stakers over time"))
     st.plotly_chart(fig3, use_container_width=True)
-
 with col4:
     fig4 = go.Figure()
-    fig4.add_trace(go.Bar(
-        x=chart_clm["date"], y=chart_clm["vtho_claimed"],
+    fig4.add_trace(go.Bar(x=chart_clm["date"], y=chart_clm["vtho_claimed"],
         marker=dict(color="rgba(189,184,255,0.7)", line=dict(width=0)),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"))
-    layout4 = chart_layout("Daily VTHO Claimed", "Per-day claiming activity")
-    layout4["bargap"] = 0.2
+    layout4 = chart_layout("Daily VTHO Claimed", "Per-day claiming activity"); layout4["bargap"] = 0.2
     fig4.update_layout(**layout4)
     st.plotly_chart(fig4, use_container_width=True)
 
 col5, _ = st.columns([1, 0.001])
 with col5:
     fig5 = go.Figure()
-    fig5.add_trace(go.Scatter(
-        x=chart_df["date"], y=chart_df["vtho_generated"],
-        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5), name="Generated",
+    fig5.add_trace(go.Scatter(x=chart_df["date"], y=chart_df["vtho_generated"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)", line=dict(color="#7266FF", width=2.5), name="Generated",
         hovertemplate="%{x}<br><b>Generated: %{y:,.0f} VTHO</b><extra></extra>"))
-    fig5.add_trace(go.Scatter(
-        x=chart_clm["date"], y=chart_clm["vtho_claimed"],
-        fill="tozeroy", fillcolor="rgba(189,184,255,0.10)",
-        line=dict(color="#BDB8FF", width=2.5), name="Claimed",
+    fig5.add_trace(go.Scatter(x=chart_clm["date"], y=chart_clm["vtho_claimed"],
+        fill="tozeroy", fillcolor="rgba(189,184,255,0.10)", line=dict(color="#BDB8FF", width=2.5), name="Claimed",
         hovertemplate="%{x}<br><b>Claimed: %{y:,.0f} VTHO</b><extra></extra>"))
     layout5 = chart_layout("VTHO Generated vs. Claimed", "Generated supply vs. actual claiming activity")
     layout5["showlegend"] = True
-    layout5["legend"] = dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)",
-                             orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    layout5["legend"] = dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)", orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     fig5.update_layout(**layout5)
     st.plotly_chart(fig5, use_container_width=True)
 
@@ -708,19 +647,15 @@ st.markdown(f"""
     <div class="vc-section-title">VET Staking Growth</div>
     <div class="vc-section-badge">&#8593; Strong Growth Trend</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 col6, _ = st.columns([1, 0.001])
 with col6:
     fig6 = go.Figure()
-    fig6.add_trace(go.Scatter(
-        x=chart_stk["date"], y=chart_stk["vet_staked_cumsum"],
-        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5),
+    fig6.add_trace(go.Scatter(x=chart_stk["date"], y=chart_stk["vet_staked_cumsum"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)", line=dict(color="#7266FF", width=2.5),
         hovertemplate="%{x}<br><b>%{y:,.0f} VET</b><extra></extra>"))
-    fig6.update_layout(**chart_layout("Total VET Staked Over Time",
-        "Cumulative VET locked in StarGate staking"))
+    fig6.update_layout(**chart_layout("Total VET Staked Over Time", "Cumulative VET locked in StarGate staking"))
     st.plotly_chart(fig6, use_container_width=True)
 
 # ═══════════════════════════════════════════════
@@ -732,23 +667,19 @@ st.markdown(f"""
     <div class="vc-section-title">VET Delegation Growth</div>
     <div class="vc-section-badge">&#8593; Growing Participation</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 col7, _ = st.columns([1, 0.001])
 with col7:
     fig7 = go.Figure()
-    fig7.add_trace(go.Scatter(
-        x=chart_dlg["date"], y=chart_dlg["vet_delegated_cumsum"],
-        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5),
+    fig7.add_trace(go.Scatter(x=chart_dlg["date"], y=chart_dlg["vet_delegated_cumsum"],
+        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)", line=dict(color="#7266FF", width=2.5),
         hovertemplate="%{x}<br><b>%{y:,.0f} VET</b><extra></extra>"))
-    fig7.update_layout(**chart_layout("Total VET Delegated Over Time",
-        "Cumulative VET delegated in StarGate"))
+    fig7.update_layout(**chart_layout("Total VET Delegated Over Time", "Cumulative VET delegated in StarGate"))
     st.plotly_chart(fig7, use_container_width=True)
 
 # ═══════════════════════════════════════════════
-# SECTION 5 — Staking Breakdown by Level
+# SECTION 5 — Staking Breakdown
 # ═══════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-section" style="background:{BG_ODD};">
@@ -756,72 +687,36 @@ st.markdown(f"""
     <div class="vc-section-title">Staking Breakdown by Level</div>
     <div class="vc-section-badge">Live Snapshot</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 st.markdown(f"""
 <div class="vc-snapshot-kpi-row">
-  <div class="vc-snapshot-kpi">
-    <div class="vc-kpi-label">Total VET Staked (Live)</div>
-    <div class="vc-kpi-value">{fmt(snap_vet)}</div>
-    <div class="vc-kpi-delta up">current snapshot</div>
-  </div>
-  <div class="vc-snapshot-kpi">
-    <div class="vc-kpi-label">Total NFT Minted</div>
-    <div class="vc-kpi-value">{fmt(snap_nft)}</div>
-    <div class="vc-kpi-delta up">across all levels</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+  <div class="vc-snapshot-kpi"><div class="vc-kpi-label">Total VET Staked (Live)</div><div class="vc-kpi-value">{fmt(snap_vet)}</div><div class="vc-kpi-delta up">current snapshot</div></div>
+  <div class="vc-snapshot-kpi"><div class="vc-kpi-label">Total NFT Minted</div><div class="vc-kpi-value">{fmt(snap_nft)}</div><div class="vc-kpi-delta up">across all levels</div></div>
+</div>""", unsafe_allow_html=True)
 
 col8, col9 = st.columns(2)
 with col8:
     fig8 = go.Figure()
-    fig8.add_trace(go.Bar(x=df_level["level"], y=df_level["vet_staked"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"))
-    layout8 = chart_layout("VET Staked by Level", "Total VET locked per staking tier", height=360)
-    layout8["hovermode"] = "x"; layout8["bargap"] = 0.25
-    fig8.update_layout(**layout8)
-    st.plotly_chart(fig8, use_container_width=True)
-
+    fig8.add_trace(go.Bar(x=df_level["level"], y=df_level["vet_staked"], marker=dict(color=LEVEL_COLORS, line=dict(width=0)), hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"))
+    layout8 = chart_layout("VET Staked by Level", "Total VET locked per staking tier", height=360); layout8["hovermode"]="x"; layout8["bargap"]=0.25
+    fig8.update_layout(**layout8); st.plotly_chart(fig8, use_container_width=True)
 with col9:
     fig9 = go.Figure()
-    fig9.add_trace(go.Pie(labels=df_level["level"], values=df_level["vet_staked"],
-        marker=dict(colors=LEVEL_COLORS), hole=0.45,
-        hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside"))
-    fig9.update_layout(title=dict(text="VET Staked Distribution",
-        subtitle=dict(text="Share of total VET staked per level", font=dict(size=12, color="#7B789A")),
-        font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40), showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5), height=360)
+    fig9.add_trace(go.Pie(labels=df_level["level"], values=df_level["vet_staked"], marker=dict(colors=LEVEL_COLORS), hole=0.45, hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>", textfont=dict(family="Satoshi", size=11), textposition="outside"))
+    fig9.update_layout(title=dict(text="VET Staked Distribution", subtitle=dict(text="Share of total VET staked per level", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")), paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40), showlegend=True, legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)", orientation="v", x=1.02, y=0.5), height=360)
     st.plotly_chart(fig9, use_container_width=True)
 
 col10, col11 = st.columns(2)
 with col10:
     fig10 = go.Figure()
-    fig10.add_trace(go.Bar(x=df_level["level"], y=df_level["nft_count"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,} NFTs<extra></extra>"))
-    layout10 = chart_layout("NFT Count by Level", "Number of NFTs minted per staking tier", height=360)
-    layout10["hovermode"] = "x"; layout10["bargap"] = 0.25; layout10["yaxis"]["tickformat"] = ","
-    fig10.update_layout(**layout10)
-    st.plotly_chart(fig10, use_container_width=True)
-
+    fig10.add_trace(go.Bar(x=df_level["level"], y=df_level["nft_count"], marker=dict(color=LEVEL_COLORS, line=dict(width=0)), hovertemplate="<b>%{x}</b><br>%{y:,} NFTs<extra></extra>"))
+    layout10 = chart_layout("NFT Count by Level", "Number of NFTs minted per staking tier", height=360); layout10["hovermode"]="x"; layout10["bargap"]=0.25; layout10["yaxis"]["tickformat"]=","
+    fig10.update_layout(**layout10); st.plotly_chart(fig10, use_container_width=True)
 with col11:
     fig11 = go.Figure()
-    fig11.add_trace(go.Pie(labels=df_level["level"], values=df_level["nft_count"],
-        marker=dict(colors=LEVEL_COLORS), hole=0.45,
-        hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside"))
-    fig11.update_layout(title=dict(text="NFT Count Distribution",
-        subtitle=dict(text="Share of total NFTs per level", font=dict(size=12, color="#7B789A")),
-        font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40), showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5), height=360)
+    fig11.add_trace(go.Pie(labels=df_level["level"], values=df_level["nft_count"], marker=dict(colors=LEVEL_COLORS), hole=0.45, hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>", textfont=dict(family="Satoshi", size=11), textposition="outside"))
+    fig11.update_layout(title=dict(text="NFT Count Distribution", subtitle=dict(text="Share of total NFTs per level", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")), paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40), showlegend=True, legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)", orientation="v", x=1.02, y=0.5), height=360)
     st.plotly_chart(fig11, use_container_width=True)
 
 # ═══════════════════════════════════════════════
@@ -833,72 +728,36 @@ st.markdown(f"""
     <div class="vc-section-title">Delegation Breakdown by Level</div>
     <div class="vc-section-badge">Live Snapshot</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 st.markdown(f"""
 <div class="vc-snapshot-kpi-row">
-  <div class="vc-snapshot-kpi">
-    <div class="vc-kpi-label">Total VET Delegated (Live)</div>
-    <div class="vc-kpi-value">{fmt(snap_dlg_vet)}</div>
-    <div class="vc-kpi-delta up">current snapshot</div>
-  </div>
-  <div class="vc-snapshot-kpi">
-    <div class="vc-kpi-label">Total NFTs Delegating</div>
-    <div class="vc-kpi-value">{fmt(snap_dlg_nft)}</div>
-    <div class="vc-kpi-delta up">across all levels</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+  <div class="vc-snapshot-kpi"><div class="vc-kpi-label">Total VET Delegated (Live)</div><div class="vc-kpi-value">{fmt(snap_dlg_vet)}</div><div class="vc-kpi-delta up">current snapshot</div></div>
+  <div class="vc-snapshot-kpi"><div class="vc-kpi-label">Total NFTs Delegating</div><div class="vc-kpi-value">{fmt(snap_dlg_nft)}</div><div class="vc-kpi-delta up">across all levels</div></div>
+</div>""", unsafe_allow_html=True)
 
 col12, col13 = st.columns(2)
 with col12:
     fig12 = go.Figure()
-    fig12.add_trace(go.Bar(x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"))
-    layout12 = chart_layout("VET Delegated by Level", "Total VET delegated per tier", height=360)
-    layout12["hovermode"] = "x"; layout12["bargap"] = 0.25
-    fig12.update_layout(**layout12)
-    st.plotly_chart(fig12, use_container_width=True)
-
+    fig12.add_trace(go.Bar(x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"], marker=dict(color=LEVEL_COLORS, line=dict(width=0)), hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"))
+    layout12 = chart_layout("VET Delegated by Level", "Total VET delegated per tier", height=360); layout12["hovermode"]="x"; layout12["bargap"]=0.25
+    fig12.update_layout(**layout12); st.plotly_chart(fig12, use_container_width=True)
 with col13:
     fig13 = go.Figure()
-    fig13.add_trace(go.Pie(labels=df_dlg_level["level"], values=df_dlg_level["vet_delegated"],
-        marker=dict(colors=LEVEL_COLORS), hole=0.45,
-        hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside"))
-    fig13.update_layout(title=dict(text="VET Delegated Distribution",
-        subtitle=dict(text="Share of total VET delegated per level", font=dict(size=12, color="#7B789A")),
-        font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40), showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5), height=360)
+    fig13.add_trace(go.Pie(labels=df_dlg_level["level"], values=df_dlg_level["vet_delegated"], marker=dict(colors=LEVEL_COLORS), hole=0.45, hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>", textfont=dict(family="Satoshi", size=11), textposition="outside"))
+    fig13.update_layout(title=dict(text="VET Delegated Distribution", subtitle=dict(text="Share of total VET delegated per level", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")), paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40), showlegend=True, legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)", orientation="v", x=1.02, y=0.5), height=360)
     st.plotly_chart(fig13, use_container_width=True)
 
 col14, col15 = st.columns(2)
 with col14:
     fig14 = go.Figure()
-    fig14.add_trace(go.Bar(x=df_dlg_level["level"], y=df_dlg_level["nft_count"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,} NFTs<extra></extra>"))
-    layout14 = chart_layout("NFT Count by Level (Delegated)", "Number of NFTs delegating per tier", height=360)
-    layout14["hovermode"] = "x"; layout14["bargap"] = 0.25; layout14["yaxis"]["tickformat"] = ","
-    fig14.update_layout(**layout14)
-    st.plotly_chart(fig14, use_container_width=True)
-
+    fig14.add_trace(go.Bar(x=df_dlg_level["level"], y=df_dlg_level["nft_count"], marker=dict(color=LEVEL_COLORS, line=dict(width=0)), hovertemplate="<b>%{x}</b><br>%{y:,} NFTs<extra></extra>"))
+    layout14 = chart_layout("NFT Count by Level (Delegated)", "Number of NFTs delegating per tier", height=360); layout14["hovermode"]="x"; layout14["bargap"]=0.25; layout14["yaxis"]["tickformat"]=","
+    fig14.update_layout(**layout14); st.plotly_chart(fig14, use_container_width=True)
 with col15:
     fig15 = go.Figure()
-    fig15.add_trace(go.Pie(labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
-        marker=dict(colors=LEVEL_COLORS), hole=0.45,
-        hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside"))
-    fig15.update_layout(title=dict(text="NFT Delegation Distribution",
-        subtitle=dict(text="Share of delegating NFTs per level", font=dict(size=12, color="#7B789A")),
-        font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40), showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5), height=360)
+    fig15.add_trace(go.Pie(labels=df_dlg_level["level"], values=df_dlg_level["nft_count"], marker=dict(colors=LEVEL_COLORS), hole=0.45, hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>", textfont=dict(family="Satoshi", size=11), textposition="outside"))
+    fig15.update_layout(title=dict(text="NFT Delegation Distribution", subtitle=dict(text="Share of delegating NFTs per level", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")), paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40), showlegend=True, legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)", orientation="v", x=1.02, y=0.5), height=360)
     st.plotly_chart(fig15, use_container_width=True)
 
 # ═══════════════════════════════════════════════
@@ -910,42 +769,23 @@ st.markdown(f"""
     <div class="vc-section-title">NFT Holders</div>
     <div class="vc-section-badge">Live Snapshot</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 st.markdown(f"""
 <div class="vc-snapshot-kpi-row" style="grid-template-columns: 1fr 2fr;">
-  <div class="vc-snapshot-kpi">
-    <div class="vc-kpi-label">Total NFT Holders</div>
-    <div class="vc-kpi-value">{fmt(snap_holders)}</div>
-    <div class="vc-kpi-delta up">unique addresses</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+  <div class="vc-snapshot-kpi"><div class="vc-kpi-label">Total NFT Holders</div><div class="vc-kpi-value">{fmt(snap_holders)}</div><div class="vc-kpi-delta up">unique addresses</div></div>
+</div>""", unsafe_allow_html=True)
 
 col16, col17 = st.columns(2)
 with col16:
     fig16 = go.Figure()
-    fig16.add_trace(go.Bar(x=df_holders["level"], y=df_holders["holders"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,} holders<extra></extra>"))
-    layout16 = chart_layout("NFT Holders by Level", "Number of unique holders per staking tier", height=360)
-    layout16["hovermode"] = "x"; layout16["bargap"] = 0.25; layout16["yaxis"]["tickformat"] = ","
-    fig16.update_layout(**layout16)
-    st.plotly_chart(fig16, use_container_width=True)
-
+    fig16.add_trace(go.Bar(x=df_holders["level"], y=df_holders["holders"], marker=dict(color=LEVEL_COLORS, line=dict(width=0)), hovertemplate="<b>%{x}</b><br>%{y:,} holders<extra></extra>"))
+    layout16 = chart_layout("NFT Holders by Level", "Number of unique holders per staking tier", height=360); layout16["hovermode"]="x"; layout16["bargap"]=0.25; layout16["yaxis"]["tickformat"]=","
+    fig16.update_layout(**layout16); st.plotly_chart(fig16, use_container_width=True)
 with col17:
     fig17 = go.Figure()
-    fig17.add_trace(go.Pie(labels=df_holders["level"], values=df_holders["holders"],
-        marker=dict(colors=LEVEL_COLORS), hole=0.45,
-        hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside"))
-    fig17.update_layout(title=dict(text="NFT Holders Distribution",
-        subtitle=dict(text="Share of holders per staking tier", font=dict(size=12, color="#7B789A")),
-        font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40), showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5), height=360)
+    fig17.add_trace(go.Pie(labels=df_holders["level"], values=df_holders["holders"], marker=dict(colors=LEVEL_COLORS), hole=0.45, hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>", textfont=dict(family="Satoshi", size=11), textposition="outside"))
+    fig17.update_layout(title=dict(text="NFT Holders Distribution", subtitle=dict(text="Share of holders per staking tier", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")), paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40), showlegend=True, legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)", orientation="v", x=1.02, y=0.5), height=360)
     st.plotly_chart(fig17, use_container_width=True)
 
 # ═══════════════════════════════════════════════
@@ -957,49 +797,27 @@ st.markdown(f"""
     <div class="vc-section-title">NFT Holder Growth</div>
     <div class="vc-section-badge">&#8593; Growing Community</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 holders_latest = f_holders_daily["holders_cumsum"].iloc[-1] if not f_holders_daily.empty else 0
 st.markdown(f"""
 <div class="vc-snapshot-kpi-row" style="grid-template-columns: 1fr 2fr;">
-  <div class="vc-snapshot-kpi">
-    <div class="vc-kpi-label">Total NFT Holders</div>
-    <div class="vc-kpi-value">{fmt(holders_latest)}</div>
-    <div class="vc-kpi-delta up">cumulative</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+  <div class="vc-snapshot-kpi"><div class="vc-kpi-label">Total NFT Holders</div><div class="vc-kpi-value">{fmt(holders_latest)}</div><div class="vc-kpi-delta up">cumulative</div></div>
+</div>""", unsafe_allow_html=True)
 
 col18, col19 = st.columns(2)
 with col18:
     fig18 = go.Figure()
-    fig18.add_trace(go.Scatter(
-        x=chart_holders["date"], y=chart_holders["holders_cumsum"],
-        fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5),
-        hovertemplate="%{x}<br><b>%{y:,} holders</b><extra></extra>"))
-    layout18 = chart_layout("Total NFT Holders Over Time", "Cumulative unique holders since launch")
-    layout18["yaxis"]["tickformat"] = ","
-    fig18.update_layout(**layout18)
-    st.plotly_chart(fig18, use_container_width=True)
-
+    fig18.add_trace(go.Scatter(x=chart_holders["date"], y=chart_holders["holders_cumsum"], fill="tozeroy", fillcolor="rgba(114,102,255,0.08)", line=dict(color="#7266FF", width=2.5), hovertemplate="%{x}<br><b>%{y:,} holders</b><extra></extra>"))
+    layout18 = chart_layout("Total NFT Holders Over Time", "Cumulative unique holders since launch"); layout18["yaxis"]["tickformat"]=","
+    fig18.update_layout(**layout18); st.plotly_chart(fig18, use_container_width=True)
 with col19:
     fig19 = go.Figure()
-    fig19.add_trace(go.Bar(
-        x=chart_holders["date"], y=chart_holders["delta"],
-        marker=dict(
-            color=["rgba(114,102,255,0.6)" if v >= 0 else "rgba(255,100,100,0.6)"
-                   for v in chart_holders["delta"]],
-            line=dict(width=0)),
+    fig19.add_trace(go.Bar(x=chart_holders["date"], y=chart_holders["delta"],
+        marker=dict(color=["rgba(114,102,255,0.6)" if v >= 0 else "rgba(255,100,100,0.6)" for v in chart_holders["delta"]], line=dict(width=0)),
         hovertemplate="%{x}<br><b>%{y:+,} holders</b><extra></extra>"))
-    layout19 = chart_layout("Daily NFT Holder Change",
-        "Net new holders per day (negative = more leaving than joining)")
-    layout19["bargap"] = 0.2
-    layout19["yaxis"]["tickformat"] = ","
-    layout19["yaxis"]["zerolinecolor"] = "rgba(12,10,31,0.15)"
-    fig19.update_layout(**layout19)
-    st.plotly_chart(fig19, use_container_width=True)
+    layout19 = chart_layout("Daily NFT Holder Change", "Net new holders per day"); layout19["bargap"]=0.2; layout19["yaxis"]["tickformat"]=","; layout19["yaxis"]["zerolinecolor"]="rgba(12,10,31,0.15)"
+    fig19.update_layout(**layout19); st.plotly_chart(fig19, use_container_width=True)
 
 # ═══════════════════════════════════════════════
 # SECTION 9 — Validators
@@ -1010,8 +828,7 @@ st.markdown(f"""
     <div class="vc-section-title">Validators</div>
     <div class="vc-section-badge">Live Snapshot</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
 total_active  = len(df_validators)
 total_vet_val = df_validators["vetStaked"].sum()
@@ -1020,28 +837,11 @@ delegator_vet = df_validators["delegatorVetStaked"].sum()
 
 st.markdown(f"""
 <div class="vc-kpi-row" style="grid-template-columns: repeat(4, 1fr);">
-  <div class="vc-kpi-card a1">
-    <div class="vc-kpi-label">Active Validators</div>
-    <div class="vc-kpi-value" style="font-size:32px">{total_active}</div>
-    <div class="vc-kpi-delta up">all online</div>
-  </div>
-  <div class="vc-kpi-card a2">
-    <div class="vc-kpi-label">Total VET Staked</div>
-    <div class="vc-kpi-value" style="font-size:32px">{fmt(total_vet_val)}</div>
-    <div class="vc-kpi-delta up">across validators</div>
-  </div>
-  <div class="vc-kpi-card a3">
-    <div class="vc-kpi-label">Validator VET</div>
-    <div class="vc-kpi-value" style="font-size:32px">{fmt(validator_vet)}</div>
-    <div class="vc-kpi-delta up">own stake</div>
-  </div>
-  <div class="vc-kpi-card a1">
-    <div class="vc-kpi-label">Delegator VET</div>
-    <div class="vc-kpi-value" style="font-size:32px">{fmt(delegator_vet)}</div>
-    <div class="vc-kpi-delta up">delegated stake</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+  <div class="vc-kpi-card a1"><div class="vc-kpi-label">Active Validators</div><div class="vc-kpi-value" style="font-size:32px">{total_active}</div><div class="vc-kpi-delta up">all online</div></div>
+  <div class="vc-kpi-card a2"><div class="vc-kpi-label">Total VET Staked</div><div class="vc-kpi-value" style="font-size:32px">{fmt(total_vet_val)}</div><div class="vc-kpi-delta up">across validators</div></div>
+  <div class="vc-kpi-card a3"><div class="vc-kpi-label">Validator VET</div><div class="vc-kpi-value" style="font-size:32px">{fmt(validator_vet)}</div><div class="vc-kpi-delta up">own stake</div></div>
+  <div class="vc-kpi-card a1"><div class="vc-kpi-label">Delegator VET</div><div class="vc-kpi-value" style="font-size:32px">{fmt(delegator_vet)}</div><div class="vc-kpi-delta up">delegated stake</div></div>
+</div>""", unsafe_allow_html=True)
 
 top20 = df_validators.nlargest(20, "vetStaked").copy()
 top20["label"] = top20["id"].str[:6] + "..." + top20["id"].str[-4:]
@@ -1049,71 +849,35 @@ top20["label"] = top20["id"].str[:6] + "..." + top20["id"].str[-4:]
 col20, col21 = st.columns(2)
 with col20:
     fig20 = go.Figure()
-    fig20.add_trace(go.Scatter(
-        x=top20["vetStaked"], y=top20["tvlBasedYield"], mode="markers",
-        marker=dict(size=12, color=top20["delegatorVetStaked"],
-                    colorscale=[[0,"#BDB8FF"],[1,"#7266FF"]], showscale=True,
-                    colorbar=dict(title="Delegator VET", tickfont=dict(color="#7B789A", size=10)),
-                    line=dict(width=1, color="white")),
-        text=top20["label"],
-        hovertemplate="<b>%{text}</b><br>VET Staked: %{x:,.0f}<br>Yield: %{y:.2f}%<extra></extra>"))
-    fig20.update_layout(
-        title=dict(text="Yield vs VET Staked",
-                   subtitle=dict(text="Top 20 validators — color intensity = delegator VET",
-                                 font=dict(size=12, color="#7B789A")),
-                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        margin=dict(l=48, r=120, t=64, b=48),
-        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11),
-                   tickformat=".2s", title="VET Staked", automargin=True),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11),
-                   title="Yield %", automargin=True),
-        height=420)
+    fig20.add_trace(go.Scatter(x=top20["vetStaked"], y=top20["tvlBasedYield"], mode="markers",
+        marker=dict(size=12, color=top20["delegatorVetStaked"], colorscale=[[0,"#BDB8FF"],[1,"#7266FF"]], showscale=True, colorbar=dict(title="Delegator VET", tickfont=dict(color="#7B789A", size=10)), line=dict(width=1, color="white")),
+        text=top20["label"], hovertemplate="<b>%{text}</b><br>VET Staked: %{x:,.0f}<br>Yield: %{y:.2f}%<extra></extra>"))
+    fig20.update_layout(title=dict(text="Yield vs VET Staked", subtitle=dict(text="Top 20 validators — color intensity = delegator VET", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", margin=dict(l=48,r=120,t=64,b=48),
+        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11), tickformat=".2s", title="VET Staked", automargin=True),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11), title="Yield %", automargin=True), height=420)
     st.plotly_chart(fig20, use_container_width=True, config={"responsive": True})
 
 with col21:
     top20_sorted = top20.sort_values("vetStaked", ascending=True)
     fig21 = go.Figure()
-    fig21.add_trace(go.Bar(y=top20_sorted["label"], x=top20_sorted["delegatorVetStaked"],
-        orientation="h", name="Delegator",
-        marker=dict(color="#7266FF", line=dict(width=0)),
-        hovertemplate="<b>%{y}</b><br>Delegator VET: %{x:,.0f}<extra></extra>"))
-    fig21.add_trace(go.Bar(y=top20_sorted["label"], x=top20_sorted["validatorVetStaked"],
-        orientation="h", name="Validator",
-        marker=dict(color="#BDB8FF", line=dict(width=0)),
-        hovertemplate="<b>%{y}</b><br>Validator VET: %{x:,.0f}<extra></extra>"))
-    fig21.update_layout(
-        title=dict(text="VET Staked by Validator",
-                   subtitle=dict(text="Top 20 — validator vs delegator split",
-                                 font=dict(size=12, color="#7B789A")),
-                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", barmode="stack",
-        margin=dict(l=40, r=24, t=64, b=40),
-        legend=dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)",
-                    orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    fig21.add_trace(go.Bar(y=top20_sorted["label"], x=top20_sorted["delegatorVetStaked"], orientation="h", name="Delegator", marker=dict(color="#7266FF", line=dict(width=0)), hovertemplate="<b>%{y}</b><br>Delegator VET: %{x:,.0f}<extra></extra>"))
+    fig21.add_trace(go.Bar(y=top20_sorted["label"], x=top20_sorted["validatorVetStaked"], orientation="h", name="Validator", marker=dict(color="#BDB8FF", line=dict(width=0)), hovertemplate="<b>%{y}</b><br>Validator VET: %{x:,.0f}<extra></extra>"))
+    fig21.update_layout(title=dict(text="VET Staked by Validator", subtitle=dict(text="Top 20 — validator vs delegator split", font=dict(size=12, color="#7B789A")), font=dict(family="Satoshi", size=14, color="#0C0A1F")),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff", barmode="stack", margin=dict(l=40,r=24,t=64,b=40),
+        legend=dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)", orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
         xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11), tickformat=".2s"),
-        yaxis=dict(tickfont=dict(color="#7B789A", size=10)),
-        height=400)
+        yaxis=dict(tickfont=dict(color="#7B789A", size=10)), height=400)
     st.plotly_chart(fig21, use_container_width=True)
 
 _, col_tbl, _ = st.columns([1, 2, 1])
 with col_tbl:
-    st.markdown("""
-    <div style="font-size:16px; font-weight:700; color:#0C0A1F; font-family:'Satoshi',sans-serif; margin-bottom:16px;">
+    st.markdown("""<div style="font-size:16px; font-weight:700; color:#0C0A1F; font-family:'Satoshi',sans-serif; margin-bottom:16px;">
       Est. APY Range by NFT Level
-      <span style="font-size:11px; font-weight:400; color:#7B789A; margin-left:12px;">
-        Validators accepting delegation only &middot; Next cycle
-      </span>
-    </div>
-    """, unsafe_allow_html=True)
-    st.dataframe(
-        df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
-        use_container_width=True, hide_index=True,
-        column_config={
-            "NFT Level":      st.column_config.TextColumn("NFT Level"),
-            "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
-            "Avg APY":        st.column_config.TextColumn("Avg APY"),
-        })
+      <span style="font-size:11px; font-weight:400; color:#7B789A; margin-left:12px;">Validators accepting delegation only &middot; Next cycle</span>
+    </div>""", unsafe_allow_html=True)
+    st.dataframe(df_apy_table[["NFT Level","Est. APY Range","Avg APY"]], use_container_width=True, hide_index=True,
+        column_config={"NFT Level": st.column_config.TextColumn("NFT Level"), "Est. APY Range": st.column_config.TextColumn("Est. APY Range"), "Avg APY": st.column_config.TextColumn("Avg APY")})
 
 # ── Footer ────────────────────────────────────────────────
 st.markdown(f"""
@@ -1123,5 +887,4 @@ st.markdown(f"""
     <div class="vc-live-dot">Live Data</div>
     <div class="vc-watermark">VeWorld Indexer API</div>
   </div>
-</div>
-""", unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
