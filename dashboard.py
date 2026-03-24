@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="VeChain StarGate Dashboard",
     layout="wide",
     page_icon="🌉",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
 # ── CSS ───────────────────────────────────────────────────
