@@ -28,51 +28,29 @@ st.markdown("""
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
 [data-testid="collapsedControl"] { display: none !important; }
-/* Filter bar sits on the dark header background */
-.vc-header-filter-divider {
-  height: 1px;
-  background: rgba(255,255,255,0.08);
-  margin: 32px 0 24px 0;
-}
-.vc-header-filter-label {
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(189,184,255,0.5);
-  font-family: 'Satoshi', sans-serif;
-  margin-bottom: 12px;
+
+/* Filter bar — style the columns block that holds the filters */
+[data-testid="stMainBlockContainer"] > div > [data-testid="stVerticalBlock"] > div:nth-child(3) [data-testid="stHorizontalBlock"] {
+  background: var(--vc-dark) !important;
+  padding: 0 64px 40px 64px !important;
+  gap: 24px !important;
 }
 
-/* Dark-themed Streamlit filter controls */
-.vc-filter-bar {
-  background: var(--vc-dark);
-  padding: 0 64px 40px 64px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.vc-filter-bar [data-testid="stSelectbox"] label,
-.vc-filter-bar [data-testid="stDateInput"] label {
+/* Filter label and input styling */
+[data-testid="stSelectbox"] label,
+[data-testid="stDateInput"] label {
   color: rgba(189,184,255,0.55) !important;
   font-size: 10px !important;
   letter-spacing: 0.12em !important;
   text-transform: uppercase !important;
   font-family: 'Satoshi', sans-serif !important;
 }
-.vc-filter-bar [data-testid="stSelectbox"] > div > div,
-.vc-filter-bar [data-testid="stDateInput"] > div > div {
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stDateInput"] input {
   background: rgba(255,255,255,0.06) !important;
   border: 1px solid rgba(255,255,255,0.12) !important;
   color: rgba(255,255,255,0.9) !important;
   border-radius: 8px !important;
-}
-.vc-filter-bar [data-testid="stSelectbox"] svg,
-.vc-filter-bar [data-testid="stDateInput"] svg {
-  fill: rgba(189,184,255,0.6) !important;
-}
-
-/* Override Streamlit column padding inside filter bar */
-.vc-filter-bar [data-testid="stHorizontalBlock"] {
-  padding: 0 !important;
-  gap: 24px !important;
 }
 .vc-header {
   background: var(--vc-dark);
@@ -519,16 +497,10 @@ st.markdown(f"""
       <span class="vc-meta-value">{last_updated}</span>
     </div>
   </div>
-  <div class="vc-header-filter-divider"></div>
-  <div class="vc-header-filter-label">Dashboard Filters</div>
 </div>
 """, unsafe_allow_html=True)
 
 # Filter controls rendered by Streamlit (inside a styled container)
-st.markdown("""
-<div class="vc-filter-bar">
-""", unsafe_allow_html=True)
-
 fc1, fc2, _ = st.columns([1, 2, 5])
 with fc1:
     period = st.selectbox(
@@ -542,8 +514,6 @@ with fc2:
         min_value=min_date,
         max_value=max_date,
     )
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
