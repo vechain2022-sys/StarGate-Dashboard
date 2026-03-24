@@ -28,6 +28,8 @@ st.markdown("""
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
+
+/* ── Sidebar ── */
 [data-testid="stSidebar"] {
   background: var(--vc-dark) !important;
   border-right: 1px solid rgba(255,255,255,0.08);
@@ -50,6 +52,8 @@ st.markdown("""
   fill: var(--vc-light-purple) !important;
   color: var(--vc-light-purple) !important;
 }
+
+/* ── Header ── */
 .vc-header {
   background: var(--vc-dark);
   padding: 72px 80px 48px;
@@ -100,6 +104,8 @@ st.markdown("""
   font-size: 14px; font-weight: 500;
   color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif;
 }
+
+/* ── KPI Row ── */
 .vc-kpi-row {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 1px; background: rgba(12,10,31,0.08);
@@ -133,15 +139,16 @@ st.markdown("""
   font-size: 13px; font-weight: 500;
   color: var(--vc-light-purple); font-family: 'Inter', sans-serif;
 }
-.vc-kpi-delta.up::before   { content: '↑ '; }
-.vc-kpi-delta.down::before { content: '↓ '; }
+.vc-kpi-delta.up::before { content: '↑ '; }
+
+/* ── Section wrapper — contains title + charts in one unbroken block ── */
 .vc-section {
   padding: 64px 80px;
   border-bottom: 1px solid rgba(12,10,31,0.08);
 }
 .vc-section-header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  margin-bottom: 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 40px;
 }
 .vc-section-title {
   font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
@@ -152,14 +159,22 @@ st.markdown("""
   font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
   text-transform: uppercase; font-family: 'Satoshi', sans-serif;
   background: rgba(114,102,255,0.08); color: var(--vc-purple);
-  border: 1px solid rgba(114,102,255,0.2); white-space: nowrap; margin-top: 4px;
+  border: 1px solid rgba(114,102,255,0.2); white-space: nowrap;
 }
+/* charts row sits inside the same .vc-section div — no gap */
+.vc-charts-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+}
+
+/* ── Override Streamlit column padding so charts sit flush inside section ── */
 [data-testid="stHorizontalBlock"] {
   gap: 24px !important;
   padding: 0 80px 64px !important;
   background: transparent !important;
 }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
+
+/* ── Plotly chart cards ── */
 [data-testid="stPlotlyChart"] {
   background: var(--vc-white);
   border: 1px solid rgba(12,10,31,0.08);
@@ -174,9 +189,16 @@ st.markdown("""
 [data-testid="stPlotlyChart"] .plot-container,
 [data-testid="stPlotlyChart"] .plotly { overflow: hidden !important; max-width: 100% !important; }
 .modebar-container { right: 8px !important; top: 8px !important; }
+
 [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] {
   background: transparent !important;
 }
+
+/* ── Section background applied via container_style ── */
+div[data-testid="stVerticalBlock"].section-odd  { background: var(--vc-cool-gray); }
+div[data-testid="stVerticalBlock"].section-even { background: var(--vc-white); }
+
+/* ── Footer ── */
 .vc-footer {
   padding: 40px 80px; background: var(--vc-dark);
   display: flex; align-items: center; justify-content: space-between;
@@ -196,12 +218,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Config ────────────────────────────────────────────────
-FROM_TS_FULL = 1733702400
-FROM_TS      = 1764547200
-HEADERS      = {"accept": "*/*", "user-agent": "curl/8.0.1"}
-SIZE         = 150
-TIMEOUT      = 30
-SLEEP_S      = 0.10
+FROM_TS_FULL    = 1733702400
+FROM_TS         = 1764547200
+HEADERS         = {"accept": "*/*", "user-agent": "curl/8.0.1"}
+SIZE            = 150
+TIMEOUT         = 30
+SLEEP_S         = 0.10
 PRE_FORK_ANNUAL = 13_672_848_202.60
 
 LEVEL_ORDER = ["Dawn","Lightning","Flash","VeThorX","Thunder","Strength",
@@ -214,11 +236,33 @@ LEVEL_COLORS = [
 BG_ODD  = "#F1F1F4"
 BG_EVEN = "#ffffff"
 
+# ── Section title helper — inline with charts, no extra block ─────────────
+def section_header(title, badge, bg):
+    st.markdown(f"""
+    <div style="background:{bg};padding:56px 80px 32px;border-bottom:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:28px;font-weight:700;letter-spacing:-0.02em;
+                    color:#0C0A1F;font-family:'Satoshi',sans-serif;">{title}</div>
+        <div style="padding:6px 14px;border-radius:6px;font-size:10px;font-weight:600;
+                    letter-spacing:0.09em;text-transform:uppercase;font-family:'Satoshi',sans-serif;
+                    background:rgba(114,102,255,0.08);color:#7266FF;
+                    border:1px solid rgba(114,102,255,0.2);white-space:nowrap;">{badge}</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# ── Section bottom border + background wrapper ────────────────────────────
+def section_end(bg):
+    st.markdown(f"""
+    <div style="background:{bg};padding:0 0 56px 0;
+                border-bottom:1px solid rgba(12,10,31,0.08);"></div>
+    """, unsafe_allow_html=True)
+
 # ── Fetch helpers ─────────────────────────────────────────
 def _fetch_daily(url, value_col, from_ts=None):
     if from_ts is None:
         from_ts = FROM_TS
-    TO_TS = int(pd.Timestamp.utcnow().timestamp())
+    TO_TS   = int(pd.Timestamp.utcnow().timestamp())
     session = requests.Session()
     session.headers.update(HEADERS)
     rows = []
@@ -243,42 +287,37 @@ def _fetch_daily(url, value_col, from_ts=None):
             page += 1
             time.sleep(SLEEP_S)
     if not rows:
-        return pd.DataFrame(columns=["blockNumber","blockTimestamp","gmtTime","date", value_col])
+        return pd.DataFrame(columns=["blockNumber","blockTimestamp","gmtTime","date",value_col])
     df = pd.DataFrame(rows)[["blockNumber","blockTimestamp","total"]].copy()
-    df["gmtTime"]   = pd.to_datetime(df["blockTimestamp"], unit="s", utc=True)
-    df["date"]      = df["gmtTime"].dt.date
-    df[value_col]   = pd.to_numeric(df["total"], errors="coerce") / 1e18
+    df["gmtTime"] = pd.to_datetime(df["blockTimestamp"], unit="s", utc=True)
+    df["date"]    = df["gmtTime"].dt.date
+    df[value_col] = pd.to_numeric(df["total"], errors="coerce") / 1e18
     df = df.drop_duplicates(subset=["blockNumber","blockTimestamp"])
     df = df.sort_values(["blockTimestamp","blockNumber"]).reset_index(drop=True)
-    return df[["blockNumber","blockTimestamp","gmtTime","date", value_col]]
+    return df[["blockNumber","blockTimestamp","gmtTime","date",value_col]]
 
-# ── Fetch functions ───────────────────────────────────────
 @st.cache_data(ttl=300)
 def fetch_vtho_generated():
     return _fetch_daily(
         "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-generated/DAY",
-        "vtho_generated"
-    )
+        "vtho_generated")
 
 @st.cache_data(ttl=300)
 def fetch_vtho_claimed():
     df = _fetch_daily(
         "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-claimed/DAY",
-        "vtho_claimed"
-    )
+        "vtho_claimed")
     return df[df["vtho_claimed"] > 0].reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_vet_staked():
     df = _fetch_daily(
         "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY",
-        "vet_staked_delta",
-        from_ts=FROM_TS_FULL
-    )
+        "vet_staked_delta", from_ts=FROM_TS_FULL)
     df["vet_staked_cumsum"] = df["vet_staked_delta"].cumsum()
     df = df.groupby("date").agg(
-        vet_staked_delta=("vet_staked_delta", "sum"),
-        vet_staked_cumsum=("vet_staked_cumsum", "last")
+        vet_staked_delta=("vet_staked_delta","sum"),
+        vet_staked_cumsum=("vet_staked_cumsum","last")
     ).reset_index()
     dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
     return df[df["date"] >= dec1].reset_index(drop=True)
@@ -287,139 +326,88 @@ def fetch_vet_staked():
 def fetch_vet_delegated():
     df = _fetch_daily(
         "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-delegated/DAY",
-        "vet_delegated_delta",
-    )
+        "vet_delegated_delta")
     df["vet_delegated_cumsum"] = df["vet_delegated_delta"].cumsum()
     df = df.groupby("date").agg(
-        vet_delegated_delta=("vet_delegated_delta", "sum"),
-        vet_delegated_cumsum=("vet_delegated_cumsum", "last")
+        vet_delegated_delta=("vet_delegated_delta","sum"),
+        vet_delegated_cumsum=("vet_delegated_cumsum","last")
     ).reset_index()
-    return df[["date", "vet_delegated_delta", "vet_delegated_cumsum"]]
+    return df[["date","vet_delegated_delta","vet_delegated_cumsum"]]
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_staked_snapshot():
-    url = "https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked"
-    r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-    r.raise_for_status()
-    data = r.json()
+    r    = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked",
+                        headers=HEADERS, timeout=TIMEOUT)
+    r.raise_for_status(); data = r.json()
     total_vet    = int(data["total"]) / 1e18
     total_nft    = data["totalNftCount"]
-    by_level     = {k: int(v) / 1e18 for k, v in data["byLevel"].items()}
+    by_level     = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
     nft_by_level = data["nftCountByLevel"]
     df_level = pd.DataFrame({
         "level":      list(by_level.keys()),
         "vet_staked": list(by_level.values()),
-        "nft_count":  [nft_by_level[k] for k in by_level.keys()]
+        "nft_count":  [nft_by_level[k] for k in by_level]
     })
-    df_level["order"] = df_level["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
-    df_level = df_level.sort_values("order").reset_index(drop=True)
-    return total_vet, total_nft, df_level
+    df_level["order"] = df_level["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
+    return total_vet, total_nft, df_level.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_delegated_snapshot():
-    url = "https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated"
-    r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-    r.raise_for_status()
-    data = r.json()
+    r    = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated",
+                        headers=HEADERS, timeout=TIMEOUT)
+    r.raise_for_status(); data = r.json()
     total_vet    = int(data["total"]) / 1e18
     total_nft    = data["totalNftCount"]
-    by_level     = {k: int(v) / 1e18 for k, v in data["byLevel"].items()}
+    by_level     = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
     nft_by_level = data["nftCountByLevel"]
     df_level = pd.DataFrame({
         "level":         list(by_level.keys()),
         "vet_delegated": list(by_level.values()),
-        "nft_count":     [nft_by_level[k] for k in by_level.keys()]
+        "nft_count":     [nft_by_level[k] for k in by_level]
     })
-    df_level["order"] = df_level["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
-    df_level = df_level.sort_values("order").reset_index(drop=True)
-    return total_vet, total_nft, df_level
+    df_level["order"] = df_level["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
+    return total_vet, total_nft, df_level.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_nft_holders_snapshot():
-    url = "https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders"
-    r = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
-    r.raise_for_status()
-    data = r.json()
-    total = data["total"]
-    df_holders = pd.DataFrame({
-        "level":   list(data["byLevel"].keys()),
-        "holders": list(data["byLevel"].values())
-    })
-    df_holders["order"] = df_holders["level"].map({l: i for i, l in enumerate(LEVEL_ORDER)})
-    df_holders = df_holders.sort_values("order").reset_index(drop=True)
-    return total, df_holders
-
-@st.cache_data(ttl=300)
-def fetch_nft_holders_daily():
-    TO_TS = int(pd.Timestamp.utcnow().timestamp())
-    session = requests.Session()
-    session.headers.update(HEADERS)
-    rows = []
-    page = 0
-    while True:
-        params = {"from": FROM_TS_FULL, "to": TO_TS, "page": page, "size": 150, "direction": "ASC"}
-        r = session.get(
-            "https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders/DAY",
-            params=params, timeout=TIMEOUT
-        )
-        r.raise_for_status()
-        data = r.json().get("data", []) or []
-        rows.extend(data)
-        if not r.json()["pagination"]["hasNext"]:
-            break
-        page += 1
-        time.sleep(SLEEP_S)
-    if not rows:
-        return pd.DataFrame(columns=["date","delta","holders_cumsum"])
-    df = pd.DataFrame(rows)
-    df["date"] = pd.to_datetime(df[["year","month","dayOfMonth"]].rename(columns={"dayOfMonth":"day"}))
-    df["date"] = df["date"].dt.date
-    df["delta"] = pd.to_numeric(df["total"])
-    df = df.sort_values("date").reset_index(drop=True)
-    df["holders_cumsum"] = df["delta"].cumsum()
-    dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
-    return df[df["date"] >= dec1][["date","delta","holders_cumsum"]].reset_index(drop=True)
+    r    = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders",
+                        headers=HEADERS, timeout=TIMEOUT)
+    r.raise_for_status(); data = r.json()
+    df_h = pd.DataFrame({"level": list(data["byLevel"].keys()),
+                          "holders": list(data["byLevel"].values())})
+    df_h["order"] = df_h["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
+    return data["total"], df_h.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_validators():
-    rows = []
-    page = 0
-    session = requests.Session()
-    session.headers.update(HEADERS)
+    rows, page = [], 0
+    session = requests.Session(); session.headers.update(HEADERS)
     while True:
-        r = session.get(
-            "https://indexer.mainnet.vechain.org/api/v1/validators",
-            params={"page": page, "size": 50, "direction": "ASC"},
-            timeout=TIMEOUT
-        )
+        r = session.get("https://indexer.mainnet.vechain.org/api/v1/validators",
+                        params={"page":page,"size":50,"direction":"ASC"}, timeout=TIMEOUT)
         r.raise_for_status()
-        data = r.json().get("data", []) or []
+        data = r.json().get("data",[]) or []
         rows.extend(data)
-        if not r.json()["pagination"]["hasNext"]:
-            break
-        page += 1
-        time.sleep(SLEEP_S)
-    df = pd.DataFrame(rows)
-    active = df[df["status"] == "ACTIVE"].copy().reset_index(drop=True)
-    accepting = active[active["delegatorVetStaked"] > 0]
+        if not r.json()["pagination"]["hasNext"]: break
+        page += 1; time.sleep(SLEEP_S)
+    df     = pd.DataFrame(rows)
+    active = df[df["status"]=="ACTIVE"].copy().reset_index(drop=True)
     apy_rows = []
-    for _, row in accepting.iterrows():
+    for _, row in active[active["delegatorVetStaked"]>0].iterrows():
         yields = row.get("nftYieldsNextCycle", {})
         if isinstance(yields, dict):
             for level, apy in yields.items():
                 apy_rows.append({"level": level, "apy": float(apy)})
     apy_df = pd.DataFrame(apy_rows)
-    apy_table_rows = []
+    tbl = []
     for level in LEVEL_ORDER:
-        subset = apy_df[apy_df["level"] == level]["apy"]
-        apy_table_rows.append({
-            "NFT Level": level,
-            "Min APY":   round(subset.min(), 1),
-            "Avg APY":   round(subset.mean(), 1),
-            "Max APY":   round(subset.max(), 1),
-        })
-    apy_table = pd.DataFrame(apy_table_rows)
-    apy_table["Est. APY Range"] = apy_table["Min APY"].map("{:.1f}%".format) + " – " + apy_table["Max APY"].map("{:.1f}%".format)
+        sub = apy_df[apy_df["level"]==level]["apy"]
+        tbl.append({"NFT Level": level,
+                    "Min APY": round(sub.min(),1),
+                    "Avg APY": round(sub.mean(),1),
+                    "Max APY": round(sub.max(),1)})
+    apy_table = pd.DataFrame(tbl)
+    apy_table["Est. APY Range"] = apy_table["Min APY"].map("{:.1f}%".format)+" – "+apy_table["Max APY"].map("{:.1f}%".format)
     apy_table["Avg APY"]        = apy_table["Avg APY"].map("{:.1f}%".format)
     return active, apy_table
 
@@ -432,7 +420,6 @@ with st.spinner("Fetching data from VeChain indexer..."):
     snap_vet, snap_nft, df_level             = fetch_total_vet_staked_snapshot()
     snap_dlg_vet, snap_dlg_nft, df_dlg_level = fetch_total_vet_delegated_snapshot()
     snap_holders, df_holders                 = fetch_nft_holders_snapshot()
-    df_holders_daily                         = fetch_nft_holders_daily()
     df_validators, df_apy_table              = fetch_validators()
 
 if df.empty:
@@ -442,78 +429,58 @@ if df.empty:
 # ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### ⚙️ Filters")
-    period   = st.selectbox("Aggregation", ["Daily", "Weekly", "Monthly"])
-    min_date = df["date"].min()
-    max_date = df["date"].max()
-    date_range = st.date_input(
-        "Date Range",
+    period = st.selectbox("Aggregation", ["Daily","Weekly","Monthly"])
+    min_date, max_date = df["date"].min(), df["date"].max()
+    date_range = st.date_input("Date Range",
         value=(max_date - timedelta(days=30), max_date),
-        min_value=min_date,
-        max_value=max_date,
-    )
+        min_value=min_date, max_value=max_date)
 
-# ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
 e = date_range[1] if len(date_range) == 2 else max_date
 
-filtered = df[(df["date"] >= s) & (df["date"] <= e)].copy()
+filtered = df[(df["date"]>=s)&(df["date"]<=e)].copy()
 if filtered.empty:
-    st.warning("No data for selected range.")
-    st.stop()
+    st.warning("No data for selected range."); st.stop()
 
-f_clm           = df_clm[(df_clm["date"] >= s) & (df_clm["date"] <= e)].copy()
-f_stk           = df_stk[(df_stk["date"] >= s) & (df_stk["date"] <= e)].copy()
-f_dlg           = df_dlg[(df_dlg["date"] >= s) & (df_dlg["date"] <= e)].copy()
-f_holders_daily = df_holders_daily[(df_holders_daily["date"] >= s) & (df_holders_daily["date"] <= e)].copy()
+f_clm = df_clm[(df_clm["date"]>=s)&(df_clm["date"]<=e)].copy()
+f_stk = df_stk[(df_stk["date"]>=s)&(df_stk["date"]<=e)].copy()
+f_dlg = df_dlg[(df_dlg["date"]>=s)&(df_dlg["date"]<=e)].copy()
 
 # ── Aggregate ─────────────────────────────────────────────
-def aggregate(df, col, how="sum"):
-    df = df.copy()
-    df["gmtTime"] = pd.to_datetime(df["date"] if "gmtTime" not in df.columns else df["gmtTime"])
+def aggregate(d, col, how="sum"):
+    d = d.copy()
+    d["gmtTime"] = pd.to_datetime(d["date"] if "gmtTime" not in d.columns else d["gmtTime"])
     if period == "Weekly":
-        r = df.set_index("gmtTime").resample("W")[col].agg(how).reset_index()
+        r = d.set_index("gmtTime").resample("W")[col].agg(how).reset_index()
     elif period == "Monthly":
-        r = df.set_index("gmtTime").resample("ME")[col].agg(how).reset_index()
+        r = d.set_index("gmtTime").resample("ME")[col].agg(how).reset_index()
     else:
-        return df[["date", col]].copy()
-    r.columns = ["date", col]
-    return r
+        return d[["date",col]].copy()
+    r.columns = ["date",col]; return r
 
 filtered["gmtTime"] = pd.to_datetime(filtered["gmtTime"])
 f_clm["gmtTime"]    = pd.to_datetime(f_clm["gmtTime"])
 f_stk["gmtTime"]    = pd.to_datetime(f_stk["date"])
 f_dlg["gmtTime"]    = pd.to_datetime(f_dlg["date"])
 
-chart_df  = aggregate(filtered, "vtho_generated", "sum")
-chart_clm = aggregate(f_clm,    "vtho_claimed",   "sum")
+chart_df  = aggregate(filtered,"vtho_generated","sum")
+chart_clm = aggregate(f_clm,"vtho_claimed","sum")
 
-if period in ["Weekly", "Monthly"]:
-    freq = "W" if period == "Weekly" else "ME"
+if period in ["Weekly","Monthly"]:
+    freq = "W" if period=="Weekly" else "ME"
     chart_stk = f_stk.set_index("gmtTime").resample(freq).agg(
-        vet_staked_delta=("vet_staked_delta", "sum"),
-        vet_staked_cumsum=("vet_staked_cumsum", "last")
-    ).reset_index().rename(columns={"gmtTime": "date"})
+        vet_staked_delta=("vet_staked_delta","sum"),
+        vet_staked_cumsum=("vet_staked_cumsum","last")
+    ).reset_index().rename(columns={"gmtTime":"date"})
     chart_dlg = f_dlg.set_index("gmtTime").resample(freq)["vet_delegated_cumsum"].last().reset_index()
-    chart_dlg.columns = ["date", "vet_delegated_cumsum"]
+    chart_dlg.columns = ["date","vet_delegated_cumsum"]
 else:
     chart_stk = f_stk[["date","vet_staked_delta","vet_staked_cumsum"]].copy()
     chart_dlg = f_dlg[["date","vet_delegated_cumsum"]].copy()
 
-f_holders_daily["gmtTime"] = pd.to_datetime(f_holders_daily["date"])
-if period in ["Weekly", "Monthly"]:
-    freq = "W" if period == "Weekly" else "ME"
-    chart_holders = f_holders_daily.set_index("gmtTime").resample(freq).agg(
-        delta=("delta", "sum"),
-        holders_cumsum=("holders_cumsum", "last")
-    ).reset_index().rename(columns={"gmtTime": "date"})
-else:
-    chart_holders = f_holders_daily[["date","delta","holders_cumsum"]].copy()
-
 # ── KPIs ──────────────────────────────────────────────────
 vtho_gen_total = filtered["vtho_generated"].sum()
 vtho_clm_total = f_clm["vtho_claimed"].sum() if not f_clm.empty else 0
-vet_dlg_latest = f_dlg["vet_delegated_cumsum"].iloc[-1] if not f_dlg.empty else 0
-deleg_pct      = (vet_dlg_latest / snap_vet * 100) if snap_vet else 0
 validator_vet  = df_validators["validatorVetStaked"].sum()
 tvl            = snap_vet + validator_vet
 
@@ -526,19 +493,19 @@ def fmt(v):
 last_updated = pd.Timestamp.utcnow().strftime("%-d %b %Y, %H:%M UTC")
 
 # ── Chart layout helper ───────────────────────────────────
-def chart_layout(title, subtitle=None, height=320):
+def chart_layout(title, subtitle=None, height=360):
     return dict(
         title=dict(
             text=title,
-            subtitle=dict(text=subtitle, font=dict(size=12, color="#7B789A")) if subtitle else None,
-            font=dict(family="Satoshi", size=14, color="#0C0A1F")
+            subtitle=dict(text=subtitle, font=dict(size=12,color="#7B789A")) if subtitle else None,
+            font=dict(family="Satoshi",size=14,color="#0C0A1F")
         ),
         paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        margin=dict(l=40, r=24, t=64, b=40),
+        margin=dict(l=40,r=24,t=64,b=40),
         hovermode="x unified", showlegend=False,
-        xaxis=dict(showgrid=False, tickfont=dict(color="#7B789A", size=11), automargin=True),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)", tickfont=dict(color="#7B789A", size=11),
-                   tickformat=".2s", automargin=True),
+        xaxis=dict(showgrid=False,tickfont=dict(color="#7B789A",size=11),automargin=True),
+        yaxis=dict(gridcolor="rgba(12,10,31,0.05)",tickfont=dict(color="#7B789A",size=11),
+                   tickformat=".2s",automargin=True),
         height=height
     )
 
@@ -601,18 +568,7 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════
 # SECTION 1 — Staking Overview  (gray)
 # ════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="vc-section" style="background:{BG_ODD};">
-  <div class="vc-section-header">
-    <div class="vc-section-title">Staking Overview</div>
-    <div class="vc-section-badge">↑ Strong Growth Trend</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-validator_vet_pie = df_validators["validatorVetStaked"].sum()
-delegated_pie     = snap_dlg_vet
-undelegated_pie   = max(snap_vet - snap_dlg_vet, 0)
+section_header("Staking Overview", "↑ Strong Growth Trend", BG_ODD)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -620,37 +576,31 @@ with col1:
     dlg_line = chart_dlg[["date","vet_delegated_cumsum"]].copy()
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(
-        x=stk_line["date"], y=stk_line["vet_staked_cumsum"],
-        name="Total VET Staked",
+        x=stk_line["date"], y=stk_line["vet_staked_cumsum"], name="Total VET Staked",
         fill="tozeroy", fillcolor="rgba(114,102,255,0.10)",
-        line=dict(color="#7266FF", width=2.5), mode="lines",
+        line=dict(color="#7266FF",width=2.5), mode="lines",
         hovertemplate="%{x}<br><b>Staked: %{y:,.0f} VET</b><extra></extra>"
     ))
     fig1.add_trace(go.Scatter(
-        x=dlg_line["date"], y=dlg_line["vet_delegated_cumsum"],
-        name="Delegated Stake",
+        x=dlg_line["date"], y=dlg_line["vet_delegated_cumsum"], name="Delegated Stake",
         fill="tozeroy", fillcolor="rgba(189,184,255,0.12)",
-        line=dict(color="#BDB8FF", width=2.5, dash="dash"), mode="lines",
+        line=dict(color="#BDB8FF",width=2.5,dash="dash"), mode="lines",
         hovertemplate="%{x}<br><b>Delegated: %{y:,.0f} VET</b><extra></extra>"
     ))
     if not stk_line.empty:
-        fig1.add_annotation(
-            x=stk_line["date"].iloc[-1], y=stk_line["vet_staked_cumsum"].iloc[-1],
+        fig1.add_annotation(x=stk_line["date"].iloc[-1], y=stk_line["vet_staked_cumsum"].iloc[-1],
             text=f"<b>{fmt(stk_line['vet_staked_cumsum'].iloc[-1])}</b>",
             showarrow=False, xanchor="left", xshift=8,
-            font=dict(size=12, color="#7266FF", family="Satoshi")
-        )
+            font=dict(size=12,color="#7266FF",family="Satoshi"))
     if not dlg_line.empty:
-        fig1.add_annotation(
-            x=dlg_line["date"].iloc[-1], y=dlg_line["vet_delegated_cumsum"].iloc[-1],
+        fig1.add_annotation(x=dlg_line["date"].iloc[-1], y=dlg_line["vet_delegated_cumsum"].iloc[-1],
             text=f"<b>{fmt(dlg_line['vet_delegated_cumsum'].iloc[-1])}</b>",
             showarrow=False, xanchor="left", xshift=8,
-            font=dict(size=12, color="#BDB8FF", family="Satoshi")
-        )
+            font=dict(size=12,color="#BDB8FF",family="Satoshi"))
     l1 = chart_layout("VET Staked vs. Delegated",
-        "Cumulative VET locked in StarGate staking and delegation", height=380)
+        "Cumulative VET locked in StarGate staking and delegation")
     l1["showlegend"] = True
-    l1["legend"] = dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)",
+    l1["legend"] = dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
                         orientation="h", yanchor="bottom", y=-0.18, xanchor="left", x=0)
     l1["margin"]["r"] = 80
     fig1.update_layout(**l1)
@@ -659,42 +609,35 @@ with col1:
 with col2:
     fig2 = go.Figure()
     fig2.add_trace(go.Pie(
-        labels=["Validator Stake", "Delegated Stake", "Undelegated Stake"],
-        values=[validator_vet_pie, delegated_pie, undelegated_pie],
-        marker=dict(colors=["#7266FF", "#BDB8FF", "#E0DEFF"]),
+        labels=["Validator Stake","Delegated Stake","Undelegated Stake"],
+        values=[validator_vet, snap_dlg_vet, max(snap_vet-snap_dlg_vet,0)],
+        marker=dict(colors=["#7266FF","#BDB8FF","#E0DEFF"]),
         hole=0.48,
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside", sort=False
+        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:10px'>Total TVL</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
-        font=dict(size=13, color="#0C0A1F", family="Satoshi")
-    )
+        font=dict(size=13,color="#0C0A1F",family="Satoshi"))
     fig2.update_layout(
         title=dict(text="Stake Composition",
                    subtitle=dict(text="Validator · Delegated · Undelegated",
-                                 font=dict(size=12, color="#7B789A")),
-                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40),
+                                 font=dict(size=12,color="#7B789A")),
+                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
+        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
         showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)",
+        legend=dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
                     orientation="h", yanchor="bottom", y=-0.08, xanchor="left", x=0),
-        height=380
-    )
+        height=360)
     st.plotly_chart(fig2, use_container_width=True)
+
+section_end(BG_ODD)
 
 # ════════════════════════════════════════════════════
 # SECTION 2 — VTHO Emission  (white)
 # ════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="vc-section" style="background:{BG_EVEN};">
-  <div class="vc-section-header">
-    <div class="vc-section-title">VTHO Emission</div>
-    <div class="vc-section-badge">Key Mechanism Change</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+section_header("VTHO Emission", "Key Mechanism Change", BG_EVEN)
 
 col3, col4 = st.columns(2)
 with col3:
@@ -702,7 +645,7 @@ with col3:
     fig3.add_trace(go.Scatter(
         x=chart_df["date"], y=chart_df["vtho_generated"],
         fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
-        line=dict(color="#7266FF", width=2.5),
+        line=dict(color="#7266FF",width=2.5),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
     ))
     fig3.update_layout(**chart_layout("VTHO Generated",
@@ -713,61 +656,49 @@ with col4:
     ann_df = filtered[["date","vtho_generated"]].copy()
     ann_df["vtho_annualised"] = ann_df["vtho_generated"] * 365
     fig4 = go.Figure()
-    fig4.add_shape(
-        type="line",
+    fig4.add_shape(type="line",
         x0=ann_df["date"].iloc[0], x1=ann_df["date"].iloc[-1],
         y0=PRE_FORK_ANNUAL, y1=PRE_FORK_ANNUAL,
-        line=dict(color="#FF4D4D", width=1.8, dash="dash")
-    )
-    fig4.add_annotation(
-        x=ann_df["date"].iloc[-1], y=PRE_FORK_ANNUAL,
+        line=dict(color="#FF4D4D",width=1.8,dash="dash"))
+    fig4.add_annotation(x=ann_df["date"].iloc[-1], y=PRE_FORK_ANNUAL,
         text=f"<b>{fmt(PRE_FORK_ANNUAL)}</b>",
         showarrow=False, xanchor="left", xshift=8,
-        font=dict(size=12, color="#FF4D4D", family="Satoshi")
-    )
+        font=dict(size=12,color="#FF4D4D",family="Satoshi"))
     fig4.add_trace(go.Scatter(
-        x=ann_df["date"], y=ann_df["vtho_annualised"],
-        name="Post-Hayabusa",
+        x=ann_df["date"], y=ann_df["vtho_annualised"], name="Post-Hayabusa",
         fill="tozeroy", fillcolor="rgba(114,102,255,0.10)",
-        line=dict(color="#BDB8FF", width=2.5),
-        mode="lines+markers", marker=dict(size=5, color="#BDB8FF"),
+        line=dict(color="#BDB8FF",width=2.5),
+        mode="lines+markers", marker=dict(size=5,color="#BDB8FF"),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO/yr</b><extra></extra>"
     ))
-    fig4.add_trace(go.Scatter(
-        x=[None], y=[None], name="Pre-Hayabusa",
-        mode="lines", line=dict(color="#FF4D4D", width=2, dash="dash")
-    ))
+    fig4.add_trace(go.Scatter(x=[None], y=[None], name="Pre-Hayabusa",
+        mode="lines", line=dict(color="#FF4D4D",width=2,dash="dash")))
     l4 = chart_layout("Annualised Emission Rate",
         f"Post-Hayabusa vs. {fmt(PRE_FORK_ANNUAL)}/yr pre-fork baseline")
     l4["showlegend"] = True
-    l4["legend"] = dict(font=dict(color="#7B789A", size=11), bgcolor="rgba(0,0,0,0)",
+    l4["legend"] = dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
                         orientation="h", yanchor="bottom", y=-0.18, xanchor="left", x=0)
     l4["margin"]["r"] = 80
     l4["yaxis"]["tickformat"] = ".2s"
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
 
+section_end(BG_EVEN)
+
 # ════════════════════════════════════════════════════
 # SECTION 3 — Staking by Level  (gray)
 # ════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="vc-section" style="background:{BG_ODD};">
-  <div class="vc-section-header">
-    <div class="vc-section-title">Staking by Level</div>
-    <div class="vc-section-badge">Live Snapshot</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+section_header("Staking by Level", "Live Snapshot", BG_ODD)
 
 col5, col6 = st.columns(2)
 with col5:
     fig5 = go.Figure()
     fig5.add_trace(go.Bar(
         x=df_level["level"], y=df_level["vet_staked"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
+        marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
         hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
     ))
-    l5 = chart_layout("VET Staked by Level", "Total VET locked per staking tier", height=380)
+    l5 = chart_layout("VET Staked by Level","Total VET locked per staking tier")
     l5["hovermode"] = "x"; l5["bargap"] = 0.25
     fig5.update_layout(**l5)
     st.plotly_chart(fig5, use_container_width=True)
@@ -778,42 +709,36 @@ with col6:
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside", sort=False
+        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
     ))
     fig6.update_layout(
         title=dict(text="NFT Minted by Level",
                    subtitle=dict(text="Share of total NFTs minted per staking tier",
-                                 font=dict(size=12, color="#7B789A")),
-                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40),
+                                 font=dict(size=12,color="#7B789A")),
+                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
+        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
         showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
+        legend=dict(font=dict(color="#7B789A",size=10), bgcolor="rgba(0,0,0,0)",
                     orientation="v", x=1.02, y=0.5),
-        height=380
-    )
+        height=360)
     st.plotly_chart(fig6, use_container_width=True)
+
+section_end(BG_ODD)
 
 # ════════════════════════════════════════════════════
 # SECTION 4 — Delegation by Level  (white)
 # ════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="vc-section" style="background:{BG_EVEN};">
-  <div class="vc-section-header">
-    <div class="vc-section-title">Delegation by Level</div>
-    <div class="vc-section-badge">Live Snapshot</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+section_header("Delegation by Level", "Live Snapshot", BG_EVEN)
 
 col7, col8 = st.columns(2)
 with col7:
     fig7 = go.Figure()
     fig7.add_trace(go.Bar(
         x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"],
-        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
+        marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
         hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
     ))
-    l7 = chart_layout("VET Delegated by Level", "Total VET delegated per staking tier", height=380)
+    l7 = chart_layout("VET Delegated by Level","Total VET delegated per staking tier")
     l7["hovermode"] = "x"; l7["bargap"] = 0.25
     fig7.update_layout(**l7)
     st.plotly_chart(fig7, use_container_width=True)
@@ -824,32 +749,26 @@ with col8:
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside", sort=False
+        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
     ))
     fig8.update_layout(
         title=dict(text="NFTs Delegating by Level",
                    subtitle=dict(text="Share of delegating NFTs per staking tier",
-                                 font=dict(size=12, color="#7B789A")),
-                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40),
+                                 font=dict(size=12,color="#7B789A")),
+                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
+        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
         showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
+        legend=dict(font=dict(color="#7B789A",size=10), bgcolor="rgba(0,0,0,0)",
                     orientation="v", x=1.02, y=0.5),
-        height=380
-    )
+        height=360)
     st.plotly_chart(fig8, use_container_width=True)
+
+section_end(BG_EVEN)
 
 # ════════════════════════════════════════════════════
 # SECTION 5 — Holders & Yield  (gray)
 # ════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="vc-section" style="background:{BG_ODD};">
-  <div class="vc-section-header">
-    <div class="vc-section-title">Holders &amp; Yield</div>
-    <div class="vc-section-badge">Live Snapshot</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+section_header("Holders &amp; Yield", "Live Snapshot", BG_ODD)
 
 col9, col10 = st.columns(2)
 with col9:
@@ -858,24 +777,22 @@ with col9:
         labels=df_holders["level"], values=df_holders["holders"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=11), textposition="outside", sort=False
+        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:10px'>Total Holders</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
-        font=dict(size=13, color="#0C0A1F", family="Satoshi")
-    )
+        font=dict(size=13,color="#0C0A1F",family="Satoshi"))
     fig9.update_layout(
         title=dict(text="Holders by Level",
                    subtitle=dict(text="Unique holders per staking tier",
-                                 font=dict(size=12, color="#7B789A")),
-                   font=dict(family="Satoshi", size=14, color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40, r=40, t=64, b=40),
+                                 font=dict(size=12,color="#7B789A")),
+                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
+        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
         showlegend=True,
-        legend=dict(font=dict(color="#7B789A", size=10), bgcolor="rgba(0,0,0,0)",
+        legend=dict(font=dict(color="#7B789A",size=10), bgcolor="rgba(0,0,0,0)",
                     orientation="v", x=1.02, y=0.5),
-        height=420
-    )
+        height=420)
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
@@ -892,16 +809,15 @@ with col10:
     </div>
     """, unsafe_allow_html=True)
     st.dataframe(
-        df_apy_table[["NFT Level", "Est. APY Range", "Avg APY"]],
-        use_container_width=True,
-        hide_index=True,
-        height=360,
+        df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
+        use_container_width=True, hide_index=True, height=360,
         column_config={
             "NFT Level":      st.column_config.TextColumn("NFT Level"),
             "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
             "Avg APY":        st.column_config.TextColumn("Avg APY"),
-        }
-    )
+        })
+
+section_end(BG_ODD)
 
 # ════════════════════════════════════════════════════
 # FOOTER
