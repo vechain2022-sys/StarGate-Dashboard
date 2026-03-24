@@ -42,7 +42,7 @@ st.markdown("""
 }
 .vc-header {
   background: var(--vc-dark);
-  padding: 72px 64px 48px;
+  padding: 88px 64px 48px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
   position: relative; overflow: hidden;
 }
