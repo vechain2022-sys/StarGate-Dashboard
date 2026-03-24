@@ -32,12 +32,32 @@ _CSS_VARS = """
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 #MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: #F1F1F4; }
-[data-testid="stMain"] { background: #F1F1F4; padding-top: 0 !important; }
-[data-testid="stMainBlockContainer"] { padding: 0 !important; max-width: 100% !important; }
-.stMainBlockContainer { padding: 0 !important; }
-section.main > div { padding-top: 0 !important; }
+[data-testid="stMain"] { background: #F1F1F4; }
+
+/* Nuclear zero-padding — targets every known Streamlit wrapper */
+.block-container,
+.main .block-container,
+[data-testid="stMainBlockContainer"],
+[data-testid="stMain"] > div,
+[data-testid="stMain"] > div > div,
+section[data-testid="stMain"] > div,
+.stMainBlockContainer,
+.appview-container .main .block-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+/* Remove gap above first element */
+[data-testid="stVerticalBlock"] > div:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+[data-testid="stVerticalBlockBorderWrapper"]:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
 </style>
 """
 
@@ -453,7 +473,7 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════
 # SECTION 1 — Staking Overview
 # ════════════════════════════════════════════════════
-section_title("Staking Overview", "&#8593; Strong Growth Trend")
+section_title("Staking Overview", "Strong Growth Trend &uarr;")
 
 col1, col2 = st.columns(2)
 with col1:
