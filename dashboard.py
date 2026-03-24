@@ -234,7 +234,7 @@ LEVEL_COLORS = [
 ]
 
 BG_ODD  = "#F1F1F4"
-BG_EVEN = "#ffffff"
+BG_EVEN = "#F1F1F4"
 
 # ── Section title helper — inline with charts, no extra block ─────────────
 def section_header(title, badge, bg):
@@ -568,7 +568,7 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════
 # SECTION 1 — Staking Overview  (gray)
 # ════════════════════════════════════════════════════
-section_header("Staking Overview", "↑ Strong Growth Trend", BG_ODD)
+section_header("Staking Overview", "↑ Strong Growth Trend")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -632,12 +632,12 @@ with col2:
         height=360)
     st.plotly_chart(fig2, use_container_width=True)
 
-section_end(BG_ODD)
+section_end()
 
 # ════════════════════════════════════════════════════
 # SECTION 2 — VTHO Emission  (white)
 # ════════════════════════════════════════════════════
-section_header("VTHO Emission", "Key Mechanism Change", BG_EVEN)
+section_header("VTHO Emission", "Key Mechanism Change")
 
 col3, col4 = st.columns(2)
 with col3:
@@ -683,12 +683,12 @@ with col4:
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
 
-section_end(BG_EVEN)
+section_end()
 
 # ════════════════════════════════════════════════════
 # SECTION 3 — Staking by Level  (gray)
 # ════════════════════════════════════════════════════
-section_header("Staking by Level", "Live Snapshot", BG_ODD)
+section_header("Staking by Level", "Live Snapshot")
 
 col5, col6 = st.columns(2)
 with col5:
@@ -723,12 +723,12 @@ with col6:
         height=360)
     st.plotly_chart(fig6, use_container_width=True)
 
-section_end(BG_ODD)
+section_end()
 
 # ════════════════════════════════════════════════════
 # SECTION 4 — Delegation by Level  (white)
 # ════════════════════════════════════════════════════
-section_header("Delegation by Level", "Live Snapshot", BG_EVEN)
+section_header("Delegation by Level", "Live Snapshot")
 
 col7, col8 = st.columns(2)
 with col7:
@@ -763,12 +763,12 @@ with col8:
         height=360)
     st.plotly_chart(fig8, use_container_width=True)
 
-section_end(BG_EVEN)
+section_end()
 
 # ════════════════════════════════════════════════════
 # SECTION 5 — Holders & Yield  (gray)
 # ════════════════════════════════════════════════════
-section_header("Holders &amp; Yield", "Live Snapshot", BG_ODD)
+section_header("Holders &amp; Yield", "Live Snapshot")
 
 col9, col10 = st.columns(2)
 with col9:
@@ -817,7 +817,7 @@ with col10:
             "Avg APY":        st.column_config.TextColumn("Avg APY"),
         })
 
-section_end(BG_ODD)
+section_end()
 
 # ════════════════════════════════════════════════════
 # FOOTER
