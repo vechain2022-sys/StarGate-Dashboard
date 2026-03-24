@@ -45,12 +45,14 @@ st.markdown("""
   text-transform: uppercase !important;
   font-family: 'Satoshi', sans-serif !important;
 }
-[data-testid="stSelectbox"] > div > div,
-[data-testid="stDateInput"] input {
-  background: rgba(255,255,255,0.06) !important;
-  border: 1px solid rgba(255,255,255,0.12) !important;
-  color: rgba(255,255,255,0.9) !important;
-  border-radius: 8px !important;
+/* Filter inputs — scoped only to first columns block after header */
+[data-testid="stSelectbox"] label,
+[data-testid="stDateInput"] label {
+  color: var(--muted) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  font-family: 'Satoshi', sans-serif !important;
 }
 .vc-header {
   background: var(--vc-dark);
@@ -461,6 +463,31 @@ with st.spinner("Fetching data from VeChain indexer..."):
 if df.empty:
     st.error("No data returned from API.")
     st.stop()
+
+st.markdown("""
+<div style="background:var(--vc-dark); padding: 24px 64px 0 64px; margin:0;">
+  <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+        color:rgba(189,184,255,0.5); font-family:'Satoshi',sans-serif;">
+    Dashboard Filters
+  </span>
+</div>
+""", unsafe_allow_html=True)
+
+fc1, fc2, _ = st.columns([1, 2, 5])
+with fc1:
+    period = st.selectbox("AGGREGATION", ["Daily", "Weekly", "Monthly"])
+with fc2:
+    date_range = st.date_input(
+        "DATE RANGE",
+        value=(max_date - timedelta(days=30), max_date),
+        min_value=min_date,
+        max_value=max_date,
+    )
+
+st.markdown("""
+<div style="background:var(--vc-dark); height:32px; margin:0;
+     border-bottom:1px solid rgba(255,255,255,0.08);"></div>
+""", unsafe_allow_html=True)
 
 # ── Helpers needed before header ─────────────────────────
 def fmt(v):
