@@ -12,215 +12,105 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── CSS ───────────────────────────────────────────────────
-st.markdown("""
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+# ── Inject fonts ──────────────────────────────────────────
+st.markdown(
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">'
+    '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">',
+    unsafe_allow_html=True
+)
+
+# ── Inject CSS (split into small blocks to avoid Streamlit stripping) ────
+_CSS_VARS = """
 <style>
 :root {
-  --vc-purple:       #7266FF;
-  --vc-dark:         #0C0A1F;
+  --vc-purple: #7266FF;
+  --vc-dark: #0C0A1F;
   --vc-light-purple: #BDB8FF;
-  --vc-cool-gray:    #F1F1F4;
-  --vc-white:        #ffffff;
-  --muted:           #7B789A;
-}
-
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 0 !important; max-width: 100% !important; }
-
-/* ── Page background ── */
-[data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
-[data-testid="stMain"] { background: var(--vc-cool-gray); }
-
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-  background: var(--vc-dark) !important;
-  border-right: 1px solid rgba(255,255,255,0.08);
-}
-[data-testid="stSidebar"] * { color: rgba(255,255,255,0.85) !important; }
-[data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stDateInput label {
-  color: rgba(189,184,255,0.6) !important;
-  font-size: 10px !important;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-[data-testid="collapsedControl"] {
-  background: var(--vc-dark) !important;
-  border-radius: 0 8px 8px 0 !important;
-  border: 1px solid rgba(114,102,255,0.3) !important;
-  border-left: none !important;
-}
-[data-testid="collapsedControl"] svg {
-  fill: var(--vc-light-purple) !important;
-  color: var(--vc-light-purple) !important;
-}
-
-/* ── Header ── */
-.vc-header {
-  background: var(--vc-dark);
-  padding: 72px 80px 48px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  position: relative; overflow: hidden;
-}
-.vc-header::before {
-  content: ''; position: absolute; top: -160px; right: -160px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(114,102,255,0.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-.vc-header::after {
-  content: ''; position: absolute; bottom: -80px; left: 200px;
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(189,184,255,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.vc-header-tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(114,102,255,0.18);
-  border: 1px solid rgba(114,102,255,0.4);
-  border-radius: 100px; padding: 6px 16px;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--vc-light-purple);
-  margin-bottom: 20px; font-family: 'Satoshi', sans-serif;
-}
-.vc-header-tag::before {
-  content: ''; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--vc-light-purple); display: inline-block;
-  animation: blink 2s ease-in-out infinite;
+  --vc-cool-gray: #F1F1F4;
+  --vc-white: #ffffff;
+  --muted: #7B789A;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-.vc-header h1 {
-  font-size: 60px; font-weight: 700; line-height: 1.05;
-  letter-spacing: -0.03em; margin-bottom: 12px;
-  background: linear-gradient(135deg, #ffffff 0%, #d0ccff 55%, var(--vc-light-purple) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text; font-family: 'Satoshi', sans-serif;
-}
-.vc-header-meta { display: flex; gap: 40px; margin-top: 36px; }
-.vc-meta-item { display: flex; flex-direction: column; gap: 4px; }
-.vc-meta-label {
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: rgba(189,184,255,0.5); font-family: 'Satoshi', sans-serif;
-}
-.vc-meta-value {
-  font-size: 14px; font-weight: 500;
-  color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif;
-}
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { padding: 0 !important; max-width: 100% !important; }
+[data-testid="stAppViewContainer"] { background: #F1F1F4; }
+[data-testid="stMain"] { background: #F1F1F4; }
+</style>
+"""
 
-/* ── KPI Row ── */
-.vc-kpi-row {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1px; background: rgba(12,10,31,0.08);
-  border-bottom: 1px solid rgba(12,10,31,0.08);
-}
-.vc-kpi-card {
-  background: var(--vc-white); padding: 40px;
-  position: relative; overflow: hidden;
-}
-.vc-kpi-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-}
-.vc-kpi-card.a1::before { background: var(--vc-purple); }
-.vc-kpi-card.a2::before { background: var(--vc-light-purple); }
-.vc-kpi-card.a3::before { background: var(--vc-light-purple); }
-.vc-kpi-card.a4::before { background: var(--vc-purple); }
-.vc-kpi-label {
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 14px; font-family: 'Satoshi', sans-serif;
-}
-.vc-kpi-value {
-  font-size: 44px; font-weight: 700; line-height: 1;
-  letter-spacing: -0.025em; margin-bottom: 10px;
-  font-family: 'Satoshi', sans-serif;
-}
-.vc-kpi-card.a1 .vc-kpi-value,
-.vc-kpi-card.a2 .vc-kpi-value,
-.vc-kpi-card.a3 .vc-kpi-value { color: var(--vc-purple); }
-.vc-kpi-card.a4 .vc-kpi-value  { color: var(--vc-dark); }
-.vc-kpi-delta {
-  font-size: 13px; font-weight: 500;
-  color: var(--vc-light-purple); font-family: 'Inter', sans-serif;
-}
-.vc-kpi-delta.up::before { content: '↑ '; }
+_CSS_SIDEBAR = """
+<style>
+[data-testid="stSidebar"] { background: #0C0A1F !important; border-right: 1px solid rgba(255,255,255,0.08); }
+[data-testid="stSidebar"] * { color: rgba(255,255,255,0.85) !important; }
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stDateInput label { color: rgba(189,184,255,0.6) !important; font-size: 10px !important; letter-spacing: 0.1em; text-transform: uppercase; }
+[data-testid="collapsedControl"] { background: #0C0A1F !important; border-radius: 0 8px 8px 0 !important; border: 1px solid rgba(114,102,255,0.3) !important; border-left: none !important; }
+[data-testid="collapsedControl"] svg { fill: #BDB8FF !important; color: #BDB8FF !important; }
+</style>
+"""
 
-/* ── Section title ── */
-.vc-section-title-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 56px 80px 0;
-}
-.vc-section-title {
-  font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
-  color: var(--vc-dark); font-family: 'Satoshi', sans-serif;
-}
-.vc-section-badge {
-  padding: 6px 14px; border-radius: 6px;
-  font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
-  text-transform: uppercase; font-family: 'Satoshi', sans-serif;
-  background: rgba(114,102,255,0.08); color: var(--vc-purple);
-  border: 1px solid rgba(114,102,255,0.2); white-space: nowrap;
-}
-
-/* ── Chart columns ── */
-[data-testid="stHorizontalBlock"] {
-  gap: 24px !important;
-  padding: 24px 80px 56px !important;
-  background: transparent !important;
-}
+_CSS_CHARTS = """
+<style>
+[data-testid="stHorizontalBlock"] { gap: 24px !important; padding: 24px 80px 56px !important; background: transparent !important; }
 [data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
-
-/* ── Plotly chart cards ── */
-[data-testid="stPlotlyChart"] {
-  background: var(--vc-white);
-  border: 1px solid rgba(12,10,31,0.08);
-  border-radius: 12px;
-  padding: 24px !important;
-  box-shadow: 0 2px 24px rgba(114,102,255,0.07);
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-}
+[data-testid="stPlotlyChart"] { background: #ffffff; border: 1px solid rgba(12,10,31,0.08); border-radius: 12px; padding: 24px !important; box-shadow: 0 2px 24px rgba(114,102,255,0.07); overflow: hidden !important; box-sizing: border-box !important; }
 [data-testid="stPlotlyChart"] > div { margin: 0 !important; overflow: hidden !important; }
 [data-testid="stPlotlyChart"] .js-plotly-plot,
 [data-testid="stPlotlyChart"] .plot-container,
 [data-testid="stPlotlyChart"] .plotly { overflow: hidden !important; max-width: 100% !important; }
 .modebar-container { right: 8px !important; top: 8px !important; }
-
-/* ── Dataframe card ── */
-[data-testid="stDataFrame"] {
-  background: var(--vc-white);
-  border: 1px solid rgba(12,10,31,0.08);
-  border-radius: 12px;
-  padding: 0 !important;
-  box-shadow: 0 2px 24px rgba(114,102,255,0.07);
-}
-
-/* ── Section divider ── */
-.vc-divider {
-  height: 1px;
-  background: rgba(12,10,31,0.08);
-  margin: 0 80px;
-}
-
-/* ── Footer ── */
-.vc-footer {
-  padding: 40px 80px; background: var(--vc-dark);
-  display: flex; align-items: center; justify-content: space-between;
-  margin-top: 56px;
-}
-.vc-footer-brand { font-size: 13px; color: rgba(189,184,255,0.6); font-family: 'Inter', sans-serif; }
-.vc-footer-brand strong { color: #fff; font-family: 'Satoshi', sans-serif; }
-.vc-live-dot {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 11px; color: var(--vc-light-purple); font-family: 'Satoshi', sans-serif;
-}
-.vc-live-dot::before {
-  content: ''; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--vc-purple); display: inline-block;
-  animation: blink 2s ease-in-out infinite;
-}
+[data-testid="stDataFrame"] { background: #ffffff; border: 1px solid rgba(12,10,31,0.08); border-radius: 12px; padding: 0 !important; box-shadow: 0 2px 24px rgba(114,102,255,0.07); }
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] { background: transparent !important; }
 </style>
-""", unsafe_allow_html=True)
+"""
+
+_CSS_COMPONENTS = """
+<style>
+.vc-header { background: #0C0A1F; padding: 72px 80px 48px; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
+.vc-header::before { content: ''; position: absolute; top: -160px; right: -160px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(114,102,255,0.18) 0%, transparent 70%); pointer-events: none; }
+.vc-header::after { content: ''; position: absolute; bottom: -80px; left: 200px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(189,184,255,0.08) 0%, transparent 70%); pointer-events: none; }
+.vc-header-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(114,102,255,0.18); border: 1px solid rgba(114,102,255,0.4); border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #BDB8FF; margin-bottom: 20px; font-family: 'Satoshi', sans-serif; }
+.vc-header-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #BDB8FF; display: inline-block; animation: blink 2s ease-in-out infinite; }
+.vc-header h1 { font-size: 60px; font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 12px; background: linear-gradient(135deg, #ffffff 0%, #d0ccff 55%, #BDB8FF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: 'Satoshi', sans-serif; }
+.vc-header-meta { display: flex; gap: 40px; margin-top: 36px; }
+.vc-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.vc-meta-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(189,184,255,0.5); font-family: 'Satoshi', sans-serif; }
+.vc-meta-value { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif; }
+</style>
+"""
+
+_CSS_KPI = """
+<style>
+.vc-kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(12,10,31,0.08); border-bottom: 1px solid rgba(12,10,31,0.08); }
+.vc-kpi-card { background: #ffffff; padding: 40px; position: relative; overflow: hidden; }
+.vc-kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.vc-kpi-card.a1::before, .vc-kpi-card.a4::before { background: #7266FF; }
+.vc-kpi-card.a2::before, .vc-kpi-card.a3::before { background: #BDB8FF; }
+.vc-kpi-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7B789A; margin-bottom: 14px; font-family: 'Satoshi', sans-serif; }
+.vc-kpi-value { font-size: 44px; font-weight: 700; line-height: 1; letter-spacing: -0.025em; margin-bottom: 10px; font-family: 'Satoshi', sans-serif; }
+.vc-kpi-card.a1 .vc-kpi-value, .vc-kpi-card.a2 .vc-kpi-value, .vc-kpi-card.a3 .vc-kpi-value { color: #7266FF; }
+.vc-kpi-card.a4 .vc-kpi-value { color: #0C0A1F; }
+.vc-kpi-delta { font-size: 13px; font-weight: 500; color: #BDB8FF; font-family: 'Inter', sans-serif; }
+.vc-kpi-delta.up::before { content: '\2191 '; }
+</style>
+"""
+
+_CSS_LAYOUT = """
+<style>
+.vc-section-title-row { display: flex; align-items: center; justify-content: space-between; padding: 56px 80px 0; }
+.vc-section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #0C0A1F; font-family: 'Satoshi', sans-serif; }
+.vc-section-badge { padding: 6px 14px; border-radius: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; font-family: 'Satoshi', sans-serif; background: rgba(114,102,255,0.08); color: #7266FF; border: 1px solid rgba(114,102,255,0.2); white-space: nowrap; }
+.vc-divider { height: 1px; background: rgba(12,10,31,0.08); margin: 0 80px; }
+.vc-footer { padding: 40px 80px; background: #0C0A1F; display: flex; align-items: center; justify-content: space-between; margin-top: 56px; }
+.vc-footer-brand { font-size: 13px; color: rgba(189,184,255,0.6); font-family: 'Inter', sans-serif; }
+.vc-footer-brand strong { color: #ffffff; font-family: 'Satoshi', sans-serif; }
+.vc-live-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #BDB8FF; font-family: 'Satoshi', sans-serif; }
+.vc-live-dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #7266FF; display: inline-block; animation: blink 2s ease-in-out infinite; }
+</style>
+"""
+
+for _css in [_CSS_VARS, _CSS_SIDEBAR, _CSS_CHARTS, _CSS_COMPONENTS, _CSS_KPI, _CSS_LAYOUT]:
+    st.markdown(_css, unsafe_allow_html=True)
 
 # ── Config ────────────────────────────────────────────────
 FROM_TS_FULL    = 1733702400
@@ -238,14 +128,15 @@ LEVEL_COLORS = [
     "#6057E8","#4E45D1","#3C34BA","#2A23A3","#18128C"
 ]
 
-# ── Native section title helper ───────────────────────────
+# ── Native section helpers ────────────────────────────────
 def section_title(title, badge):
-    st.markdown(f"""
-    <div class="vc-section-title-row">
-      <div class="vc-section-title">{title}</div>
-      <div class="vc-section-badge">{badge}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        f'<div class="vc-section-title-row">'
+        f'<div class="vc-section-title">{title}</div>'
+        f'<div class="vc-section-badge">{badge}</div>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
 
 def divider():
     st.markdown('<div class="vc-divider"></div>', unsafe_allow_html=True)
@@ -415,8 +306,7 @@ with st.spinner("Fetching data from VeChain indexer..."):
     df_validators, df_apy_table              = fetch_validators()
 
 if df.empty:
-    st.error("No data returned from API.")
-    st.stop()
+    st.error("No data returned from API."); st.stop()
 
 # ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
@@ -502,11 +392,11 @@ def chart_layout(title, subtitle=None, height=360):
     )
 
 # ════════════════════════════════════════════════════
-# HEADER  (pure HTML — no conflict)
+# HEADER
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-header">
-  <div class="vc-header-tag">Live · Post-Hayabusa Analysis</div>
+  <div class="vc-header-tag">Live &middot; Post-Hayabusa Analysis</div>
   <h1>StarGate by VeChain<br>Performance Report</h1>
   <div class="vc-header-meta">
     <div class="vc-meta-item">
@@ -515,7 +405,7 @@ st.markdown(f"""
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Key Change</span>
-      <span class="vc-meta-value">Fixed → Proportional VTHO Issuance</span>
+      <span class="vc-meta-value">Fixed &#8594; Proportional VTHO Issuance</span>
     </div>
     <div class="vc-meta-item">
       <span class="vc-meta-label">Data Source</span>
@@ -530,7 +420,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
-# KPI ROW  (pure HTML — no conflict)
+# KPI ROW
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-kpi-row">
@@ -560,7 +450,7 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════
 # SECTION 1 — Staking Overview
 # ════════════════════════════════════════════════════
-section_title("Staking Overview", "↑ Strong Growth Trend")
+section_title("Staking Overview", "&#8593; Strong Growth Trend")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -788,18 +678,15 @@ with col9:
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
-    st.markdown("""
-    <div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);border-radius:12px;
-                padding:32px;box-shadow:0 2px 24px rgba(114,102,255,0.07);">
-      <div style="font-size:15px;font-weight:700;color:#0C0A1F;
-                  font-family:'Satoshi',sans-serif;margin-bottom:6px;">
-        Est. APY Range by NFT Level
-      </div>
-      <div style="font-size:11px;color:#7B789A;font-family:'Inter',sans-serif;margin-bottom:16px;">
-        Validators accepting delegation only · Next cycle
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        '<div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);border-radius:12px;'
+        'padding:32px;box-shadow:0 2px 24px rgba(114,102,255,0.07);">'
+        '<div style="font-size:15px;font-weight:700;color:#0C0A1F;'
+        'font-family:Satoshi,sans-serif;margin-bottom:6px;">Est. APY Range by NFT Level</div>'
+        '<div style="font-size:11px;color:#7B789A;font-family:Inter,sans-serif;margin-bottom:16px;">'
+        'Validators accepting delegation only &middot; Next cycle</div></div>',
+        unsafe_allow_html=True
+    )
     st.dataframe(
         df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
         use_container_width=True, hide_index=True, height=360,
@@ -810,11 +697,12 @@ with col10:
         })
 
 # ════════════════════════════════════════════════════
-# FOOTER  (pure HTML — no conflict)
+# FOOTER
 # ════════════════════════════════════════════════════
-st.markdown(f"""
-<div class="vc-footer">
-  <div class="vc-footer-brand"><strong>VeChain StarGate</strong> — Post-Hayabusa Report</div>
-  <div class="vc-live-dot">Live Data</div>
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+    '<div class="vc-footer">'
+    '<div class="vc-footer-brand"><strong>VeChain StarGate</strong> &mdash; Post-Hayabusa Report</div>'
+    '<div class="vc-live-dot">Live Data</div>'
+    '</div>',
+    unsafe_allow_html=True
+)
