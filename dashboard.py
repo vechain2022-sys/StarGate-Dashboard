@@ -10,9 +10,8 @@ st.set_page_config(
     page_title="VeChain StarGate Dashboard",
     layout="wide",
     page_icon="🌉",
-    initial_sidebar_state="auto"
+    initial_sidebar_state="collapsed"
 )
-
 # ── CSS ───────────────────────────────────────────────────
 st.markdown("""
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
@@ -28,18 +27,7 @@ st.markdown("""
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding: 0 !important; max-width: 100% !important; }
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
-[data-testid="stSidebar"] {
-  background: var(--vc-dark) !important;
-  border-right: 1px solid rgba(255,255,255,0.08);
-}
-[data-testid="stSidebar"] * { color: rgba(255,255,255,0.85) !important; }
-[data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stDateInput label {
-  color: rgba(189,184,255,0.6) !important;
-  font-size: 10px !important;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
+[data-testid="collapsedControl"] { display: none !important; }
 .vc-header {
   background: var(--vc-dark);
   padding: 56px 64px 48px;
@@ -450,12 +438,28 @@ if df.empty:
     st.error("No data returned from API.")
     st.stop()
 
-# ── Sidebar ───────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("### ⚙️ Filters")
-    period   = st.selectbox("Aggregation", ["Daily", "Weekly", "Monthly"])
-    min_date = df["date"].min()
-    max_date = df["date"].max()
+# ── Filter Bar ────────────────────────────────────────────
+min_date = df["date"].min()
+max_date = df["date"].max()
+
+st.markdown("""
+<div style="background:#ffffff; border-bottom:1px solid rgba(12,10,31,0.08);
+     padding:16px 64px; display:flex; align-items:center; gap:48px;">
+  <span style="font-size:11px; font-weight:600; letter-spacing:0.1em;
+        text-transform:uppercase; color:#7B789A; font-family:'Satoshi',sans-serif;">
+    Filters
+  </span>
+</div>
+""", unsafe_allow_html=True)
+
+fc1, fc2, fc3 = st.columns([1, 2, 6])
+with fc1:
+    period = st.selectbox(
+        "Aggregation",
+        ["Daily", "Weekly", "Monthly"],
+        label_visibility="visible"
+    )
+with fc2:
     date_range = st.date_input(
         "Date Range",
         value=(max_date - timedelta(days=30), max_date),
@@ -463,7 +467,6 @@ with st.sidebar:
         max_value=max_date,
     )
 
-# ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
 e = date_range[1] if len(date_range) == 2 else max_date
 
