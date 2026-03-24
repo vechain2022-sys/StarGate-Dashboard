@@ -29,14 +29,10 @@ st.markdown("""
 [data-testid="stAppViewContainer"] { background: var(--vc-cool-gray); }
 [data-testid="collapsedControl"] { display: none !important; }
 
-/* Filter label styling only — no dark input overrides */
+/* Filter label styling — hidden inline, shown via HTML strip above */
 [data-testid="stSelectbox"] label,
 [data-testid="stDateInput"] label {
-  color: var(--muted) !important;
-  font-size: 10px !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  font-family: 'Satoshi', sans-serif !important;
+  display: none !important;
 }
 .vc-header {
   background: var(--vc-dark);
@@ -486,10 +482,12 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ── Filter Bar ────────────────────────────────────────────
 st.markdown("""
-<div style="background:var(--vc-dark); padding:24px 64px 0 64px;">
+<div style="background:#ffffff; border-bottom:1px solid rgba(12,10,31,0.06);
+     padding:20px 64px;">
   <span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
-        color:rgba(189,184,255,0.5); font-family:'Satoshi',sans-serif;">
+        color:#7B789A; font-family:'Satoshi',sans-serif; font-weight:600;">
     Dashboard Filters
   </span>
 </div>
@@ -497,19 +495,16 @@ st.markdown("""
 
 fc1, fc2, _ = st.columns([1, 2, 5])
 with fc1:
-    period = st.selectbox("AGGREGATION", ["Daily", "Weekly", "Monthly"])
+    period = st.selectbox("AGGREGATION", ["Daily", "Weekly", "Monthly"],
+                          label_visibility="collapsed")
 with fc2:
     date_range = st.date_input(
         "DATE RANGE",
         value=(max_date - timedelta(days=30), max_date),
         min_value=min_date,
         max_value=max_date,
+        label_visibility="collapsed",
     )
-
-st.markdown("""
-<div style="background:var(--vc-dark); height:32px; margin:0;
-     border-bottom:1px solid rgba(255,255,255,0.08);"></div>
-""", unsafe_allow_html=True)
 
 # ── Filter ────────────────────────────────────────────────
 s = date_range[0] if len(date_range) >= 1 else min_date
