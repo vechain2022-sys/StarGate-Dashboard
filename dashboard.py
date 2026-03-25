@@ -511,6 +511,13 @@ with col4:
         mode="lines",
         hovertemplate="%{x}<br><b>%{y:.2f}B VTHO/yr</b><extra></extra>"
     ))
+    if not ann_df.empty:
+        fig4.add_annotation(
+            x=ann_df["date"].iloc[-1], y=ann_df["ann_B"].iloc[-1],
+            text=f"<b>{ann_df['ann_B'].iloc[-1]:.2f}B</b>",
+            showarrow=False, xanchor="left", xshift=10,
+            font=dict(size=11, color="#BDB8FF", family="Inter")
+        )
     fig4.add_trace(go.Scatter(x=[None], y=[None], name="Pre-Hayabusa",
         mode="lines", line=dict(color="#7266FF",width=2,dash="dash")))
     l4 = base_layout("Annualised Emission Rate",f"Post-Hayabusa vs. {pre_B:.2f}B/yr pre-fork baseline")
