@@ -153,7 +153,7 @@ def legend_bottom():
                 orientation="h", yanchor="top", y=-0.28,
                 xanchor="left", x=0)
 
-def pie_layout(title, subtitle=None):
+def pie_layout(title, subtitle=None, entrywidth=40):
     """Shared layout for all pie/donut charts."""
     return dict(
         title=dict(
@@ -170,7 +170,7 @@ def pie_layout(title, subtitle=None):
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
             orientation="h", yanchor="top", y=-0.22,
             xanchor="left", x=0.0,
-            entrywidth=40,
+            entrywidth=entrywidth,
             entrywidthmode="pixels"
         )
     )
@@ -467,7 +467,7 @@ with col2:
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
         x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=15, color="#0C0A1F", family="Satoshi"))
-    l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated")
+    l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated", entrywidth=150)
     fig2.update_layout(**l2)
     fig2.update_traces(pull=[0.03, 0.03, 0.03])  # slight pull on all slices for label room
     st.plotly_chart(fig2, use_container_width=True)
@@ -585,7 +585,7 @@ with col6:
         text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
         x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
-    l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier")
+    l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier", entrywidth=40)
     fig6.update_layout(**l6)
     st.plotly_chart(fig6, use_container_width=True)
 
@@ -628,7 +628,7 @@ with col8:
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
         x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
-    l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier")
+    l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier", entrywidth=40)
     fig8.update_layout(**l8)
     st.plotly_chart(fig8, use_container_width=True)
 
@@ -654,7 +654,7 @@ with col9:
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
         x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
-    l9 = pie_layout("Holders by Level","Unique holders per staking tier")
+    l9 = pie_layout("Holders by Level","Unique holders per staking tier", entrywidth=40)
     fig9.update_layout(**l9)
     st.plotly_chart(fig9, use_container_width=True)
 
