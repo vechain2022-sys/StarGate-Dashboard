@@ -451,7 +451,7 @@ with col2:
         hole=0.48,
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.1%}", sort=False
+        texttemplate="%{percent:.2%}", sort=False
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
@@ -476,9 +476,17 @@ with col3:
         x=chart_df["date"], y=chart_df["vtho_generated"],
         fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
         line=dict(color="#7266FF",width=2.5),
-        hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
+        hovertemplate="%{x}<br><b>%{y:,.2f} VTHO</b><extra></extra>"
     ))
-    fig3.update_layout(**base_layout("VTHO Generated","Emission rising proportionally as more VET gets staked"))
+    if not chart_df.empty:
+        fig3.add_annotation(
+            x=chart_df["date"].iloc[-1], y=chart_df["vtho_generated"].iloc[-1],
+            text=f"<b>{fmt(chart_df['vtho_generated'].iloc[-1])}</b>",
+            showarrow=False, xanchor="left", xshift=10,
+            font=dict(size=11, color="#7266FF", family="Inter"))
+    l3 = base_layout("VTHO Generated","Emission rising proportionally as more VET gets staked")
+    l3["yaxis"]["rangemode"] = "nonnegative"
+    fig3.update_layout(**l3)
     st.plotly_chart(fig3, use_container_width=True)
 
 with col4:
@@ -529,10 +537,13 @@ with col5:
     fig5.add_trace(go.Bar(
         x=df_level["level"], y=df_level["vet_staked"],
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
+        hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>",
+        text=[fmt(v) for v in df_level["vet_staked"]],
+        textposition="outside", textfont=TICK_FONT
     ))
     l5 = base_layout("VET Staked by Level","Total VET locked per staking tier")
     l5["bargap"] = 0.25; l5["hovermode"] = "x"
+    l5["yaxis"]["rangemode"] = "nonnegative"
     fig5.update_layout(**l5)
     st.plotly_chart(fig5, use_container_width=True)
 
@@ -543,7 +554,7 @@ with col6:
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.1%}", sort=False
+        texttemplate="%{percent:.2%}", sort=False
     ))
     fig6.update_layout(**pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier"))
     st.plotly_chart(fig6, use_container_width=True)
@@ -561,10 +572,13 @@ with col7:
     fig7.add_trace(go.Bar(
         x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"],
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
+        hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>",
+        text=[fmt(v) for v in df_dlg_level["vet_delegated"]],
+        textposition="outside", textfont=TICK_FONT
     ))
     l7 = base_layout("VET Delegated by Level","Total VET delegated per staking tier")
     l7["bargap"] = 0.25; l7["hovermode"] = "x"
+    l7["yaxis"]["rangemode"] = "nonnegative"
     fig7.update_layout(**l7)
     st.plotly_chart(fig7, use_container_width=True)
 
@@ -575,7 +589,7 @@ with col8:
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.1%}", sort=False
+        texttemplate="%{percent:.2%}", sort=False
     ))
     fig8.update_layout(**pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier"))
     st.plotly_chart(fig8, use_container_width=True)
@@ -595,7 +609,7 @@ with col9:
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.1%}", sort=False
+        texttemplate="%{percent:.2%}", sort=False
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
