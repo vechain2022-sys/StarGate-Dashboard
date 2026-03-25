@@ -12,130 +12,79 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Inject fonts ──────────────────────────────────────────
+# ── Fonts ─────────────────────────────────────────────────
 st.markdown(
     '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet">'
     '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">',
     unsafe_allow_html=True
 )
 
-# ── Inject CSS (split into small blocks to avoid Streamlit stripping) ────
-_CSS_VARS = """
-<style>
-:root {
-  --vc-purple: #7266FF;
-  --vc-dark: #0C0A1F;
-  --vc-light-purple: #BDB8FF;
-  --vc-cool-gray: #F1F1F4;
-  --vc-white: #ffffff;
-  --muted: #7B789A;
-}
+# ── CSS blocks ────────────────────────────────────────────
+st.markdown("""<style>
+:root { --vc-purple:#7266FF; --vc-dark:#0C0A1F; --vc-light-purple:#BDB8FF; --vc-cool-gray:#F1F1F4; --vc-white:#ffffff; --muted:#7B789A; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-#MainMenu, footer, header { visibility: hidden; }
-[data-testid="stAppViewContainer"] { background: #F1F1F4; }
-[data-testid="stMain"] { background: #F1F1F4; }
+#MainMenu, footer, header { visibility:hidden; }
+.block-container, [data-testid="stMainBlockContainer"], .stMainBlockContainer,
+.main .block-container, .appview-container .main .block-container { padding:0 !important; margin:0 !important; max-width:100% !important; }
+[data-testid="stAppViewContainer"] { background:#F1F1F4; }
+[data-testid="stMain"] { background:#F1F1F4; padding-top:0 !important; }
+[data-testid="stMain"] > div, section[data-testid="stMain"] > div { padding-top:0 !important; }
+[data-testid="stVerticalBlock"] > div:first-child,
+[data-testid="stVerticalBlockBorderWrapper"]:first-child { margin-top:0 !important; padding-top:0 !important; }
+</style>""", unsafe_allow_html=True)
 
-/* Nuclear zero-padding — targets every known Streamlit wrapper */
-.block-container,
-.main .block-container,
-[data-testid="stMainBlockContainer"],
-[data-testid="stMain"] > div,
-[data-testid="stMain"] > div > div,
-section[data-testid="stMain"] > div,
-.stMainBlockContainer,
-.appview-container .main .block-container {
-  padding: 0 !important;
-  margin: 0 !important;
-  max-width: 100% !important;
-}
-
-/* Remove gap above first element */
-[data-testid="stVerticalBlock"] > div:first-child {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-[data-testid="stVerticalBlockBorderWrapper"]:first-child {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-</style>
-"""
-
-_CSS_SIDEBAR = """
-<style>
-[data-testid="stSidebar"] { background: #0C0A1F !important; border-right: 1px solid rgba(255,255,255,0.08); }
-[data-testid="stSidebar"] * { color: rgba(255,255,255,0.85) !important; }
+st.markdown("""<style>
+[data-testid="stSidebar"] { background:#0C0A1F !important; border-right:1px solid rgba(255,255,255,0.08); }
+[data-testid="stSidebar"] * { color:rgba(255,255,255,0.85) !important; }
 [data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stDateInput label { color: rgba(189,184,255,0.6) !important; font-size: 10px !important; letter-spacing: 0.1em; text-transform: uppercase; }
-[data-testid="collapsedControl"] { background: #0C0A1F !important; border-radius: 0 8px 8px 0 !important; border: 1px solid rgba(114,102,255,0.3) !important; border-left: none !important; }
-[data-testid="collapsedControl"] svg { fill: #BDB8FF !important; color: #BDB8FF !important; }
-</style>
-"""
+[data-testid="stSidebar"] .stDateInput label { color:rgba(189,184,255,0.6) !important; font-size:10px !important; letter-spacing:0.1em; text-transform:uppercase; }
+[data-testid="collapsedControl"] { background:#0C0A1F !important; border-radius:0 8px 8px 0 !important; border:1px solid rgba(114,102,255,0.3) !important; border-left:none !important; }
+[data-testid="collapsedControl"] svg { fill:#BDB8FF !important; color:#BDB8FF !important; }
+</style>""", unsafe_allow_html=True)
 
-_CSS_CHARTS = """
-<style>
-[data-testid="stHorizontalBlock"] { gap: 24px !important; padding: 24px 80px 56px !important; background: transparent !important; }
-[data-testid="stHorizontalBlock"] > div { padding: 0 !important; min-width: 0; }
-[data-testid="stPlotlyChart"] { background: #ffffff; border: 1px solid rgba(12,10,31,0.08); border-radius: 12px; padding: 24px !important; box-shadow: 0 2px 24px rgba(114,102,255,0.07); overflow: hidden !important; box-sizing: border-box !important; }
-[data-testid="stPlotlyChart"] > div { margin: 0 !important; overflow: hidden !important; }
-[data-testid="stPlotlyChart"] .js-plotly-plot,
-[data-testid="stPlotlyChart"] .plot-container,
-[data-testid="stPlotlyChart"] .plotly { overflow: hidden !important; max-width: 100% !important; }
-.modebar-container { right: 8px !important; top: 8px !important; }
-[data-testid="stDataFrame"] { background: #ffffff; border: 1px solid rgba(12,10,31,0.08); border-radius: 12px; padding: 0 !important; box-shadow: 0 2px 24px rgba(114,102,255,0.07); }
-[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] { background: transparent !important; }
-</style>
-"""
+st.markdown("""<style>
+[data-testid="stHorizontalBlock"] { gap:24px !important; padding:24px 80px 56px !important; background:transparent !important; }
+[data-testid="stHorizontalBlock"] > div { padding:0 !important; min-width:0; }
+[data-testid="stPlotlyChart"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; padding:0 !important; box-shadow:0 2px 24px rgba(114,102,255,0.07); overflow:visible !important; box-sizing:border-box !important; }
+[data-testid="stPlotlyChart"] > div { margin:0 !important; overflow:visible !important; }
+[data-testid="stDataFrame"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; box-shadow:0 2px 24px rgba(114,102,255,0.07); }
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] { background:transparent !important; }
+</style>""", unsafe_allow_html=True)
 
-_CSS_COMPONENTS = """
-<style>
-.vc-header { background: #0C0A1F; padding: 72px 80px 48px; margin-top: -6rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden; }
-.vc-header::before { content: ''; position: absolute; top: -160px; right: -160px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(114,102,255,0.18) 0%, transparent 70%); pointer-events: none; }
-.vc-header::after { content: ''; position: absolute; bottom: -80px; left: 200px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(189,184,255,0.08) 0%, transparent 70%); pointer-events: none; }
-.vc-header-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(114,102,255,0.18); border: 1px solid rgba(114,102,255,0.4); border-radius: 100px; padding: 6px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #BDB8FF; margin-bottom: 20px; font-family: 'Satoshi', sans-serif; }
-.vc-header-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #BDB8FF; display: inline-block; animation: blink 2s ease-in-out infinite; }
-.vc-header h1 { font-size: 60px; font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 12px; background: linear-gradient(135deg, #ffffff 0%, #d0ccff 55%, #BDB8FF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-family: 'Satoshi', sans-serif; }
-.vc-header-meta { display: flex; gap: 40px; margin-top: 36px; }
-.vc-meta-item { display: flex; flex-direction: column; gap: 4px; }
-.vc-meta-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(189,184,255,0.5); font-family: 'Satoshi', sans-serif; }
-.vc-meta-value { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif; }
-</style>
-"""
+st.markdown("""<style>
+.vc-header { background:#0C0A1F; padding:72px 80px 48px; margin-top:-10rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
+.vc-header::before { content:''; position:absolute; top:-160px; right:-160px; width:600px; height:600px; background:radial-gradient(circle,rgba(114,102,255,0.18) 0%,transparent 70%); pointer-events:none; }
+.vc-header::after { content:''; position:absolute; bottom:-80px; left:200px; width:400px; height:400px; background:radial-gradient(circle,rgba(189,184,255,0.08) 0%,transparent 70%); pointer-events:none; }
+.vc-header-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(114,102,255,0.18); border:1px solid rgba(114,102,255,0.4); border-radius:100px; padding:6px 16px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#BDB8FF; margin-bottom:20px; font-family:'Satoshi',sans-serif; }
+.vc-header-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:#BDB8FF; display:inline-block; animation:blink 2s ease-in-out infinite; }
+.vc-header h1 { font-size:60px; font-weight:700; line-height:1.05; letter-spacing:-0.03em; margin-bottom:12px; background:linear-gradient(135deg,#ffffff 0%,#d0ccff 55%,#BDB8FF 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-family:'Satoshi',sans-serif; }
+.vc-header-meta { display:flex; gap:40px; margin-top:36px; }
+.vc-meta-item { display:flex; flex-direction:column; gap:4px; }
+.vc-meta-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(189,184,255,0.5); font-family:'Satoshi',sans-serif; }
+.vc-meta-value { font-size:14px; font-weight:500; color:rgba(255,255,255,0.9); font-family:'Inter',sans-serif; }
+</style>""", unsafe_allow_html=True)
 
-_CSS_KPI = """
-<style>
-.vc-kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(12,10,31,0.08); border-bottom: 1px solid rgba(12,10,31,0.08); }
-.vc-kpi-card { background: #ffffff; padding: 40px; position: relative; overflow: hidden; }
-.vc-kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.vc-kpi-card.a1::before, .vc-kpi-card.a4::before { background: #7266FF; }
-.vc-kpi-card.a2::before, .vc-kpi-card.a3::before { background: #BDB8FF; }
-.vc-kpi-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #7B789A; margin-bottom: 14px; font-family: 'Satoshi', sans-serif; }
-.vc-kpi-value { font-size: 44px; font-weight: 700; line-height: 1; letter-spacing: -0.025em; margin-bottom: 10px; font-family: 'Satoshi', sans-serif; }
-.vc-kpi-card.a1 .vc-kpi-value,
-.vc-kpi-card.a2 .vc-kpi-value,
-.vc-kpi-card.a3 .vc-kpi-value,
-.vc-kpi-card.a4 .vc-kpi-value { color: #7266FF; }
-.vc-kpi-delta { font-size: 13px; font-weight: 500; color: #BDB8FF; font-family: 'Inter', sans-serif; }
-.vc-kpi-delta.up::before { content: '\2191 '; }
-</style>
-"""
+st.markdown("""<style>
+.vc-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(12,10,31,0.08); border-bottom:1px solid rgba(12,10,31,0.08); }
+.vc-kpi-card { background:#ffffff; padding:40px; position:relative; overflow:hidden; }
+.vc-kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.vc-kpi-card.a1::before, .vc-kpi-card.a4::before { background:#7266FF; }
+.vc-kpi-card.a2::before, .vc-kpi-card.a3::before { background:#BDB8FF; }
+.vc-kpi-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#7B789A; margin-bottom:14px; font-family:'Satoshi',sans-serif; }
+.vc-kpi-value { font-size:44px; font-weight:700; line-height:1; letter-spacing:-0.025em; color:#7266FF; font-family:'Satoshi',sans-serif; }
+</style>""", unsafe_allow_html=True)
 
-_CSS_LAYOUT = """
-<style>
-.vc-section-title-row { display: flex; align-items: center; justify-content: space-between; padding: 56px 80px 0; }
-.vc-section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #0C0A1F; font-family: 'Satoshi', sans-serif; }
-.vc-section-badge { padding: 6px 14px; border-radius: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; font-family: 'Satoshi', sans-serif; background: rgba(114,102,255,0.08); color: #7266FF; border: 1px solid rgba(114,102,255,0.2); white-space: nowrap; }
-.vc-divider { height: 1px; background: rgba(12,10,31,0.08); margin: 0 80px; }
-.vc-footer { padding: 40px 80px; background: #0C0A1F; display: flex; align-items: center; justify-content: space-between; margin-top: 56px; }
-.vc-footer-brand { font-size: 13px; color: rgba(189,184,255,0.6); font-family: 'Inter', sans-serif; }
-.vc-footer-brand strong { color: #ffffff; font-family: 'Satoshi', sans-serif; }
-.vc-live-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; color: #BDB8FF; font-family: 'Satoshi', sans-serif; }
-.vc-live-dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #7266FF; display: inline-block; animation: blink 2s ease-in-out infinite; }
-</style>
-"""
-
-for _css in [_CSS_VARS, _CSS_SIDEBAR, _CSS_CHARTS, _CSS_COMPONENTS, _CSS_KPI, _CSS_LAYOUT]:
-    st.markdown(_css, unsafe_allow_html=True)
+st.markdown("""<style>
+.vc-section-title-row { display:flex; align-items:center; justify-content:space-between; padding:56px 80px 0; }
+.vc-section-title { font-size:28px; font-weight:700; letter-spacing:-0.02em; color:#0C0A1F; font-family:'Satoshi',sans-serif; }
+.vc-section-badge { padding:6px 14px; border-radius:6px; font-size:10px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; font-family:'Satoshi',sans-serif; background:rgba(114,102,255,0.08); color:#7266FF; border:1px solid rgba(114,102,255,0.2); white-space:nowrap; }
+.vc-divider { height:1px; background:rgba(12,10,31,0.08); margin:0 80px; }
+.vc-footer { padding:40px 80px; background:#0C0A1F; display:flex; align-items:center; justify-content:space-between; margin-top:56px; }
+.vc-footer-brand { font-size:13px; color:rgba(189,184,255,0.6); font-family:'Inter',sans-serif; }
+.vc-footer-brand strong { color:#ffffff; font-family:'Satoshi',sans-serif; }
+.vc-live-dot { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#BDB8FF; font-family:'Satoshi',sans-serif; }
+.vc-live-dot::before { content:''; width:6px; height:6px; border-radius:50%; background:#7266FF; display:inline-block; animation:blink 2s ease-in-out infinite; }
+</style>""", unsafe_allow_html=True)
 
 # ── Config ────────────────────────────────────────────────
 FROM_TS_FULL    = 1733702400
@@ -153,26 +102,79 @@ LEVEL_COLORS = [
     "#6057E8","#4E45D1","#3C34BA","#2A23A3","#18128C"
 ]
 
-# ── Native section helpers ────────────────────────────────
+# ── Consistent chart constants ────────────────────────────
+CH        = 400          # universal chart height
+TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
+TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
+SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
+LEG_FONT  = dict(color="#7B789A", size=11, family="Inter")
+MARGINS   = dict(l=56, r=100, t=72, b=80)   # consistent on all charts
+PIE_MARGINS = dict(l=40, r=40, t=72, b=80)
+
 def section_title(title, badge):
     st.markdown(
         f'<div class="vc-section-title-row">'
         f'<div class="vc-section-title">{title}</div>'
         f'<div class="vc-section-badge">{badge}</div>'
-        f'</div>',
-        unsafe_allow_html=True
-    )
+        f'</div>', unsafe_allow_html=True)
 
 def divider():
     st.markdown('<div class="vc-divider"></div>', unsafe_allow_html=True)
+
+# ── Chart layout helpers ──────────────────────────────────
+def base_layout(title, subtitle=None):
+    """Shared layout for all cartesian charts."""
+    return dict(
+        title=dict(
+            text=title,
+            subtitle=dict(text=subtitle, font=SUB_FONT) if subtitle else None,
+            font=TITLE_FONT, pad=dict(t=0, b=0)
+        ),
+        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
+        margin=MARGINS,
+        height=CH,
+        hovermode="x unified", showlegend=False,
+        xaxis=dict(
+            showgrid=False, tickfont=TICK_FONT, automargin=True,
+            linecolor="rgba(12,10,31,0.1)", linewidth=1
+        ),
+        yaxis=dict(
+            gridcolor="rgba(12,10,31,0.05)", tickfont=TICK_FONT,
+            tickformat=".2s", automargin=True, rangemode="nonnegative",
+            linecolor="rgba(12,10,31,0.1)", exponentformat="none"
+        ),
+    )
+
+def pie_layout(title, subtitle=None):
+    """Shared layout for all pie/donut charts."""
+    return dict(
+        title=dict(
+            text=title,
+            subtitle=dict(text=subtitle, font=SUB_FONT) if subtitle else None,
+            font=TITLE_FONT
+        ),
+        paper_bgcolor="#ffffff",
+        margin=PIE_MARGINS,
+        height=CH,
+        showlegend=True,
+        legend=dict(
+            font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
+            orientation="h", yanchor="top", y=-0.06,
+            xanchor="center", x=0.5
+        )
+    )
+
+def legend_bottom():
+    return dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
+                orientation="h", yanchor="top", y=-0.12,
+                xanchor="left", x=0)
 
 # ── Fetch helpers ─────────────────────────────────────────
 def _fetch_daily(url, value_col, from_ts=None):
     if from_ts is None:
         from_ts = FROM_TS
     TO_TS   = int(pd.Timestamp.utcnow().timestamp())
-    session = requests.Session()
-    session.headers.update(HEADERS)
+    session = requests.Session(); session.headers.update(HEADERS)
     rows = []
     start_day = pd.to_datetime(from_ts, unit="s", utc=True).normalize()
     end_day   = pd.to_datetime(TO_TS,   unit="s", utc=True).normalize()
@@ -180,8 +182,7 @@ def _fetch_daily(url, value_col, from_ts=None):
         day_end     = day_start + pd.Timedelta(days=1) - pd.Timedelta(seconds=1)
         window_from = max(from_ts, int(day_start.timestamp()))
         window_to   = min(TO_TS,   int(day_end.timestamp()))
-        if window_from > window_to:
-            continue
+        if window_from > window_to: continue
         page = 0
         while True:
             params = {"from": window_from, "to": window_to,
@@ -190,10 +191,8 @@ def _fetch_daily(url, value_col, from_ts=None):
             r.raise_for_status()
             data = r.json().get("data", []) or []
             rows.extend(data)
-            if len(data) < SIZE:
-                break
-            page += 1
-            time.sleep(SLEEP_S)
+            if len(data) < SIZE: break
+            page += 1; time.sleep(SLEEP_S)
     if not rows:
         return pd.DataFrame(columns=["blockNumber","blockTimestamp","gmtTime","date",value_col])
     df = pd.DataFrame(rows)[["blockNumber","blockTimestamp","total"]].copy()
@@ -206,83 +205,53 @@ def _fetch_daily(url, value_col, from_ts=None):
 
 @st.cache_data(ttl=300)
 def fetch_vtho_generated():
-    return _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-generated/DAY",
-        "vtho_generated")
+    return _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-generated/DAY","vtho_generated")
 
 @st.cache_data(ttl=300)
 def fetch_vtho_claimed():
-    df = _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-claimed/DAY",
-        "vtho_claimed")
+    df = _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vtho-claimed/DAY","vtho_claimed")
     return df[df["vtho_claimed"] > 0].reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_vet_staked():
-    df = _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY",
-        "vet_staked_delta", from_ts=FROM_TS_FULL)
+    df = _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vet-staked/DAY","vet_staked_delta",from_ts=FROM_TS_FULL)
     df["vet_staked_cumsum"] = df["vet_staked_delta"].cumsum()
-    df = df.groupby("date").agg(
-        vet_staked_delta=("vet_staked_delta","sum"),
-        vet_staked_cumsum=("vet_staked_cumsum","last")
-    ).reset_index()
+    df = df.groupby("date").agg(vet_staked_delta=("vet_staked_delta","sum"),vet_staked_cumsum=("vet_staked_cumsum","last")).reset_index()
     dec1 = pd.to_datetime(FROM_TS, unit="s", utc=True).date()
     return df[df["date"] >= dec1].reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_vet_delegated():
-    df = _fetch_daily(
-        "https://indexer.mainnet.vechain.org/api/v1/stargate/vet-delegated/DAY",
-        "vet_delegated_delta")
+    df = _fetch_daily("https://indexer.mainnet.vechain.org/api/v1/stargate/vet-delegated/DAY","vet_delegated_delta")
     df["vet_delegated_cumsum"] = df["vet_delegated_delta"].cumsum()
-    df = df.groupby("date").agg(
-        vet_delegated_delta=("vet_delegated_delta","sum"),
-        vet_delegated_cumsum=("vet_delegated_cumsum","last")
-    ).reset_index()
+    df = df.groupby("date").agg(vet_delegated_delta=("vet_delegated_delta","sum"),vet_delegated_cumsum=("vet_delegated_cumsum","last")).reset_index()
     return df[["date","vet_delegated_delta","vet_delegated_cumsum"]]
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_staked_snapshot():
-    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked",
-                     headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-staked",headers=HEADERS,timeout=TIMEOUT)
     r.raise_for_status(); data = r.json()
-    total_vet    = int(data["total"]) / 1e18
-    total_nft    = data["totalNftCount"]
-    by_level     = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
+    by_level = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
     nft_by_level = data["nftCountByLevel"]
-    df_level = pd.DataFrame({
-        "level":      list(by_level.keys()),
-        "vet_staked": list(by_level.values()),
-        "nft_count":  [nft_by_level[k] for k in by_level]
-    })
+    df_level = pd.DataFrame({"level":list(by_level.keys()),"vet_staked":list(by_level.values()),"nft_count":[nft_by_level[k] for k in by_level]})
     df_level["order"] = df_level["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
-    return total_vet, total_nft, df_level.sort_values("order").reset_index(drop=True)
+    return int(data["total"])/1e18, data["totalNftCount"], df_level.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_total_vet_delegated_snapshot():
-    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated",
-                     headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/total-vet-delegated",headers=HEADERS,timeout=TIMEOUT)
     r.raise_for_status(); data = r.json()
-    total_vet    = int(data["total"]) / 1e18
-    total_nft    = data["totalNftCount"]
-    by_level     = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
+    by_level = {k: int(v)/1e18 for k,v in data["byLevel"].items()}
     nft_by_level = data["nftCountByLevel"]
-    df_level = pd.DataFrame({
-        "level":         list(by_level.keys()),
-        "vet_delegated": list(by_level.values()),
-        "nft_count":     [nft_by_level[k] for k in by_level]
-    })
+    df_level = pd.DataFrame({"level":list(by_level.keys()),"vet_delegated":list(by_level.values()),"nft_count":[nft_by_level[k] for k in by_level]})
     df_level["order"] = df_level["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
-    return total_vet, total_nft, df_level.sort_values("order").reset_index(drop=True)
+    return int(data["total"])/1e18, data["totalNftCount"], df_level.sort_values("order").reset_index(drop=True)
 
 @st.cache_data(ttl=300)
 def fetch_nft_holders_snapshot():
-    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders",
-                     headers=HEADERS, timeout=TIMEOUT)
+    r = requests.get("https://indexer.mainnet.vechain.org/api/v1/stargate/nft-holders",headers=HEADERS,timeout=TIMEOUT)
     r.raise_for_status(); data = r.json()
-    df_h = pd.DataFrame({"level": list(data["byLevel"].keys()),
-                          "holders": list(data["byLevel"].values())})
+    df_h = pd.DataFrame({"level":list(data["byLevel"].keys()),"holders":list(data["byLevel"].values())})
     df_h["order"] = df_h["level"].map({l:i for i,l in enumerate(LEVEL_ORDER)})
     return data["total"], df_h.sort_values("order").reset_index(drop=True)
 
@@ -291,14 +260,13 @@ def fetch_validators():
     rows, page = [], 0
     session = requests.Session(); session.headers.update(HEADERS)
     while True:
-        r = session.get("https://indexer.mainnet.vechain.org/api/v1/validators",
-                        params={"page":page,"size":50,"direction":"ASC"}, timeout=TIMEOUT)
+        r = session.get("https://indexer.mainnet.vechain.org/api/v1/validators",params={"page":page,"size":50,"direction":"ASC"},timeout=TIMEOUT)
         r.raise_for_status()
         data = r.json().get("data",[]) or []
         rows.extend(data)
         if not r.json()["pagination"]["hasNext"]: break
         page += 1; time.sleep(SLEEP_S)
-    df     = pd.DataFrame(rows)
+    df = pd.DataFrame(rows)
     active = df[df["status"]=="ACTIVE"].copy().reset_index(drop=True)
     apy_rows = []
     for _, row in active[active["delegatorVetStaked"]>0].iterrows():
@@ -310,13 +278,10 @@ def fetch_validators():
     tbl = []
     for level in LEVEL_ORDER:
         sub = apy_df[apy_df["level"]==level]["apy"]
-        tbl.append({"NFT Level": level,
-                    "Min APY": round(sub.min(),1),
-                    "Avg APY": round(sub.mean(),1),
-                    "Max APY": round(sub.max(),1)})
+        tbl.append({"NFT Level":level,"Min APY":round(sub.min(),1),"Avg APY":round(sub.mean(),1),"Max APY":round(sub.max(),1)})
     apy_table = pd.DataFrame(tbl)
     apy_table["Est. APY Range"] = apy_table["Min APY"].map("{:.1f}%".format)+" – "+apy_table["Max APY"].map("{:.1f}%".format)
-    apy_table["Avg APY"]        = apy_table["Avg APY"].map("{:.1f}%".format)
+    apy_table["Avg APY"] = apy_table["Avg APY"].map("{:.1f}%".format)
     return active, apy_table
 
 # ── Load ──────────────────────────────────────────────────
@@ -399,23 +364,6 @@ def fmt(v):
 
 last_updated = pd.Timestamp.utcnow().strftime("%-d %b %Y, %H:%M UTC")
 
-# ── Chart layout helper ───────────────────────────────────
-def chart_layout(title, subtitle=None, height=360):
-    return dict(
-        title=dict(
-            text=title,
-            subtitle=dict(text=subtitle, font=dict(size=12,color="#7B789A")) if subtitle else None,
-            font=dict(family="Satoshi",size=14,color="#0C0A1F")
-        ),
-        paper_bgcolor="#ffffff", plot_bgcolor="#ffffff",
-        margin=dict(l=40,r=24,t=64,b=40),
-        hovermode="x unified", showlegend=False,
-        xaxis=dict(showgrid=False,tickfont=dict(color="#7B789A",size=11),automargin=True),
-        yaxis=dict(gridcolor="rgba(12,10,31,0.05)",tickfont=dict(color="#7B789A",size=11),
-                   tickformat=".2s",automargin=True),
-        height=height
-    )
-
 # ════════════════════════════════════════════════════
 # HEADER
 # ════════════════════════════════════════════════════
@@ -424,22 +372,10 @@ st.markdown(f"""
   <div class="vc-header-tag">Live &middot; Post-Hayabusa Analysis</div>
   <h1>StarGate by VeChain<br>Performance Report</h1>
   <div class="vc-header-meta">
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Hard Fork</span>
-      <span class="vc-meta-value">Hayabusa</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Key Change</span>
-      <span class="vc-meta-value">Fixed &#8594; Proportional VTHO Issuance</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Data Source</span>
-      <span class="vc-meta-value">VeChain StarGate Indexer API</span>
-    </div>
-    <div class="vc-meta-item">
-      <span class="vc-meta-label">Last Updated</span>
-      <span class="vc-meta-value">{last_updated}</span>
-    </div>
+    <div class="vc-meta-item"><span class="vc-meta-label">Hard Fork</span><span class="vc-meta-value">Hayabusa</span></div>
+    <div class="vc-meta-item"><span class="vc-meta-label">Key Change</span><span class="vc-meta-value">Fixed &#8594; Proportional VTHO Issuance</span></div>
+    <div class="vc-meta-item"><span class="vc-meta-label">Data Source</span><span class="vc-meta-value">VeChain StarGate Indexer API</span></div>
+    <div class="vc-meta-item"><span class="vc-meta-label">Last Updated</span><span class="vc-meta-value">{last_updated}</span></div>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -449,22 +385,10 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-kpi-row">
-  <div class="vc-kpi-card a1">
-    <div class="vc-kpi-label">Total Value Locked</div>
-    <div class="vc-kpi-value">{fmt(tvl)}</div>
-  </div>
-  <div class="vc-kpi-card a2">
-    <div class="vc-kpi-label">Total VTHO Generated</div>
-    <div class="vc-kpi-value">{fmt(vtho_gen_total)}</div>
-  </div>
-  <div class="vc-kpi-card a3">
-    <div class="vc-kpi-label">Total NFT Minted</div>
-    <div class="vc-kpi-value">{fmt(snap_nft)}</div>
-  </div>
-  <div class="vc-kpi-card a4">
-    <div class="vc-kpi-label">Unique NFT Holders</div>
-    <div class="vc-kpi-value">{fmt(snap_holders)}</div>
-  </div>
+  <div class="vc-kpi-card a1"><div class="vc-kpi-label">Total Value Locked</div><div class="vc-kpi-value">{fmt(tvl)}</div></div>
+  <div class="vc-kpi-card a2"><div class="vc-kpi-label">Total VTHO Generated</div><div class="vc-kpi-value">{fmt(vtho_gen_total)}</div></div>
+  <div class="vc-kpi-card a3"><div class="vc-kpi-label">Total NFT Minted</div><div class="vc-kpi-value">{fmt(snap_nft)}</div></div>
+  <div class="vc-kpi-card a4"><div class="vc-kpi-label">Unique NFT Holders</div><div class="vc-kpi-value">{fmt(snap_holders)}</div></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -477,56 +401,38 @@ col1, col2 = st.columns(2)
 with col1:
     stk_line = chart_stk[["date","vet_staked_cumsum"]].copy()
     dlg_line = chart_dlg[["date","vet_delegated_cumsum"]].copy()
+    stk_line["val_B"] = stk_line["vet_staked_cumsum"] / 1e9
+    dlg_line["val_B"] = dlg_line["vet_delegated_cumsum"] / 1e9
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(
-        x=stk_line["date"], y=stk_line["vet_staked_cumsum"], name="Total VET Staked",
+        x=stk_line["date"], y=stk_line["val_B"], name="Total VET Staked",
         fill="tozeroy", fillcolor="rgba(114,102,255,0.10)",
         line=dict(color="#7266FF",width=2.5), mode="lines",
-        hovertemplate="%{x}<br><b>Staked: %{y:,.0f} VET</b><extra></extra>"
+        hovertemplate="%{x}<br><b>Staked: %{y:.2f}B VET</b><extra></extra>"
     ))
     fig1.add_trace(go.Scatter(
-        x=dlg_line["date"], y=dlg_line["vet_delegated_cumsum"], name="Delegated Stake",
+        x=dlg_line["date"], y=dlg_line["val_B"], name="Delegated Stake",
         fill="tozeroy", fillcolor="rgba(189,184,255,0.12)",
         line=dict(color="#BDB8FF",width=2.5,dash="dash"), mode="lines",
-        hovertemplate="%{x}<br><b>Delegated: %{y:,.0f} VET</b><extra></extra>"
+        hovertemplate="%{x}<br><b>Delegated: %{y:.2f}B VET</b><extra></extra>"
     ))
     if not stk_line.empty:
-        fig1.add_annotation(x=stk_line["date"].iloc[-1], y=stk_line["vet_staked_cumsum"].iloc[-1],
-            text=f"<b>{fmt(stk_line['vet_staked_cumsum'].iloc[-1])}</b>",
-            showarrow=False, xanchor="left", xshift=8,
-            font=dict(size=12,color="#7266FF",family="Satoshi"))
+        fig1.add_annotation(x=stk_line["date"].iloc[-1], y=stk_line["val_B"].iloc[-1],
+            text=f"<b>{stk_line['val_B'].iloc[-1]:.2f}B</b>",
+            showarrow=False, xanchor="left", xshift=10,
+            font=dict(size=11, color="#7266FF", family="Inter"))
     if not dlg_line.empty:
-        fig1.add_annotation(x=dlg_line["date"].iloc[-1], y=dlg_line["vet_delegated_cumsum"].iloc[-1],
-            text=f"<b>{fmt(dlg_line['vet_delegated_cumsum'].iloc[-1])}</b>",
-            showarrow=False, xanchor="left", xshift=8,
-            font=dict(size=12,color="#BDB8FF",family="Satoshi"))
-    l1 = chart_layout("VET Staked vs. Delegated",
-        "Cumulative VET locked in StarGate staking and delegation", height=400)
+        fig1.add_annotation(x=dlg_line["date"].iloc[-1], y=dlg_line["val_B"].iloc[-1],
+            text=f"<b>{dlg_line['val_B'].iloc[-1]:.2f}B</b>",
+            showarrow=False, xanchor="left", xshift=10,
+            font=dict(size=11, color="#BDB8FF", family="Inter"))
+    l1 = base_layout("VET Staked vs. Delegated","Cumulative VET locked in StarGate staking and delegation")
     l1["showlegend"] = True
-    l1["legend"] = dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
-                        orientation="h", yanchor="top", y=-0.12, xanchor="left", x=0)
-    l1["margin"] = dict(l=60, r=90, t=64, b=80)
-    l1["yaxis"]["tickformat"] = ""
-    l1["yaxis"]["ticksuffix"] = ""
-    l1["yaxis"]["tickvals"] = None
+    l1["legend"] = legend_bottom()
+    l1["yaxis"]["tickformat"] = ".2f"
+    l1["yaxis"]["ticksuffix"] = "B"
     l1["yaxis"]["exponentformat"] = "none"
-    l1["yaxis"]["tickprefix"] = ""
-    l1["yaxis"]["tickmode"] = "auto"
-    l1["yaxis"]["nticks"] = 6
-    l1["yaxis"]["tickformatstops"] = [
-        dict(dtickrange=[None, 1e9], value=".2s"),
-        dict(dtickrange=[1e9, None], value=".3s"),
-    ]
-    # Override tickformat to show B instead of G
-    l1["yaxis"]["tickformat"] = ","
-    l1["yaxis"]["tickvals"] = None
-    # Use a custom tick formatter via labels
-    fig1.update_yaxes(
-        tickformat=".2s",
-        labelalias={"1G": "1B", "2G": "2B", "3G": "3B", "4G": "4B",
-                    "5G": "5B", "6G": "6B", "7G": "7B", "8G": "8B",
-                    "9G": "9B", "10G": "10B", "0.0G": "0"}
-    )
+    l1["yaxis"]["rangemode"] = "nonnegative"
     fig1.update_layout(**l1)
     st.plotly_chart(fig1, use_container_width=True)
 
@@ -538,26 +444,13 @@ with col2:
         marker=dict(colors=["#7266FF","#BDB8FF","#E0DEFF"]),
         hole=0.48,
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi", size=12, color="#4E4B6A"),
-        textposition="outside",
-        textinfo="percent",
-        sort=False
+        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
     ))
     fig2.add_annotation(
-        text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A'>Total TVL</span>",
+        text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
         font=dict(size=15, color="#0C0A1F", family="Satoshi"))
-    fig2.update_layout(
-        title=dict(text="Stake Composition",
-                   subtitle=dict(text="Validator · Delegated · Undelegated",
-                                 font=dict(size=12,color="#7B789A")),
-                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
-        paper_bgcolor="#ffffff",
-        margin=dict(l=60, r=60, t=64, b=80),
-        showlegend=True,
-        legend=dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
-                    orientation="h", yanchor="top", y=-0.06, xanchor="center", x=0.5),
-        height=420)
+    fig2.update_layout(**pie_layout("Stake Composition","Validator · Delegated · Undelegated"))
     st.plotly_chart(fig2, use_container_width=True)
 
 divider()
@@ -576,38 +469,38 @@ with col3:
         line=dict(color="#7266FF",width=2.5),
         hovertemplate="%{x}<br><b>%{y:,.0f} VTHO</b><extra></extra>"
     ))
-    fig3.update_layout(**chart_layout("VTHO Generated",
-        "Emission rising proportionally as more VET gets staked"))
+    fig3.update_layout(**base_layout("VTHO Generated","Emission rising proportionally as more VET gets staked"))
     st.plotly_chart(fig3, use_container_width=True)
 
 with col4:
     ann_df = filtered[["date","vtho_generated"]].copy()
-    ann_df["vtho_annualised"] = ann_df["vtho_generated"] * 365
+    ann_df["ann_B"] = ann_df["vtho_generated"] * 365 / 1e9
+    pre_B = PRE_FORK_ANNUAL / 1e9
     fig4 = go.Figure()
     fig4.add_shape(type="line",
         x0=ann_df["date"].iloc[0], x1=ann_df["date"].iloc[-1],
-        y0=PRE_FORK_ANNUAL, y1=PRE_FORK_ANNUAL,
+        y0=pre_B, y1=pre_B,
         line=dict(color="#FF4D4D",width=1.8,dash="dash"))
-    fig4.add_annotation(x=ann_df["date"].iloc[-1], y=PRE_FORK_ANNUAL,
-        text=f"<b>{fmt(PRE_FORK_ANNUAL)}</b>",
-        showarrow=False, xanchor="left", xshift=8,
-        font=dict(size=12,color="#FF4D4D",family="Satoshi"))
+    fig4.add_annotation(x=ann_df["date"].iloc[-1], y=pre_B,
+        text=f"<b>{pre_B:.2f}B</b>",
+        showarrow=False, xanchor="left", xshift=10,
+        font=dict(size=11, color="#FF4D4D", family="Inter"))
     fig4.add_trace(go.Scatter(
-        x=ann_df["date"], y=ann_df["vtho_annualised"], name="Post-Hayabusa",
+        x=ann_df["date"], y=ann_df["ann_B"], name="Post-Hayabusa",
         fill="tozeroy", fillcolor="rgba(114,102,255,0.10)",
         line=dict(color="#BDB8FF",width=2.5),
-        mode="lines+markers", marker=dict(size=5,color="#BDB8FF"),
-        hovertemplate="%{x}<br><b>%{y:,.0f} VTHO/yr</b><extra></extra>"
+        mode="lines+markers", marker=dict(size=4,color="#BDB8FF"),
+        hovertemplate="%{x}<br><b>%{y:.2f}B VTHO/yr</b><extra></extra>"
     ))
     fig4.add_trace(go.Scatter(x=[None], y=[None], name="Pre-Hayabusa",
         mode="lines", line=dict(color="#FF4D4D",width=2,dash="dash")))
-    l4 = chart_layout("Annualised Emission Rate",
-        f"Post-Hayabusa vs. {fmt(PRE_FORK_ANNUAL)}/yr pre-fork baseline")
+    l4 = base_layout("Annualised Emission Rate",f"Post-Hayabusa vs. {pre_B:.2f}B/yr pre-fork baseline")
     l4["showlegend"] = True
-    l4["legend"] = dict(font=dict(color="#7B789A",size=11), bgcolor="rgba(0,0,0,0)",
-                        orientation="h", yanchor="bottom", y=-0.18, xanchor="left", x=0)
-    l4["margin"]["r"] = 80
-    l4["yaxis"]["tickformat"] = ".2s"
+    l4["legend"] = legend_bottom()
+    l4["yaxis"]["tickformat"] = ".2f"
+    l4["yaxis"]["ticksuffix"] = "B"
+    l4["yaxis"]["exponentformat"] = "none"
+    l4["yaxis"]["rangemode"] = "nonnegative"
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
 
@@ -626,8 +519,8 @@ with col5:
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
         hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
     ))
-    l5 = chart_layout("VET Staked by Level","Total VET locked per staking tier")
-    l5["hovermode"] = "x"; l5["bargap"] = 0.25
+    l5 = base_layout("VET Staked by Level","Total VET locked per staking tier")
+    l5["bargap"] = 0.25; l5["hovermode"] = "x"
     fig5.update_layout(**l5)
     st.plotly_chart(fig5, use_container_width=True)
 
@@ -637,18 +530,9 @@ with col6:
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
+        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
     ))
-    fig6.update_layout(
-        title=dict(text="NFT Minted by Level",
-                   subtitle=dict(text="Share of total NFTs minted per staking tier",
-                                 font=dict(size=12,color="#7B789A")),
-                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
-        showlegend=True,
-        legend=dict(font=dict(color="#7B789A",size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5),
-        height=360)
+    fig6.update_layout(**pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier"))
     st.plotly_chart(fig6, use_container_width=True)
 
 divider()
@@ -666,8 +550,8 @@ with col7:
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
         hovertemplate="<b>%{x}</b><br>%{y:,.0f} VET<extra></extra>"
     ))
-    l7 = chart_layout("VET Delegated by Level","Total VET delegated per staking tier")
-    l7["hovermode"] = "x"; l7["bargap"] = 0.25
+    l7 = base_layout("VET Delegated by Level","Total VET delegated per staking tier")
+    l7["bargap"] = 0.25; l7["hovermode"] = "x"
     fig7.update_layout(**l7)
     st.plotly_chart(fig7, use_container_width=True)
 
@@ -677,18 +561,9 @@ with col8:
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
+        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
     ))
-    fig8.update_layout(
-        title=dict(text="NFTs Delegating by Level",
-                   subtitle=dict(text="Share of delegating NFTs per staking tier",
-                                 font=dict(size=12,color="#7B789A")),
-                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
-        showlegend=True,
-        legend=dict(font=dict(color="#7B789A",size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5),
-        height=360)
+    fig8.update_layout(**pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier"))
     st.plotly_chart(fig8, use_container_width=True)
 
 divider()
@@ -705,37 +580,25 @@ with col9:
         labels=df_holders["level"], values=df_holders["holders"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=dict(family="Satoshi",size=11), textposition="outside", sort=False
+        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
     ))
     fig9.add_annotation(
-        text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:10px'>Total Holders</span>",
+        text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
-        font=dict(size=13,color="#0C0A1F",family="Satoshi"))
-    fig9.update_layout(
-        title=dict(text="Holders by Level",
-                   subtitle=dict(text="Unique holders per staking tier",
-                                 font=dict(size=12,color="#7B789A")),
-                   font=dict(family="Satoshi",size=14,color="#0C0A1F")),
-        paper_bgcolor="#ffffff", margin=dict(l=40,r=40,t=64,b=40),
-        showlegend=True,
-        legend=dict(font=dict(color="#7B789A",size=10), bgcolor="rgba(0,0,0,0)",
-                    orientation="v", x=1.02, y=0.5),
-        height=420)
+        font=dict(size=15, color="#0C0A1F", family="Satoshi"))
+    fig9.update_layout(**pie_layout("Holders by Level","Unique holders per staking tier"))
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
     st.markdown(
         '<div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);border-radius:12px;'
-        'padding:32px;box-shadow:0 2px 24px rgba(114,102,255,0.07);">'
-        '<div style="font-size:15px;font-weight:700;color:#0C0A1F;'
-        'font-family:Satoshi,sans-serif;margin-bottom:6px;">Est. APY Range by NFT Level</div>'
-        '<div style="font-size:11px;color:#7B789A;font-family:Inter,sans-serif;margin-bottom:16px;">'
-        'Validators accepting delegation only &middot; Next cycle</div></div>',
-        unsafe_allow_html=True
-    )
+        'padding:32px;box-shadow:0 2px 24px rgba(114,102,255,0.07);height:100%;">'
+        '<div style="font-size:14px;font-weight:700;color:#0C0A1F;font-family:Satoshi,sans-serif;margin-bottom:6px;">Est. APY Range by NFT Level</div>'
+        '<div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;margin-bottom:20px;">Validators accepting delegation only &middot; Next cycle</div>'
+        '</div>', unsafe_allow_html=True)
     st.dataframe(
         df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
-        use_container_width=True, hide_index=True, height=360,
+        use_container_width=True, hide_index=True, height=320,
         column_config={
             "NFT Level":      st.column_config.TextColumn("NFT Level"),
             "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
@@ -749,6 +612,4 @@ st.markdown(
     '<div class="vc-footer">'
     '<div class="vc-footer-brand"><strong>VeChain StarGate</strong> &mdash; Post-Hayabusa Report</div>'
     '<div class="vc-live-dot">Live Data</div>'
-    '</div>',
-    unsafe_allow_html=True
-)
+    '</div>', unsafe_allow_html=True)
