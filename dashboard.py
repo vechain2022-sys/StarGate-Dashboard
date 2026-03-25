@@ -107,13 +107,13 @@ LEVEL_COLORS = [
 ]
 
 # ── Consistent chart constants ────────────────────────────
-CH        = 500          # universal chart height
+CH        = 480          # universal chart height
 TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
 TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
 LEG_FONT  = dict(color="#7B789A", size=11, family="Inter")
-MARGINS   = dict(l=56, r=100, t=72, b=72)   # consistent on all charts
-PIE_MARGINS = dict(l=60, r=60, t=72, b=72)
+MARGINS   = dict(l=56, r=100, t=72, b=65)   # consistent on all charts
+PIE_MARGINS = dict(l=60, r=60, t=72, b=65)
 
 def section_title(title, badge):
     st.markdown(
@@ -150,7 +150,7 @@ def base_layout(title, subtitle=None):
 
 def legend_bottom():
     return dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                orientation="h", yanchor="top", y=-0.28,
+                orientation="h", yanchor="top", y=-0.2,
                 xanchor="left", x=0)
 
 def pie_layout(title, subtitle=None, entrywidth=40):
@@ -168,7 +168,7 @@ def pie_layout(title, subtitle=None, entrywidth=40):
         showlegend=True,
         legend=dict(
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-            orientation="h", yanchor="top", y=-0.12,
+            orientation="h", yanchor="top", y=-0.08,
             xanchor="left", x=0.0,
             entrywidth=entrywidth,
             entrywidthmode="pixels"
@@ -440,7 +440,7 @@ with col1:
     l1 = base_layout("VET Staked vs. Delegated","Total VET staked and delegated in StarGate")
     l1["showlegend"] = True
     l1["legend"] = dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                        orientation="h", yanchor="top", y=-0.18,
+                        orientation="h", yanchor="top", y=-0.15,
                         xanchor="left", x=0)
     l1["yaxis"]["tickformat"] = ".2f"
     l1["yaxis"]["ticksuffix"] = "B"
