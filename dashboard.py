@@ -461,7 +461,7 @@ with col2:
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False,
-        domain=dict(x=[0.05, 0.95], y=[0.10, 1.0])
+        domain=dict(x=[0.05, 0.95], y=[0.05, 1.05])
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
