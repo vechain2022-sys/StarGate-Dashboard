@@ -107,7 +107,7 @@ LEVEL_COLORS = [
 ]
 
 # ── Consistent chart constants ────────────────────────────
-CH        = 420          # universal chart height
+CH        = 450          # universal chart height
 TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
 TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
@@ -461,7 +461,7 @@ with col2:
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False,
-        domain=dict(x=[0.05, 0.95], y=[0.05, 1.0])
+        domain=dict(x=[0.05, 0.95], y=[0.1, 1.0])
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
