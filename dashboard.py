@@ -99,8 +99,8 @@ TIMEOUT         = 30
 SLEEP_S         = 0.10
 PRE_FORK_ANNUAL = 13_672_848_202.60
 
-LEVEL_ORDER = ["Dawn","Lightning","Flash","VeThorX","Thunder","Strength",
-               "ThunderX","StrengthX","Mjolnir","MjolnirX"]
+LEVEL_ORDER = ["Dawn","Lightning","Flash","Strength","Thunder","Mjolnir",
+               "VeThorX","StrengthX","ThunderX","MjolnirX"]
 LEVEL_COLORS = [
     "#BDB8FF","#A09AFF","#8E87FF","#7C75FF","#7266FF",
     "#6057E8","#4E45D1","#3C34BA","#2A23A3","#18128C"
@@ -531,7 +531,7 @@ with col4:
         )
     fig4.add_trace(go.Scatter(x=[None], y=[None], name="Pre-Hayabusa",
         mode="lines", line=dict(color="#7266FF",width=2,dash="dash")))
-    l4 = base_layout("Annualised Emission Rate",f"Post-Hayabusa vs. {pre_B:.2f}B/yr pre-fork baseline")
+    l4 = base_layout("Annualised VTHO Emission",f"Post-Hayabusa vs. {pre_B:.2f}B/yr pre-fork baseline")
     l4["showlegend"] = True
     l4["legend"] = legend_bottom()
     l4["yaxis"]["tickformat"] = ".2f"
@@ -559,7 +559,7 @@ with col5:
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
         hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>"
     ))
-    l5 = base_layout("VET Staked by Level","Total VET locked per staking tier")
+    l5 = base_layout("VET Staked by Level","Total VET locked per NFT tier")
     l5["bargap"] = 0.25; l5["hovermode"] = "x"
     l5["yaxis"]["rangemode"] = "nonnegative"
     l5["yaxis"]["tickformat"] = ".2f"
@@ -583,9 +583,9 @@ with col6:
     ))
     fig6.add_annotation(
         text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
-        x=0.5, y=0.57, showarrow=False, align="center",
+        x=0.5, y=0.55, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
-    l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier", entrywidth=40)
+    l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per NFT tier", entrywidth=40)
     fig6.update_layout(**l6)
     st.plotly_chart(fig6, use_container_width=True)
 
@@ -604,7 +604,7 @@ with col7:
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
         hovertemplate="<b>%{x}</b><br>%{y:.2f}B VET<extra></extra>"
     ))
-    l7 = base_layout("VET Delegated by Level","Total VET delegated per staking tier")
+    l7 = base_layout("VET Delegated by Level","Total VET delegated per NFT tier")
     l7["bargap"] = 0.25; l7["hovermode"] = "x"
     l7["yaxis"]["rangemode"] = "nonnegative"
     l7["yaxis"]["tickformat"] = ".2f"
@@ -626,9 +626,9 @@ with col8:
     ))
     fig8.add_annotation(
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
-        x=0.5, y=0.57, showarrow=False, align="center",
+        x=0.5, y=0.55, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
-    l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier", entrywidth=40)
+    l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per NFT tier", entrywidth=40)
     fig8.update_layout(**l8)
     st.plotly_chart(fig8, use_container_width=True)
 
@@ -637,7 +637,7 @@ divider()
 # ════════════════════════════════════════════════════
 # SECTION 5 — Holders & Yield
 # ════════════════════════════════════════════════════
-section_title("Holders &amp; Yield", "Live Snapshot")
+section_title("Holders &amp; Est. Yield", "Live Snapshot")
 
 col9, col10 = st.columns(2)
 with col9:
@@ -652,9 +652,9 @@ with col9:
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
-        x=0.5, y=0.57, showarrow=False, align="center",
+        x=0.5, y=0.55, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
-    l9 = pie_layout("Holders by Level","Unique holders per staking tier", entrywidth=40)
+    l9 = pie_layout("Holders by Level","Unique holders per NFT tier", entrywidth=40)
     fig9.update_layout(**l9)
     st.plotly_chart(fig9, use_container_width=True)
 
