@@ -660,14 +660,15 @@ with col9:
 
 with col10:
     st.markdown(
-        '<div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);border-radius:12px;'
-        'padding:32px;box-shadow:0 2px 24px rgba(114,102,255,0.07);height:100%;">'
-        '<div style="font-size:14px;font-weight:700;color:#0C0A1F;font-family:Satoshi,sans-serif;margin-bottom:6px;">Est. APY Range by NFT Level</div>'
-        '<div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;margin-bottom:20px;">Validators accepting delegation only &middot; Next cycle</div>'
-        '</div>', unsafe_allow_html=True)
+        '<div style="font-size:14px;font-weight:700;color:#0C0A1F;'
+        'font-family:Satoshi,sans-serif;margin-bottom:6px;padding-top:4px;">'
+        'Est. APY Range by NFT Level</div>'
+        '<div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;margin-bottom:16px;">'
+        'Validators accepting delegation only &middot; Next cycle</div>',
+        unsafe_allow_html=True)
     st.dataframe(
         df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
-        use_container_width=True, hide_index=True, height=320,
+        use_container_width=True, hide_index=True, height=360,
         column_config={
             "NFT Level":      st.column_config.TextColumn("NFT Level"),
             "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
