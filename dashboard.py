@@ -678,10 +678,11 @@ with col10:
         <div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;">
           Validators accepting delegation only &middot; Next cycle</div>
       </div>
-      <table style="width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;">
+      <div style="overflow-y:auto;max-height:308px;">
+        <table style="width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;">
         <thead>
-          <tr style="background:#F1F1F4;border-top:1px solid rgba(12,10,31,0.08);
-                     border-bottom:1px solid rgba(12,10,31,0.08);">
+          <tr style="background:rgba(114,102,255,0.10);border-top:1px solid rgba(12,10,31,0.08);
+                     border-bottom:1px solid rgba(12,10,31,0.08);position:sticky;top:0;z-index:1;">
             <th style="padding:10px 24px;font-weight:600;color:#7B789A;
                        letter-spacing:0.05em;text-align:left;font-size:11px;
                        text-transform:uppercase;">NFT Level</th>
@@ -703,7 +704,8 @@ with col10:
             for i, (_, row) in enumerate(df_apy_table[["NFT Level","Est. APY Range","Avg APY"]].iterrows())
           ])}
         </tbody>
-      </table>
+              </table>
+      </div>
     </div>
     """, unsafe_allow_html=True)
 
