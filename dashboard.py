@@ -112,8 +112,8 @@ TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
 TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
 LEG_FONT  = dict(color="#7B789A", size=11, family="Inter")
-MARGINS   = dict(l=56, r=100, t=60, b=68)   # consistent on all charts
-PIE_MARGINS = dict(l=60, r=60, t=60, b=68)
+MARGINS   = dict(l=56, r=100, t=58, b=72)   # consistent on all charts
+PIE_MARGINS = dict(l=60, r=60, t=58, b=72)
 
 def section_title(title, badge):
     st.markdown(
@@ -678,7 +678,7 @@ with col10:
         <div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;">
           Validators accepting delegation only &middot; Next cycle</div>
       </div>
-      <div style="overflow-y:auto;max-height:308px;">
+      <div style="overflow-y:auto;max-height:324px;">
         <table style="width:100%;border-collapse:separate;border-spacing:0;font-family:Inter,sans-serif;font-size:13px;">
         <thead>
           <tr style="background:rgba(114,102,255,0.10);border-top:1px solid rgba(12,10,31,0.08);
