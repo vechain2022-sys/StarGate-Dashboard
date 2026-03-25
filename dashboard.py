@@ -56,7 +56,7 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-.vc-header { background:#0C0A1F; padding:72px 80px 56px 48px; margin-top:-8rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
+.vc-header { background:#0C0A1F; padding:72px 80px 80px 48px; margin-top:-8rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
 .vc-header::before { content:''; position:absolute; top:-160px; right:-160px; width:600px; height:600px; background:radial-gradient(circle,rgba(114,102,255,0.18) 0%,transparent 70%); pointer-events:none; }
 .vc-header::after { content:''; position:absolute; bottom:-80px; left:200px; width:400px; height:400px; background:radial-gradient(circle,rgba(189,184,255,0.08) 0%,transparent 70%); pointer-events:none; }
 .vc-header-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(114,102,255,0.18); border:1px solid rgba(114,102,255,0.4); border-radius:100px; padding:6px 16px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#BDB8FF; margin-bottom:20px; font-family:'Satoshi',sans-serif; }
