@@ -659,49 +659,53 @@ with col9:
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
-    st.markdown("""
-    <style>
-    .apy-title {
-        background:#ffffff;
-        border:1px solid rgba(12,10,31,0.08);
-        border-bottom:none;
-        border-radius:12px 12px 0 0;
-        padding:24px 24px 16px 24px;
-        box-shadow:0 2px 24px rgba(114,102,255,0.07);
-    }
-    .apy-title h4 {
-        font-size:14px;font-weight:700;color:#0C0A1F;
-        font-family:Satoshi,sans-serif;margin:0 0 6px 0;
-    }
-    .apy-title p {
-        font-size:12px;color:#7B789A;
-        font-family:Inter,sans-serif;margin:0;
-    }
-    /* Remove default card styling from dataframe and connect to title */
-    .apy-table [data-testid="stDataFrame"] {
-        border-radius:0 0 12px 12px !important;
-        border:1px solid rgba(12,10,31,0.08) !important;
-        border-top:none !important;
-        box-shadow:0 2px 24px rgba(114,102,255,0.07) !important;
-        margin-top:0 !important;
-    }
-    </style>
-    <div class="apy-title">
-      <h4>Est. APY Range by NFT Level</h4>
-      <p>Validators accepting delegation only &middot; Next cycle</p>
+    rows_html = "".join([
+        f"""<tr>
+          <td>{row['NFT Level']}</td>
+          <td>{row['Est. APY Range']}</td>
+          <td>{row['Avg APY']}</td>
+        </tr>"""
+        for _, row in df_apy_table[["NFT Level","Est. APY Range","Avg APY"]].iterrows()
+    ])
+    st.markdown(f"""
+    <div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);
+                border-radius:12px;box-shadow:0 2px 24px rgba(114,102,255,0.07);
+                overflow:hidden;">
+      <div style="padding:24px 24px 16px 24px;">
+        <div style="font-size:14px;font-weight:700;color:#0C0A1F;
+                    font-family:Satoshi,sans-serif;margin-bottom:6px;">
+          Est. APY Range by NFT Level</div>
+        <div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;">
+          Validators accepting delegation only &middot; Next cycle</div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;">
+        <thead>
+          <tr style="background:#F1F1F4;border-top:1px solid rgba(12,10,31,0.08);
+                     border-bottom:1px solid rgba(12,10,31,0.08);">
+            <th style="padding:10px 24px;font-weight:600;color:#7B789A;
+                       letter-spacing:0.05em;text-align:left;font-size:11px;
+                       text-transform:uppercase;">NFT Level</th>
+            <th style="padding:10px 24px;font-weight:600;color:#7B789A;
+                       letter-spacing:0.05em;text-align:left;font-size:11px;
+                       text-transform:uppercase;">Est. APY Range</th>
+            <th style="padding:10px 24px;font-weight:600;color:#7B789A;
+                       letter-spacing:0.05em;text-align:left;font-size:11px;
+                       text-transform:uppercase;">Avg APY</th>
+          </tr>
+        </thead>
+        <tbody>
+          {"".join([
+            f'<tr style="border-bottom:1px solid rgba(12,10,31,0.06);background:{"#ffffff" if i%2==0 else "rgba(114,102,255,0.05)"};">'
+            f'<td style="padding:11px 24px;color:#0C0A1F;font-weight:500;">{row["NFT Level"]}</td>'
+            f'<td style="padding:11px 24px;color:#4E4B6A;">{row["Est. APY Range"]}</td>'
+            f'<td style="padding:11px 24px;color:#7266FF;font-weight:600;">{row["Avg APY"]}</td>'
+            f'</tr>'
+            for i, (_, row) in enumerate(df_apy_table[["NFT Level","Est. APY Range","Avg APY"]].iterrows())
+          ])}
+        </tbody>
+      </table>
     </div>
     """, unsafe_allow_html=True)
-    with st.container():
-        st.markdown('<div class="apy-table">', unsafe_allow_html=True)
-        st.dataframe(
-            df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
-            use_container_width=True, hide_index=True, height=360,
-            column_config={
-                "NFT Level":      st.column_config.TextColumn("NFT Level"),
-                "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
-                "Avg APY":        st.column_config.TextColumn("Avg APY"),
-            })
-        st.markdown('</div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
 # FOOTER
