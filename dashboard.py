@@ -24,13 +24,31 @@ st.markdown("""<style>
 :root { --vc-purple:#7266FF; --vc-dark:#0C0A1F; --vc-light-purple:#BDB8FF; --vc-cool-gray:#F1F1F4; --vc-white:#ffffff; --muted:#7B789A; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 #MainMenu, footer, header { visibility:hidden; }
-.block-container, [data-testid="stMainBlockContainer"], .stMainBlockContainer,
-.main .block-container, .appview-container .main .block-container { padding:0 !important; margin:0 !important; max-width:100% !important; }
-[data-testid="stAppViewContainer"] { background:#F1F1F4; }
-[data-testid="stMain"] { background:#F1F1F4; padding-top:0 !important; }
-[data-testid="stMain"] > div, section[data-testid="stMain"] > div { padding-top:0 !important; }
+.block-container,
+[data-testid="stMainBlockContainer"] {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+}
+
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+    background: #F1F1F4;
+}
+
+[data-testid="stMain"] {
+    padding-top: 0 !important;
+}
+
+[data-testid="stMain"] > div {
+    padding-top: 0 !important;
+}
+
 [data-testid="stVerticalBlock"] > div:first-child,
-[data-testid="stVerticalBlockBorderWrapper"]:first-child { margin-top:0 !important; padding-top:0 !important; }
+[data-testid="stVerticalBlockBorderWrapper"]:first-child {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
@@ -148,10 +166,16 @@ def base_layout(title, subtitle=None):
         ),
     )
 
-def legend_bottom():
-    return dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                orientation="h", yanchor="top", y=-0.08,
-                xanchor="left", x=0)
+def legend_bottom(y=-0.10):
+    return dict(
+        font=LEG_FONT,
+        bgcolor="rgba(0,0,0,0)",
+        orientation="h",
+        yanchor="top",
+        y=y,
+        xanchor="left",
+        x=0
+    )
 
 def pie_layout(title, subtitle=None, entrywidth=40):
     """Shared layout for all pie/donut charts."""
@@ -174,11 +198,6 @@ def pie_layout(title, subtitle=None, entrywidth=40):
             entrywidthmode="pixels"
         )
     )
-
-def legend_bottom():
-    return dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                orientation="h", yanchor="top", y=-0.1,
-                xanchor="left", x=0)
 
 # ── Fetch helpers ─────────────────────────────────────────
 def _fetch_daily(url, value_col, from_ts=None):
@@ -445,8 +464,13 @@ with col1:
     l1["yaxis"]["tickformat"] = ".2f"
     l1["yaxis"]["ticksuffix"] = "B"
     l1["yaxis"]["exponentformat"] = "none"
-    l1["yaxis"]["rangemode"] = "normal"   # allow axis to start near data, not zero
-    l1["yaxis"]["autorange"] = True
+    ymin = min(stk_line["val_B"].min(), dlg_line["val_B"].min()) if not stk_line.empty and not dlg_line.empty else 0
+    ymax = max(stk_line["val_B"].max(), dlg_line["val_B"].max()) if not stk_line.empty and not dlg_line.empty else 1
+    pad = max((ymax - ymin) * 0.08, 0.02)
+    
+    l1["yaxis"]["rangemode"] = None
+    l1["yaxis"]["autorange"] = False
+    l1["yaxis"]["range"] = [max(0, ymin - pad), ymax + pad]
     l1["margin"] = dict(l=56, r=100, t=72, b=100)  # extra bottom for legend
     fig1.update_layout(**l1)
     st.plotly_chart(fig1, use_container_width=True)
@@ -555,18 +579,18 @@ col5, col6 = st.columns(2)
 with col5:
     fig5 = go.Figure()
     fig5.add_trace(go.Bar(
-        x=df_level["level"], y=df_level["vet_staked"],
-        marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>"
+        x=df_level["level"],
+        y=df_level["vet_staked"] / 1e9,
+        marker=dict(color=LEVEL_COLORS, line=dict(width=0)),
+        hovertemplate="<b>%{x}</b><br>%{y:.2f}B VET<extra></extra>"
     ))
-    l5 = base_layout("VET Staked by Level","Total VET locked per NFT tier")
-    l5["bargap"] = 0.25; l5["hovermode"] = "x"
+    l5 = base_layout("VET Staked by Level", "Total VET locked per NFT tier")
+    l5["bargap"] = 0.25
+    l5["hovermode"] = "x"
     l5["yaxis"]["rangemode"] = "nonnegative"
     l5["yaxis"]["tickformat"] = ".2f"
     l5["yaxis"]["ticksuffix"] = "B"
     l5["yaxis"]["exponentformat"] = "none"
-    # convert to billions for clean labels
-    fig5.update_traces(y=df_level["vet_staked"] / 1e9)
     fig5.update_layout(**l5)
     st.plotly_chart(fig5, use_container_width=True)
 
@@ -577,8 +601,8 @@ with col6:
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False,
+        textinfo="none",
+        sort=False,
         domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
     ))
     fig6.add_annotation(
@@ -620,8 +644,8 @@ with col8:
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False,
+        textinfo="none",
+        sort=False,
         domain=dict(x=[0.1, 0.9], y=[0.15, 1])
     ))
     fig8.add_annotation(
@@ -646,8 +670,8 @@ with col9:
         labels=df_holders["level"], values=df_holders["holders"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False,
+        textinfo="none",
+        sort=False,
         domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
     ))
     fig9.add_annotation(
@@ -659,14 +683,6 @@ with col9:
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
-    rows_html = "".join([
-        f"""<tr>
-          <td>{row['NFT Level']}</td>
-          <td>{row['Est. APY Range']}</td>
-          <td>{row['Avg APY']}</td>
-        </tr>"""
-        for _, row in df_apy_table[["NFT Level","Est. APY Range","Avg APY"]].iterrows()
-    ])
     st.markdown(f"""
     <div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);
                 border-radius:12px;box-shadow:0 2px 24px rgba(114,102,255,0.07);
