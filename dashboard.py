@@ -43,7 +43,7 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-[data-testid="stHorizontalBlock"] { gap:24px !important; padding:24px 80px 56px !important; background:transparent !important; }
+[data-testid="stHorizontalBlock"] { gap:24px !important; padding:24px 100px 56px !important; background:transparent !important; }
 [data-testid="stHorizontalBlock"] > div { padding:0 !important; min-width:0; }
 [data-testid="stPlotlyChart"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; padding:0 !important; box-shadow:0 2px 24px rgba(114,102,255,0.07); overflow:visible !important; box-sizing:border-box !important; }
 [data-testid="stPlotlyChart"] > div { margin:0 !important; overflow:visible !important; }
@@ -75,10 +75,10 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-.vc-section-title-row { display:flex; align-items:center; justify-content:space-between; padding:56px 80px 0; }
+.vc-section-title-row { display:flex; align-items:center; justify-content:space-between; padding:56px 100px 0; }
 .vc-section-title { font-size:28px; font-weight:700; letter-spacing:-0.02em; color:#0C0A1F; font-family:'Satoshi',sans-serif; }
 .vc-section-badge { padding:6px 14px; border-radius:6px; font-size:10px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; font-family:'Satoshi',sans-serif; background:rgba(114,102,255,0.08); color:#7266FF; border:1px solid rgba(114,102,255,0.2); white-space:nowrap; }
-.vc-divider { height:1px; background:rgba(12,10,31,0.08); margin:0 80px; }
+.vc-divider { height:1px; background:rgba(12,10,31,0.08); margin:0 100px; }
 .vc-footer { padding:40px 80px; background:#0C0A1F; display:flex; align-items:center; justify-content:space-between; margin-top:56px; }
 .vc-footer-brand { font-size:13px; color:rgba(189,184,255,0.6); font-family:'Inter',sans-serif; }
 .vc-footer-brand strong { color:#ffffff; font-family:'Satoshi',sans-serif; }
@@ -109,7 +109,7 @@ TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
 LEG_FONT  = dict(color="#7B789A", size=11, family="Inter")
 MARGINS   = dict(l=56, r=100, t=72, b=80)   # consistent on all charts
-PIE_MARGINS = dict(l=40, r=40, t=72, b=80)
+PIE_MARGINS = dict(l=60, r=60, t=72, b=80)
 
 def section_title(title, badge):
     st.markdown(
@@ -432,7 +432,9 @@ with col1:
     l1["yaxis"]["tickformat"] = ".2f"
     l1["yaxis"]["ticksuffix"] = "B"
     l1["yaxis"]["exponentformat"] = "none"
-    l1["yaxis"]["rangemode"] = "nonnegative"
+    l1["yaxis"]["rangemode"] = "normal"   # allow axis to start near data, not zero
+    l1["yaxis"]["autorange"] = True
+    l1["margin"] = dict(l=56, r=100, t=72, b=100)  # extra bottom for legend
     fig1.update_layout(**l1)
     st.plotly_chart(fig1, use_container_width=True)
 
@@ -444,13 +446,16 @@ with col2:
         marker=dict(colors=["#7266FF","#BDB8FF","#E0DEFF"]),
         hole=0.48,
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
+        textfont=TICK_FONT, textposition="outside",
+        texttemplate="%{percent:.1%}", sort=False
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
         font=dict(size=15, color="#0C0A1F", family="Satoshi"))
-    fig2.update_layout(**pie_layout("Stake Composition","Validator · Delegated · Undelegated"))
+    l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated")
+    fig2.update_layout(**l2)
+    fig2.update_traces(pull=[0.03, 0.03, 0.03])  # slight pull on all slices for label room
     st.plotly_chart(fig2, use_container_width=True)
 
 divider()
@@ -500,7 +505,10 @@ with col4:
     l4["yaxis"]["tickformat"] = ".2f"
     l4["yaxis"]["ticksuffix"] = "B"
     l4["yaxis"]["exponentformat"] = "none"
-    l4["yaxis"]["rangemode"] = "nonnegative"
+    l4["yaxis"]["rangemode"] = "normal"
+    ann_y_min = max(0, ann_df["ann_B"].min() * 0.95)
+    ann_y_max = max(ann_df["ann_B"].max(), pre_B) * 1.10
+    l4["yaxis"]["range"] = [ann_y_min, ann_y_max]
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
 
@@ -530,7 +538,8 @@ with col6:
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
+        textfont=TICK_FONT, textposition="outside",
+        texttemplate="%{percent:.1%}", sort=False
     ))
     fig6.update_layout(**pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier"))
     st.plotly_chart(fig6, use_container_width=True)
@@ -561,7 +570,8 @@ with col8:
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
+        textfont=TICK_FONT, textposition="outside",
+        texttemplate="%{percent:.1%}", sort=False
     ))
     fig8.update_layout(**pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier"))
     st.plotly_chart(fig8, use_container_width=True)
@@ -580,7 +590,8 @@ with col9:
         labels=df_holders["level"], values=df_holders["holders"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside", textinfo="percent", sort=False
+        textfont=TICK_FONT, textposition="outside",
+        texttemplate="%{percent:.1%}", sort=False
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
