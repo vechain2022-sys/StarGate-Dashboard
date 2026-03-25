@@ -56,7 +56,7 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-.vc-header { background:#0C0A1F; padding:72px 80px 80px 48px; margin-top:-8rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
+.vc-header { background:#0C0A1F; padding:72px 80px 48px 48px; margin-top:-8rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
 .vc-header::before { content:''; position:absolute; top:-160px; right:-160px; width:600px; height:600px; background:radial-gradient(circle,rgba(114,102,255,0.18) 0%,transparent 70%); pointer-events:none; }
 .vc-header::after { content:''; position:absolute; bottom:-80px; left:200px; width:400px; height:400px; background:radial-gradient(circle,rgba(189,184,255,0.08) 0%,transparent 70%); pointer-events:none; }
 .vc-header-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(114,102,255,0.18); border:1px solid rgba(114,102,255,0.4); border-radius:100px; padding:6px 16px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#BDB8FF; margin-bottom:20px; font-family:'Satoshi',sans-serif; }
@@ -384,8 +384,8 @@ st.markdown(f"""
   <h1>StarGate by VeChain<br>Performance Report</h1>
   <div class="vc-header-meta">
     <div class="vc-meta-item"><span class="vc-meta-label">Hard Fork</span><span class="vc-meta-value">Hayabusa</span></div>
-    <div class="vc-meta-item"><span class="vc-meta-label">Key Change</span><span class="vc-meta-value">Fixed &#8594; Proportional VTHO Issuance</span></div>
-    <div class="vc-meta-item"><span class="vc-meta-label">Data Source</span><span class="vc-meta-value">VeChain StarGate Indexer API</span></div>
+    <div class="vc-meta-item"><span class="vc-meta-label">Key Change</span><span class="vc-meta-value">Uncapped &#8594; Self-regulating</span></div>
+    <div class="vc-meta-item"><span class="vc-meta-label">Data Source</span><span class="vc-meta-value">VeChain StarGate</span></div>
     <div class="vc-meta-item"><span class="vc-meta-label">Last Updated</span><span class="vc-meta-value">{last_updated}</span></div>
   </div>
 </div>
@@ -396,7 +396,7 @@ st.markdown(f"""
 # ════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="vc-kpi-row">
-  <div class="vc-kpi-card a1"><div class="vc-kpi-label">Total Value Locked</div><div class="vc-kpi-value">{fmt(tvl)}</div></div>
+  <div class="vc-kpi-card a1"><div class="vc-kpi-label">Total Value Locked (VET)</div><div class="vc-kpi-value">{fmt(tvl)}</div></div>
   <div class="vc-kpi-card a2"><div class="vc-kpi-label">Total VTHO Generated</div><div class="vc-kpi-value">{fmt(vtho_gen_total)}</div></div>
   <div class="vc-kpi-card a3"><div class="vc-kpi-label">Total NFT Minted</div><div class="vc-kpi-value">{fmt(snap_nft)}</div></div>
   <div class="vc-kpi-card a4"><div class="vc-kpi-label">Unique NFT Holders</div><div class="vc-kpi-value">{fmt(snap_holders)}</div></div>
@@ -437,10 +437,10 @@ with col1:
             text=f"<b>{dlg_line['val_B'].iloc[-1]:.2f}B</b>",
             showarrow=False, xanchor="left", xshift=10,
             font=dict(size=11, color="#BDB8FF", family="Inter"))
-    l1 = base_layout("VET Staked vs. Delegated","Cumulative VET locked in StarGate staking and delegation")
+    l1 = base_layout("VET Staked vs. Delegated","Total VET staked and delegated in StarGate")
     l1["showlegend"] = True
     l1["legend"] = dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                        orientation="h", yanchor="top", y=-0.38,
+                        orientation="h", yanchor="top", y=-0.18,
                         xanchor="left", x=0)
     l1["yaxis"]["tickformat"] = ".2f"
     l1["yaxis"]["ticksuffix"] = "B"
@@ -465,9 +465,9 @@ with col2:
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
-        x=0.5, y=0.57, showarrow=False, align="center",
+        x=0.5, y=0.55, showarrow=False, align="center",
         font=dict(size=15, color="#0C0A1F", family="Satoshi"))
-    l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated", entrywidth=150)
+    l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated", entrywidth=100)
     fig2.update_layout(**l2)
     fig2.update_traces(pull=[0.03, 0.03, 0.03])  # slight pull on all slices for label room
     st.plotly_chart(fig2, use_container_width=True)
