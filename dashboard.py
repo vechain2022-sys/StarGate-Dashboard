@@ -458,7 +458,7 @@ with col2:
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
-        x=0.5, y=0.5, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=15, color="#0C0A1F", family="Satoshi"))
     l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated")
     fig2.update_layout(**l2)
@@ -576,7 +576,7 @@ with col6:
     ))
     fig6.add_annotation(
         text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
-        x=0.5, y=0.5, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier")
     fig6.update_layout(**l6)
@@ -619,7 +619,7 @@ with col8:
     ))
     fig8.add_annotation(
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
-        x=0.5, y=0.5, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier")
     fig8.update_layout(**l8)
@@ -645,7 +645,7 @@ with col9:
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
-        x=0.5, y=0.5, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l9 = pie_layout("Holders by Level","Unique holders per staking tier")
     fig9.update_layout(**l9)
