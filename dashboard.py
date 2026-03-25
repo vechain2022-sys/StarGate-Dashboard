@@ -107,13 +107,13 @@ LEVEL_COLORS = [
 ]
 
 # ── Consistent chart constants ────────────────────────────
-CH        = 400          # universal chart height
+CH        = 420          # universal chart height
 TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
 TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
 LEG_FONT  = dict(color="#7B789A", size=11, family="Inter")
-MARGINS   = dict(l=56, r=100, t=65, b=65)   # consistent on all charts
-PIE_MARGINS = dict(l=60, r=60, t=65, b=65)
+MARGINS   = dict(l=56, r=100, t=60, b=68)   # consistent on all charts
+PIE_MARGINS = dict(l=60, r=60, t=60, b=68)
 
 def section_title(title, badge):
     st.markdown(
@@ -150,7 +150,7 @@ def base_layout(title, subtitle=None):
 
 def legend_bottom():
     return dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                orientation="h", yanchor="top", y=-0.1,
+                orientation="h", yanchor="top", y=-0.08,
                 xanchor="left", x=0)
 
 def pie_layout(title, subtitle=None, entrywidth=40):
@@ -168,7 +168,7 @@ def pie_layout(title, subtitle=None, entrywidth=40):
         showlegend=True,
         legend=dict(
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-            orientation="h", yanchor="top", y=-0.02,
+            orientation="h", yanchor="top", y=0,
             xanchor="left", x=0.0,
             entrywidth=entrywidth,
             entrywidthmode="pixels"
