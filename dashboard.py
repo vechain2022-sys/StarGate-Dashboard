@@ -56,7 +56,7 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-.vc-header { background:#0C0A1F; padding:72px 80px 48px; margin-top:-10rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
+.vc-header { background:#0C0A1F; padding:72px 80px 48px 48px; margin-top:-10rem; border-bottom:1px solid rgba(255,255,255,0.08); position:relative; overflow:hidden; }
 .vc-header::before { content:''; position:absolute; top:-160px; right:-160px; width:600px; height:600px; background:radial-gradient(circle,rgba(114,102,255,0.18) 0%,transparent 70%); pointer-events:none; }
 .vc-header::after { content:''; position:absolute; bottom:-80px; left:200px; width:400px; height:400px; background:radial-gradient(circle,rgba(189,184,255,0.08) 0%,transparent 70%); pointer-events:none; }
 .vc-header-tag { display:inline-flex; align-items:center; gap:8px; background:rgba(114,102,255,0.18); border:1px solid rgba(114,102,255,0.4); border-radius:100px; padding:6px 16px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#BDB8FF; margin-bottom:20px; font-family:'Satoshi',sans-serif; }
@@ -83,7 +83,7 @@ st.markdown("""<style>
 .vc-section-title { font-size:28px; font-weight:700; letter-spacing:-0.02em; color:#0C0A1F; font-family:'Satoshi',sans-serif; }
 .vc-section-badge { padding:6px 14px; border-radius:6px; font-size:10px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; font-family:'Satoshi',sans-serif; background:rgba(114,102,255,0.08); color:#7266FF; border:1px solid rgba(114,102,255,0.2); white-space:nowrap; }
 .vc-divider { height:1px; background:rgba(12,10,31,0.08); margin:0 80px 0 48px; }
-.vc-footer { padding:40px 80px; background:#0C0A1F; display:flex; align-items:center; justify-content:space-between; margin-top:56px; }
+.vc-footer { padding:40px 80px 40px 48px; background:#0C0A1F; display:flex; align-items:center; justify-content:space-between; margin-top:56px; }
 .vc-footer-brand { font-size:13px; color:rgba(189,184,255,0.6); font-family:'Inter',sans-serif; }
 .vc-footer-brand strong { color:#ffffff; font-family:'Satoshi',sans-serif; }
 .vc-live-dot { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:#BDB8FF; font-family:'Satoshi',sans-serif; }
@@ -679,7 +679,7 @@ with col10:
           Validators accepting delegation only &middot; Next cycle</div>
       </div>
       <div style="overflow-y:auto;max-height:308px;">
-        <table style="width:100%;border-collapse:collapse;font-family:Inter,sans-serif;font-size:13px;">
+        <table style="width:100%;border-collapse:separate;border-spacing:0;font-family:Inter,sans-serif;font-size:13px;">
         <thead>
           <tr style="background:rgba(114,102,255,0.10);border-top:1px solid rgba(12,10,31,0.08);
                      border-bottom:1px solid rgba(12,10,31,0.08);position:sticky;top:0;z-index:1;">
