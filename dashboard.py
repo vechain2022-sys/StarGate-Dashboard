@@ -697,9 +697,9 @@ with col10:
         <tbody>
           {"".join([
             f'<tr style="border-bottom:1px solid rgba(12,10,31,0.06);background:{"#ffffff" if i%2==0 else "rgba(114,102,255,0.05)"};">'
-            f'<td style="padding:11px 24px;color:#0C0A1F;font-weight:500;">{row["NFT Level"]}</td>'
-            f'<td style="padding:11px 24px;color:#4E4B6A;">{row["Est. APY Range"]}</td>'
-            f'<td style="padding:11px 24px;color:#7266FF;font-weight:600;">{row["Avg APY"]}</td>'
+            f'<td style="padding:9px 24px;color:#0C0A1F;font-weight:500;">{row["NFT Level"]}</td>'
+            f'<td style="padding:9px 24px;color:#4E4B6A;">{row["Est. APY Range"]}</td>'
+            f'<td style="padding:9px 24px;color:#7266FF;font-weight:600;">{row["Avg APY"]}</td>'
             f'</tr>'
             for i, (_, row) in enumerate(df_apy_table[["NFT Level","Est. APY Range","Avg APY"]].iterrows())
           ])}
