@@ -107,7 +107,7 @@ LEVEL_COLORS = [
 ]
 
 # ── Consistent chart constants ────────────────────────────
-CH        = 480          # universal chart height
+CH        = 400          # universal chart height
 TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
 TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
