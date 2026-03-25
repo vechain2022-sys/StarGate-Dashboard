@@ -569,8 +569,9 @@ with col6:
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False
+        textfont=TICK_FONT, textposition="inside",
+        texttemplate="%{percent:.2%}", sort=False,
+        insidetextorientation="horizontal"
     ))
     fig6.add_annotation(
         text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
@@ -611,8 +612,9 @@ with col8:
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False
+        textfont=TICK_FONT, textposition="inside",
+        texttemplate="%{percent:.2%}", sort=False,
+        insidetextorientation="horizontal"
     ))
     fig8.add_annotation(
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
@@ -636,8 +638,9 @@ with col9:
         labels=df_holders["level"], values=df_holders["holders"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False
+        textfont=TICK_FONT, textposition="inside",
+        texttemplate="%{percent:.2%}", sort=False,
+        insidetextorientation="horizontal"
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
