@@ -622,7 +622,7 @@ with col8:
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False,
-        domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
+        domain=dict(x=[0.1, 0.9], y=[0.15, 1])
     ))
     fig8.add_annotation(
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
