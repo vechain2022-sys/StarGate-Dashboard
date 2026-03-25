@@ -43,10 +43,14 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-[data-testid="stHorizontalBlock"] { gap:24px !important; padding:24px 100px 56px !important; background:transparent !important; }
+[data-testid="stHorizontalBlock"] { gap:24px !important; padding:24px 80px 56px 48px !important; background:transparent !important; }
 [data-testid="stHorizontalBlock"] > div { padding:0 !important; min-width:0; }
 [data-testid="stPlotlyChart"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; padding:0 !important; box-shadow:0 2px 24px rgba(114,102,255,0.07); overflow:visible !important; box-sizing:border-box !important; }
 [data-testid="stPlotlyChart"] > div { margin:0 !important; overflow:visible !important; }
+[data-testid="stPlotlyChart"] .js-plotly-plot,
+[data-testid="stPlotlyChart"] .plot-container,
+[data-testid="stPlotlyChart"] .plotly { overflow:visible !important; max-width:100% !important; }
+.modebar-container { right:8px !important; top:8px !important; z-index:100 !important; }
 [data-testid="stDataFrame"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; box-shadow:0 2px 24px rgba(114,102,255,0.07); }
 [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] { background:transparent !important; }
 </style>""", unsafe_allow_html=True)
@@ -75,10 +79,10 @@ st.markdown("""<style>
 </style>""", unsafe_allow_html=True)
 
 st.markdown("""<style>
-.vc-section-title-row { display:flex; align-items:center; justify-content:space-between; padding:56px 100px 0; }
+.vc-section-title-row { display:flex; align-items:center; justify-content:space-between; padding:56px 80px 0 48px; }
 .vc-section-title { font-size:28px; font-weight:700; letter-spacing:-0.02em; color:#0C0A1F; font-family:'Satoshi',sans-serif; }
 .vc-section-badge { padding:6px 14px; border-radius:6px; font-size:10px; font-weight:600; letter-spacing:0.09em; text-transform:uppercase; font-family:'Satoshi',sans-serif; background:rgba(114,102,255,0.08); color:#7266FF; border:1px solid rgba(114,102,255,0.2); white-space:nowrap; }
-.vc-divider { height:1px; background:rgba(12,10,31,0.08); margin:0 100px; }
+.vc-divider { height:1px; background:rgba(12,10,31,0.08); margin:0 80px 0 48px; }
 .vc-footer { padding:40px 80px; background:#0C0A1F; display:flex; align-items:center; justify-content:space-between; margin-top:56px; }
 .vc-footer-brand { font-size:13px; color:rgba(189,184,255,0.6); font-family:'Inter',sans-serif; }
 .vc-footer-brand strong { color:#ffffff; font-family:'Satoshi',sans-serif; }
@@ -505,7 +509,7 @@ with col4:
     l4["yaxis"]["tickformat"] = ".2f"
     l4["yaxis"]["ticksuffix"] = "B"
     l4["yaxis"]["exponentformat"] = "none"
-    l4["yaxis"]["rangemode"] = "normal"
+    l4["yaxis"]["autorange"] = False
     ann_y_min = max(0, ann_df["ann_B"].min() * 0.95)
     ann_y_max = max(ann_df["ann_B"].max(), pre_B) * 1.10
     l4["yaxis"]["range"] = [ann_y_min, ann_y_max]
