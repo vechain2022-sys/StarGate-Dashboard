@@ -166,7 +166,7 @@ def base_layout(title, subtitle=None):
         ),
     )
 
-def legend_bottom(y=-0.10):
+def legend_bottom(y=-0.05):
     return dict(
         font=LEG_FONT,
         bgcolor="rgba(0,0,0,0)",
@@ -192,7 +192,7 @@ def pie_layout(title, subtitle=None, entrywidth=40):
         showlegend=True,
         legend=dict(
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-            orientation="h", yanchor="top", y=0.5,
+            orientation="h", yanchor="top", y=0.15,
             xanchor="left", x=0.0,
             entrywidth=entrywidth,
             entrywidthmode="pixels"
