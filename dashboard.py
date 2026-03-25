@@ -432,7 +432,9 @@ with col1:
             font=dict(size=11, color="#BDB8FF", family="Inter"))
     l1 = base_layout("VET Staked vs. Delegated","Cumulative VET locked in StarGate staking and delegation")
     l1["showlegend"] = True
-    l1["legend"] = legend_bottom()
+    l1["legend"] = dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
+                        orientation="h", yanchor="top", y=-0.38,
+                        xanchor="left", x=0)
     l1["yaxis"]["tickformat"] = ".2f"
     l1["yaxis"]["ticksuffix"] = "B"
     l1["yaxis"]["exponentformat"] = "none"
