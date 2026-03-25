@@ -45,7 +45,7 @@ st.markdown("""<style>
 st.markdown("""<style>
 [data-testid="stHorizontalBlock"] { gap:24px !important; padding:24px 80px 56px 48px !important; background:transparent !important; }
 [data-testid="stHorizontalBlock"] > div { padding:0 !important; min-width:0; }
-[data-testid="stPlotlyChart"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; padding:0 !important; box-shadow:0 2px 24px rgba(114,102,255,0.07); overflow:visible !important; box-sizing:border-box !important; }
+[data-testid="stPlotlyChart"] { background:#ffffff; border:1px solid rgba(12,10,31,0.08); border-radius:12px; padding:24px 8px 8px 24px !important; box-shadow:0 2px 24px rgba(114,102,255,0.07); overflow:visible !important; box-sizing:border-box !important; }
 [data-testid="stPlotlyChart"] > div { margin:0 !important; overflow:visible !important; }
 [data-testid="stPlotlyChart"] .js-plotly-plot,
 [data-testid="stPlotlyChart"] .plot-container,
