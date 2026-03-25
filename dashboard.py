@@ -577,9 +577,6 @@ with col6:
         x=0.5, y=0.5, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier")
-    l6["legend"]["orientation"] = "h"
-    l6["legend"]["y"] = -0.18
-    l6["legend"]["entrywidth"] = 90
     fig6.update_layout(**l6)
     st.plotly_chart(fig6, use_container_width=True)
 
@@ -622,8 +619,6 @@ with col8:
         x=0.5, y=0.5, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier")
-    l8["legend"]["y"] = -0.18
-    l8["legend"]["entrywidth"] = 90
     fig8.update_layout(**l8)
     st.plotly_chart(fig8, use_container_width=True)
 
@@ -649,8 +644,6 @@ with col9:
         x=0.5, y=0.5, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l9 = pie_layout("Holders by Level","Unique holders per staking tier")
-    l9["legend"]["y"] = -0.18
-    l9["legend"]["entrywidth"] = 90
     fig9.update_layout(**l9)
     st.plotly_chart(fig9, use_container_width=True)
 
