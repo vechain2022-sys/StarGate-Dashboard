@@ -99,8 +99,8 @@ TIMEOUT         = 30
 SLEEP_S         = 0.10
 PRE_FORK_ANNUAL = 13_672_848_202.60
 
-LEVEL_ORDER = ["Dawn","Lightning","Flash","Strength","Thunder","Mjolnir","VeThorX",
-               "StrengthX","ThunderX","MjolnirX"]
+LEVEL_ORDER = ["Dawn","Lightning","Flash","VeThorX","Thunder","Strength",
+               "ThunderX","StrengthX","Mjolnir","MjolnirX"]
 LEVEL_COLORS = [
     "#BDB8FF","#A09AFF","#8E87FF","#7C75FF","#7266FF",
     "#6057E8","#4E45D1","#3C34BA","#2A23A3","#18128C"
@@ -127,7 +127,6 @@ def divider():
 
 # ── Chart layout helpers ──────────────────────────────────
 def base_layout(title, subtitle=None):
-    """Shared layout for all cartesian charts."""
     return dict(
         title=dict(
             text=title,
@@ -143,11 +142,16 @@ def base_layout(title, subtitle=None):
             linecolor="rgba(12,10,31,0.1)", linewidth=1
         ),
         yaxis=dict(
-            gridcolor="rgba(12,10,31,0.05)", tickfont=TICK_FONT,
+            showgrid=False, tickfont=TICK_FONT,
             tickformat=".2s", automargin=True, rangemode="nonnegative",
             linecolor="rgba(12,10,31,0.1)", exponentformat="none"
         ),
     )
+
+def legend_bottom():
+    return dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
+                orientation="h", yanchor="top", y=-0.28,
+                xanchor="left", x=0)
 
 def pie_layout(title, subtitle=None):
     """Shared layout for all pie/donut charts."""
@@ -155,7 +159,8 @@ def pie_layout(title, subtitle=None):
         title=dict(
             text=title,
             subtitle=dict(text=subtitle, font=SUB_FONT) if subtitle else None,
-            font=TITLE_FONT
+            font=TITLE_FONT,
+            x=0.04, xanchor="left"
         ),
         paper_bgcolor="rgba(0,0,0,0)",
         margin=PIE_MARGINS,
@@ -163,8 +168,10 @@ def pie_layout(title, subtitle=None):
         showlegend=True,
         legend=dict(
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-            orientation="h", yanchor="top", y=-0.06,
-            xanchor="center", x=0.5
+            orientation="h", yanchor="top", y=-0.22,
+            xanchor="left", x=0.0,
+            entrywidth=220,
+            entrywidthmode="pixels"
         )
     )
 
@@ -458,7 +465,7 @@ with col2:
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
-        x=0.5, y=0.55, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=15, color="#0C0A1F", family="Satoshi"))
     l2 = pie_layout("Stake Composition","Validator · Delegated · Undelegated")
     fig2.update_layout(**l2)
@@ -576,7 +583,7 @@ with col6:
     ))
     fig6.add_annotation(
         text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
-        x=0.5, y=0.55, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier")
     fig6.update_layout(**l6)
@@ -619,7 +626,7 @@ with col8:
     ))
     fig8.add_annotation(
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
-        x=0.5, y=0.55, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier")
     fig8.update_layout(**l8)
@@ -645,7 +652,7 @@ with col9:
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
-        x=0.5, y=0.55, showarrow=False, align="center",
+        x=0.5, y=0.57, showarrow=False, align="center",
         font=dict(size=14, color="#0C0A1F", family="Satoshi"))
     l9 = pie_layout("Holders by Level","Unique holders per staking tier")
     fig9.update_layout(**l9)
