@@ -659,28 +659,40 @@ with col9:
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
+    st.markdown("""
+    <style>
+    .apy-title {
+        background:#ffffff;
+        border:1px solid rgba(12,10,31,0.08);
+        border-bottom:none;
+        border-radius:12px 12px 0 0;
+        padding:24px 24px 16px 24px;
+        box-shadow:0 2px 24px rgba(114,102,255,0.07);
+    }
+    .apy-title h4 {
+        font-size:14px;font-weight:700;color:#0C0A1F;
+        font-family:Satoshi,sans-serif;margin:0 0 6px 0;
+    }
+    .apy-title p {
+        font-size:12px;color:#7B789A;
+        font-family:Inter,sans-serif;margin:0;
+    }
+    /* Remove default card styling from dataframe and connect to title */
+    .apy-table [data-testid="stDataFrame"] {
+        border-radius:0 0 12px 12px !important;
+        border:1px solid rgba(12,10,31,0.08) !important;
+        border-top:none !important;
+        box-shadow:0 2px 24px rgba(114,102,255,0.07) !important;
+        margin-top:0 !important;
+    }
+    </style>
+    <div class="apy-title">
+      <h4>Est. APY Range by NFT Level</h4>
+      <p>Validators accepting delegation only &middot; Next cycle</p>
+    </div>
+    """, unsafe_allow_html=True)
     with st.container():
-        st.markdown("""
-        <div style="background:#ffffff;border:1px solid rgba(12,10,31,0.08);
-                    border-radius:12px;padding:24px 24px 0 24px;
-                    box-shadow:0 2px 24px rgba(114,102,255,0.07);">
-          <div style="font-size:14px;font-weight:700;color:#0C0A1F;
-                      font-family:Satoshi,sans-serif;margin-bottom:6px;">
-            Est. APY Range by NFT Level</div>
-          <div style="font-size:12px;color:#7B789A;font-family:Inter,sans-serif;
-                      margin-bottom:16px;">
-            Validators accepting delegation only &middot; Next cycle</div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.markdown("""
-        <style>
-        [data-testid="stDataFrame"] {
-            border-radius: 0 0 12px 12px !important;
-            border-top: none !important;
-            margin-top: -2px !important;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        st.markdown('<div class="apy-table">', unsafe_allow_html=True)
         st.dataframe(
             df_apy_table[["NFT Level","Est. APY Range","Avg APY"]],
             use_container_width=True, hide_index=True, height=360,
@@ -689,6 +701,7 @@ with col10:
                 "Est. APY Range": st.column_config.TextColumn("Est. APY Range"),
                 "Avg APY":        st.column_config.TextColumn("Avg APY"),
             })
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════
 # FOOTER
