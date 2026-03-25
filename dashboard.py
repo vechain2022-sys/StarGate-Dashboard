@@ -453,7 +453,8 @@ with col2:
         hole=0.48,
         hovertemplate="<b>%{label}</b><br>%{value:,.0f} VET<br>%{percent}<extra></extra>",
         textfont=TICK_FONT, textposition="outside",
-        texttemplate="%{percent:.2%}", sort=False
+        texttemplate="%{percent:.2%}", sort=False,
+        domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
     ))
     fig2.add_annotation(
         text=f"<b>{fmt(tvl)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total TVL</span>",
@@ -569,9 +570,9 @@ with col6:
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="inside",
+        textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False,
-        insidetextorientation="horizontal"
+        domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
     ))
     fig6.add_annotation(
         text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
@@ -612,9 +613,9 @@ with col8:
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} NFTs<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="inside",
+        textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False,
-        insidetextorientation="horizontal"
+        domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
     ))
     fig8.add_annotation(
         text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
@@ -638,9 +639,9 @@ with col9:
         labels=df_holders["level"], values=df_holders["holders"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
         hovertemplate="<b>%{label}</b><br>%{value:,} holders<br>%{percent}<extra></extra>",
-        textfont=TICK_FONT, textposition="inside",
+        textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False,
-        insidetextorientation="horizontal"
+        domain=dict(x=[0.1, 0.9], y=[0.15, 0.95])
     ))
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
