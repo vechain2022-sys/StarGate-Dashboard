@@ -170,7 +170,7 @@ def pie_layout(title, subtitle=None):
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
             orientation="h", yanchor="top", y=-0.22,
             xanchor="left", x=0.0,
-            entrywidth=90,
+            entrywidth=60,
             entrywidthmode="pixels"
         )
     )
