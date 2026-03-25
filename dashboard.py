@@ -539,7 +539,7 @@ with col4:
     l4["yaxis"]["exponentformat"] = "none"
     l4["yaxis"]["autorange"] = False
     ann_y_min = max(0, ann_df["ann_B"].min() * 0.95)
-    ann_y_max = max(ann_df["ann_B"].max(), pre_B) * 1.10
+    ann_y_max = max(ann_df["ann_B"].max(), pre_B) * 1
     l4["yaxis"]["range"] = [ann_y_min, ann_y_max]
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
