@@ -130,8 +130,8 @@ TICK_FONT = dict(color="#7B789A", size=11, family="Inter")
 TITLE_FONT= dict(color="#0C0A1F", size=14, family="Satoshi")
 SUB_FONT  = dict(color="#7B789A", size=12, family="Inter")
 LEG_FONT  = dict(color="#7B789A", size=11, family="Inter")
-MARGINS   = dict(l=56, r=100, t=40, b=72)   # consistent on all charts
-PIE_MARGINS = dict(l=60, r=60, t=40, b=72)
+MARGINS   = dict(l=56, r=100, t=45, b=72)   # consistent on all charts
+PIE_MARGINS = dict(l=60, r=60, t=45, b=72)
 
 def section_title(title, badge):
     st.markdown(
@@ -192,7 +192,7 @@ def pie_layout(title, subtitle=None, entrywidth=40):
         showlegend=True,
         legend=dict(
             font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-            orientation="h", yanchor="top", y=0,
+            orientation="h", yanchor="top", y=0.5,
             xanchor="left", x=0.0,
             entrywidth=entrywidth,
             entrywidthmode="pixels"
@@ -563,7 +563,7 @@ with col4:
     l4["yaxis"]["exponentformat"] = "none"
     l4["yaxis"]["autorange"] = False
     ann_y_min = max(0, ann_df["ann_B"].min() * 0.95)
-    ann_y_max = max(ann_df["ann_B"].max(), pre_B) * 1
+    ann_y_max = max(ann_df["ann_B"].max(), pre_B) * 1.05
     l4["yaxis"]["range"] = [ann_y_min, ann_y_max]
     fig4.update_layout(**l4)
     st.plotly_chart(fig4, use_container_width=True)
