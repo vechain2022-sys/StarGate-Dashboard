@@ -433,7 +433,7 @@ with col1:
     l1 = base_layout("VET Staked vs. Delegated","Cumulative VET locked in StarGate staking and delegation")
     l1["showlegend"] = True
     l1["legend"] = dict(font=LEG_FONT, bgcolor="rgba(0,0,0,0)",
-                        orientation="h", yanchor="top", y=-0.18,
+                        orientation="h", yanchor="top", y=-0.38,
                         xanchor="left", x=0)
     l1["yaxis"]["tickformat"] = ".2f"
     l1["yaxis"]["ticksuffix"] = "B"
@@ -499,20 +499,20 @@ with col4:
     fig4.add_shape(type="line",
         x0=ann_df["date"].iloc[0], x1=ann_df["date"].iloc[-1],
         y0=pre_B, y1=pre_B,
-        line=dict(color="#FF4D4D",width=1.8,dash="dash"))
+        line=dict(color="#7266FF",width=1.8,dash="dash"))
     fig4.add_annotation(x=ann_df["date"].iloc[-1], y=pre_B,
         text=f"<b>{pre_B:.2f}B</b>",
         showarrow=False, xanchor="left", xshift=10,
-        font=dict(size=11, color="#FF4D4D", family="Inter"))
+        font=dict(size=11, color="#7266FF", family="Inter"))
     fig4.add_trace(go.Scatter(
         x=ann_df["date"], y=ann_df["ann_B"], name="Post-Hayabusa",
         fill="tozeroy", fillcolor="rgba(114,102,255,0.10)",
         line=dict(color="#BDB8FF",width=2.5),
-        mode="lines+markers", marker=dict(size=4,color="#BDB8FF"),
+        mode="lines",
         hovertemplate="%{x}<br><b>%{y:.2f}B VTHO/yr</b><extra></extra>"
     ))
     fig4.add_trace(go.Scatter(x=[None], y=[None], name="Pre-Hayabusa",
-        mode="lines", line=dict(color="#FF4D4D",width=2,dash="dash")))
+        mode="lines", line=dict(color="#7266FF",width=2,dash="dash")))
     l4 = base_layout("Annualised Emission Rate",f"Post-Hayabusa vs. {pre_B:.2f}B/yr pre-fork baseline")
     l4["showlegend"] = True
     l4["legend"] = legend_bottom()
