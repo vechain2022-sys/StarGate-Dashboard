@@ -475,19 +475,22 @@ col3, col4 = st.columns(2)
 with col3:
     fig3 = go.Figure()
     fig3.add_trace(go.Scatter(
-        x=chart_df["date"], y=chart_df["vtho_generated"],
+        x=chart_df["date"], y=chart_df["vtho_generated"] / 1e6,
         fill="tozeroy", fillcolor="rgba(114,102,255,0.08)",
         line=dict(color="#7266FF",width=2.5),
-        hovertemplate="%{x}<br><b>%{y:,.2f} VTHO</b><extra></extra>"
+        hovertemplate="%{x}<br><b>%{y:.2f}M VTHO</b><extra></extra>"
     ))
     if not chart_df.empty:
         fig3.add_annotation(
-            x=chart_df["date"].iloc[-1], y=chart_df["vtho_generated"].iloc[-1],
-            text=f"<b>{fmt(chart_df['vtho_generated'].iloc[-1])}</b>",
+            x=chart_df["date"].iloc[-1], y=chart_df["vtho_generated"].iloc[-1] / 1e6,
+            text=f"<b>{chart_df['vtho_generated'].iloc[-1]/1e6:.2f}M</b>",
             showarrow=False, xanchor="left", xshift=10,
             font=dict(size=11, color="#7266FF", family="Inter"))
     l3 = base_layout("VTHO Generated","Emission rising proportionally as more VET gets staked")
     l3["yaxis"]["rangemode"] = "nonnegative"
+    l3["yaxis"]["tickformat"] = ".2f"
+    l3["yaxis"]["ticksuffix"] = "M"
+    l3["yaxis"]["exponentformat"] = "none"
     fig3.update_layout(**l3)
     st.plotly_chart(fig3, use_container_width=True)
 
@@ -546,18 +549,22 @@ with col5:
     fig5.add_trace(go.Bar(
         x=df_level["level"], y=df_level["vet_staked"],
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>",
-        text=[fmt(v) for v in df_level["vet_staked"]],
-        textposition="outside", textfont=TICK_FONT
+        hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>"
     ))
     l5 = base_layout("VET Staked by Level","Total VET locked per staking tier")
     l5["bargap"] = 0.25; l5["hovermode"] = "x"
     l5["yaxis"]["rangemode"] = "nonnegative"
+    l5["yaxis"]["tickformat"] = ".2f"
+    l5["yaxis"]["ticksuffix"] = "B"
+    l5["yaxis"]["exponentformat"] = "none"
+    # convert to billions for clean labels
+    fig5.update_traces(y=df_level["vet_staked"] / 1e9)
     fig5.update_layout(**l5)
     st.plotly_chart(fig5, use_container_width=True)
 
 with col6:
     fig6 = go.Figure()
+    total_nft_s3 = df_level["nft_count"].sum()
     fig6.add_trace(go.Pie(
         labels=df_level["level"], values=df_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
@@ -565,7 +572,15 @@ with col6:
         textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False
     ))
-    fig6.update_layout(**pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier"))
+    fig6.add_annotation(
+        text=f"<b>{fmt(total_nft_s3)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
+        x=0.5, y=0.5, showarrow=False, align="center",
+        font=dict(size=14, color="#0C0A1F", family="Satoshi"))
+    l6 = pie_layout("NFT Minted by Level","Share of total NFTs minted per staking tier")
+    l6["legend"]["orientation"] = "h"
+    l6["legend"]["y"] = -0.18
+    l6["legend"]["entrywidth"] = 90
+    fig6.update_layout(**l6)
     st.plotly_chart(fig6, use_container_width=True)
 
 divider()
@@ -579,20 +594,22 @@ col7, col8 = st.columns(2)
 with col7:
     fig7 = go.Figure()
     fig7.add_trace(go.Bar(
-        x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"],
+        x=df_dlg_level["level"], y=df_dlg_level["vet_delegated"] / 1e9,
         marker=dict(color=LEVEL_COLORS,line=dict(width=0)),
-        hovertemplate="<b>%{x}</b><br>%{y:,.2f} VET<extra></extra>",
-        text=[fmt(v) for v in df_dlg_level["vet_delegated"]],
-        textposition="outside", textfont=TICK_FONT
+        hovertemplate="<b>%{x}</b><br>%{y:.2f}B VET<extra></extra>"
     ))
     l7 = base_layout("VET Delegated by Level","Total VET delegated per staking tier")
     l7["bargap"] = 0.25; l7["hovermode"] = "x"
     l7["yaxis"]["rangemode"] = "nonnegative"
+    l7["yaxis"]["tickformat"] = ".2f"
+    l7["yaxis"]["ticksuffix"] = "B"
+    l7["yaxis"]["exponentformat"] = "none"
     fig7.update_layout(**l7)
     st.plotly_chart(fig7, use_container_width=True)
 
 with col8:
     fig8 = go.Figure()
+    total_nft_s4 = df_dlg_level["nft_count"].sum()
     fig8.add_trace(go.Pie(
         labels=df_dlg_level["level"], values=df_dlg_level["nft_count"],
         marker=dict(colors=LEVEL_COLORS), hole=0.45,
@@ -600,7 +617,14 @@ with col8:
         textfont=TICK_FONT, textposition="outside",
         texttemplate="%{percent:.2%}", sort=False
     ))
-    fig8.update_layout(**pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier"))
+    fig8.add_annotation(
+        text=f"<b>{fmt(total_nft_s4)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total NFTs</span>",
+        x=0.5, y=0.5, showarrow=False, align="center",
+        font=dict(size=14, color="#0C0A1F", family="Satoshi"))
+    l8 = pie_layout("NFTs Delegating by Level","Share of delegating NFTs per staking tier")
+    l8["legend"]["y"] = -0.18
+    l8["legend"]["entrywidth"] = 90
+    fig8.update_layout(**l8)
     st.plotly_chart(fig8, use_container_width=True)
 
 divider()
@@ -623,8 +647,11 @@ with col9:
     fig9.add_annotation(
         text=f"<b>{fmt(snap_holders)}</b><br><span style='font-size:11px;color:#7B789A;font-family:Inter'>Total Holders</span>",
         x=0.5, y=0.5, showarrow=False, align="center",
-        font=dict(size=15, color="#0C0A1F", family="Satoshi"))
-    fig9.update_layout(**pie_layout("Holders by Level","Unique holders per staking tier"))
+        font=dict(size=14, color="#0C0A1F", family="Satoshi"))
+    l9 = pie_layout("Holders by Level","Unique holders per staking tier")
+    l9["legend"]["y"] = -0.18
+    l9["legend"]["entrywidth"] = 90
+    fig9.update_layout(**l9)
     st.plotly_chart(fig9, use_container_width=True)
 
 with col10:
